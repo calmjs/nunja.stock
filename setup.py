@@ -29,10 +29,16 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'setuptools',
-        # -*- Extra requirements: -*-
+        'nunja',
     ],
-    entry_points="""
-    # -*- Entry points: -*-
-    """,
+    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
+    entry_points={
+        'calmjs.module.tests': [
+            'nunja.stock = nunja.stock.tests',
+        ],
+        'nunja.mold': [
+            'nunja.stock.molds = nunja.stock:molds',
+        ],
+    },
+    test_suite="nunja.stock.tests.make_suite",
 )
