@@ -1,4 +1,4 @@
-[{
+var exports = [{
     "active_columns": [
         "name",
         "type",
@@ -33,4 +33,26 @@
         "size": 0,
         "type": "folder"
     }
-}]
+}, [
+    "<div data-nunja=\"nunja.stock.molds/navtree\">",
+    "<table class=\"\">",
+    "  <thead>",
+    "    <tr class=\"\">",
+    "    <td>name</td><td>type</td><td>size</td>",
+    "    </tr>",
+    "  </thead>",
+    "  <tbody>",
+    "    <tr class=\"\">",
+    "      <td><a href=\"/script.py?/dummydir2/file1\">file1</a></td><td>file</td><td>13</td>",
+    "    </tr><tr class=\"\">",
+    "      <td><a href=\"/script.py?/dummydir2/file2\">file2</a></td><td>file</td><td>13</td>",
+    "    </tr>",
+    "  </tbody>",
+    "</table>",
+    "</div>"
+]]
+
+// requirejs export shim
+define([], function() {
+    return exports;
+})
