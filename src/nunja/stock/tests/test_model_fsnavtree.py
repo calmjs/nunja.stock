@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 import unittest
+import json
+from pkg_resources import resource_filename
 from os import makedirs
 from os.path import join
 
 from nunja.stock.model import fsnavtree
+from calmjs.rjs.ecma import parse
+
 from calmjs.testing.utils import mkdtemp
 
 
@@ -123,7 +127,6 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@id': 'test_file.txt',
                 'name': 'test_file.txt',
                 'href': '/script.py?/test_file.txt',
-                'data_href': '/json.py/test_file.txt',
             }
         )
 
@@ -146,7 +149,6 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@id': 'file1',
                 'name': 'file1',
                 'href': '/script.py?/dummydir2/file1',
-                'data_href': '/json.py/dummydir2/file1',
             }
         )
 
@@ -236,7 +238,29 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         results = model.get_struct('/dummydir2')
         self.assertEqual(len(results['result']['items']), 2)
 
-    def test_get_struct_success_limited_columns(self):
+
+class FSNavTreeModelMirrorTestCase(unittest.TestCase):
+
+    def setUp(self):
+        with open(resource_filename(
+                'nunja.stock.tests', 'fsnavtree_examples.js')) as fd:
+            self.data = json.loads(parse(fd.read()).children()[0].children(
+                )[0].initializer.to_ecma())
+
+        self.tmpdir = mkdtemp(self)
+        self.dummydir2 = join(self.tmpdir, 'dummydir2')
+        self.dummydir2dir = join(self.tmpdir, 'dummydir2', 'dir')
+        makedirs(self.dummydir2dir)
+        self.dummydirfile1 = join(self.dummydir2, 'file1')
+        self.dummydirfile2 = join(self.dummydir2, 'file2')
+
+        with open(self.dummydirfile1, 'w') as fd:
+            fd.write('dummydirfile1')
+
+        with open(self.dummydirfile2, 'w') as fd:
+            fd.write('dummydirfile2')
+
+    def test_get_struct_success_limited_columns_no_data(self):
         model = fsnavtree.Base(
             self.tmpdir, '/script.py?{path}', active_columns=[
                 'name', 'type', 'size',
@@ -244,5 +268,16 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         )
         self.maxDiff = None
         results = model.get_struct('/dummydir2')
-        self.assertEqual(len(results['column_map']), 3)
-        self.assertEqual(len(results['active_columns']), 3)
+        self.assertEqual(results, self.data[0][0])
+
+    def test_get_struct_success_limited_columns_with_data(self):
+        model = fsnavtree.Base(
+            self.tmpdir, '/script.py?{path}',
+            uri_template_json='/json.py?{path}',
+            active_columns=[
+                'name', 'type', 'size',
+            ]
+        )
+        self.maxDiff = None
+        results = model.get_struct('/dummydir2')
+        self.assertEqual(results, self.data[1][0])

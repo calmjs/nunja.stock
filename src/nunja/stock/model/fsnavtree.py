@@ -100,11 +100,14 @@ class Base(object):
             'href': self._fs_format_uri(fs_path),
         }
 
-        if self.uri_template_json:
-            base['data_href'] = self._fs_format_uri(
-                fs_path, self.uri_template_json)
-
         f_type = to_filetype(attr.st_mode)
+
+        if self.uri_template_json:
+            if f_type == 'folder':
+                # only hook this up for folders.
+                base['data_href'] = self._fs_format_uri(
+                    fs_path, self.uri_template_json)
+
         result = {k: v for k, v in (
             ('type', f_type),
             ('name', basename(fs_path)),

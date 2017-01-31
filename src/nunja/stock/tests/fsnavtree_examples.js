@@ -19,6 +19,13 @@ var exports = [
             "href": "/script.py?/dummydir2",
             "items": [
                 {
+                    "@id": "dir",
+                    "href": "/script.py?/dummydir2/dir",
+                    "name": "dir",
+                    "size": 0,
+                    "type": "folder"
+                },
+                {
                     "@id": "file1",
                     "href": "/script.py?/dummydir2/file1",
                     "name": "file1",
@@ -47,6 +54,8 @@ var exports = [
         "  </thead>",
         "  <tbody>",
         "    <tr class=\"\">",
+        "      <td><a href=\"/script.py?/dummydir2/dir\">dir</a></td><td>folder</td><td>0</td>",
+        "    </tr><tr class=\"\">",
         "      <td><a href=\"/script.py?/dummydir2/file1\">file1</a></td><td>file</td><td>13</td>",
         "    </tr><tr class=\"\">",
         "      <td><a href=\"/script.py?/dummydir2/file2\">file2</a></td><td>file</td><td>13</td>",
@@ -74,9 +83,16 @@ var exports = [
             "data_href": "/json.py?/dummydir2",
             "items": [
                 {
+                    "@id": "dir",
+                    "href": "/script.py?/dummydir2/dir",
+                    "data_href": "/json.py?/dummydir2/dir",
+                    "name": "dir",
+                    "size": 0,
+                    "type": "folder"
+                },
+                {
                     "@id": "file1",
                     "href": "/script.py?/dummydir2/file1",
-                    "data_href": "/json.py?/dummydir2/file1",
                     "name": "file1",
                     "size": 13,
                     "type": "file"
@@ -84,7 +100,6 @@ var exports = [
                 {
                     "@id": "file2",
                     "href": "/script.py?/dummydir2/file2",
-                    "data_href": "/json.py?/dummydir2/file2",
                     "name": "file2",
                     "size": 13,
                     "type": "file"
@@ -104,17 +119,19 @@ var exports = [
         "  </thead>",
         "  <tbody>",
         "    <tr class=\"\">",
-        "      <td><a href=\"/script.py?/dummydir2/file1\" data-href=\"/json.py?/dummydir2/file1\">file1</a></td><td>file</td><td>13</td>",
+        "      <td><a href=\"/script.py?/dummydir2/dir\" data-href=\"/json.py?/dummydir2/dir\">dir</a></td><td>folder</td><td>0</td>",
         "    </tr><tr class=\"\">",
-        "      <td><a href=\"/script.py?/dummydir2/file2\" data-href=\"/json.py?/dummydir2/file2\">file2</a></td><td>file</td><td>13</td>",
+        "      <td><a href=\"/script.py?/dummydir2/file1\">file1</a></td><td>file</td><td>13</td>",
+        "    </tr><tr class=\"\">",
+        "      <td><a href=\"/script.py?/dummydir2/file2\">file2</a></td><td>file</td><td>13</td>",
         "    </tr>",
         "  </tbody>",
         "</table>",
         "</div>"
     ]],
-]
+];
 
 // requirejs export shim
 define([], function() {
     return exports;
-})
+});
