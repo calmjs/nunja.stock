@@ -31,12 +31,24 @@ describe('Basic nunja.stock.molds/navtree rendering', function() {
 
     it('Linked rendering with Python', function() {
         var data = require('nunja/stock/tests/fsnavtree_examples');
+        var datum = data[0];
         var results = this.engine.execute(
-            'nunja.stock.molds/navtree', data[0]);
+            'nunja.stock.molds/navtree', datum[0]);
         var rendered = results.split('\n').filter(function(v) {
             return v.length > 0;
         }).join('\n');
-        expect(rendered).to.equal(data[1].join('\n'));
+        expect(rendered).to.equal(datum[1].join('\n'));
+    });
+
+    it('Linked rendering with Python, with data-href', function() {
+        var data = require('nunja/stock/tests/fsnavtree_examples');
+        var datum = data[1];
+        var results = this.engine.execute(
+            'nunja.stock.molds/navtree', datum[0]);
+        var rendered = results.split('\n').filter(function(v) {
+            return v.length > 0;
+        }).join('\n');
+        expect(rendered).to.equal(datum[1].join('\n'));
     });
 
 });

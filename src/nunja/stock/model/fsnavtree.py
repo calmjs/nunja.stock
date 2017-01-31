@@ -44,7 +44,10 @@ def get_filetype(path):
 
 class Base(object):
 
-    def __init__(self, root, uri_template, active_columns=None):
+    def __init__(
+            self, root, uri_template,
+            uri_template_json=None,
+            active_columns=None):
         """
         Arguments:
 
@@ -57,29 +60,38 @@ class Base(object):
             convention set forth by RFC 6570.
 
             see the method ``format_uri`` for details.
+        uri_template_json
+            This is the template for all the URIs that will be generated
+            for all the navigational links for getting to the JSON for
+            that particular record.
+
+            Defaults to uri_template if left as unassigned.
         active_columns
             The columns that are active.
         """
 
         self.root = root
         self.uri_template = uri_template
+        self.uri_template_json = uri_template_json
         if not active_columns:
             self.active_columns = columns
         else:
             # the specified columns have an order priority
             self.active_columns = [c for c in active_columns if c in columns]
 
-    def format_uri(self, path):
+    def format_uri(self, path, template=None):
         """
         Subclasses should override this, as the default simply take over
         the entire query string with the path.
         """
 
-        return self.uri_template.format(path=path)
+        if template is None:
+            template = self.uri_template
+        return template.format(path=path)
 
-    def _fs_format_uri(self, fs_path):
+    def _fs_format_uri(self, fs_path, template=None):
         return self.format_uri('/'.join(
-            fs_path[len(self.root):].split(sep)))
+            fs_path[len(self.root):].split(sep)), template)
 
     def _get_attrs(self, fs_path):
         attr = os.stat(fs_path)
@@ -87,6 +99,11 @@ class Base(object):
             '@id': basename(fs_path),
             'href': self._fs_format_uri(fs_path),
         }
+
+        if self.uri_template_json:
+            base['data_href'] = self._fs_format_uri(
+                fs_path, self.uri_template_json)
+
         f_type = to_filetype(attr.st_mode)
         result = {k: v for k, v in (
             ('type', f_type),

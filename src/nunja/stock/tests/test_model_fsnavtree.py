@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
-import json
 from os import makedirs
 from os.path import join
-
-from pkg_resources import resource_filename
 
 from nunja.stock.model import fsnavtree
 from calmjs.testing.utils import mkdtemp
@@ -110,6 +107,46 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@id': 'file1',
                 'name': 'file1',
                 'href': '/script.py?/dummydir2/file1'
+            }
+        )
+
+    def test_get_attrs_data(self):
+        model = fsnavtree.Base(
+            self.tmpdir, '/script.py?{path}',
+            uri_template_json='/json.py{path}',
+        )
+
+        self.assertEqual(
+            _dict_clone_filtered(model._get_attrs(self.test_file)), {
+                'type': 'file',
+                'size': 22,
+                '@id': 'test_file.txt',
+                'name': 'test_file.txt',
+                'href': '/script.py?/test_file.txt',
+                'data_href': '/json.py/test_file.txt',
+            }
+        )
+
+        self.assertEqual(
+            _dict_clone_filtered(model._get_attrs(self.dummydir1), [
+                'created', 'size',
+            ]), {
+                'type': 'folder',
+                '@id': 'dummydir1',
+                'name': 'dummydir1',
+                'href': '/script.py?/dummydir1',
+                'data_href': '/json.py/dummydir1',
+            }
+        )
+
+        self.assertEqual(
+            _dict_clone_filtered(model._get_attrs(self.dummydirfile1)), {
+                'type': 'file',
+                'size': 13,
+                '@id': 'file1',
+                'name': 'file1',
+                'href': '/script.py?/dummydir2/file1',
+                'data_href': '/json.py/dummydir2/file1',
             }
         )
 

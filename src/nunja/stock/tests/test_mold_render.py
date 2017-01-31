@@ -21,7 +21,15 @@ def reconstitute(lines):
 class FSNavTreeRenderTestCase(unittest.TestCase):
 
     def test_render(self):
-        raw = engine.execute('nunja.stock.molds/navtree', data=data[0])
-        answer = reconstitute(data[1])
+        datum = data[0]
+        raw = engine.execute('nunja.stock.molds/navtree', data=datum[0])
+        answer = reconstitute(datum[1])
+        rendered = reconstitute(raw.splitlines())
+        self.assertEqual(answer, rendered)
+
+    def test_render_with_data(self):
+        datum = data[1]
+        raw = engine.execute('nunja.stock.molds/navtree', data=datum[0])
+        answer = reconstitute(datum[1])
         rendered = reconstitute(raw.splitlines())
         self.assertEqual(answer, rendered)

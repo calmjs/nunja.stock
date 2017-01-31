@@ -11,7 +11,10 @@
     <tr class="{{ cls['table.tbody.tr'] }}">
       {% for id in active_columns -%}
         {%- if id == active_columns[0] and item['@id'] -%}
-          <td><a href="{{ item['href'] }}">{{ item[id] }}</a></td>
+          <td><a href="{{ item['href'] }}"
+          {%- if item['data_href'] %} data-href="{{ item['data_href'] }}"
+          {%- endif -%}
+          >{{ item[id] }}</a></td>
         {%- else -%}
           <td>{{ item[id] }}</td>
         {%- endif -%}
