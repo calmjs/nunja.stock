@@ -44,49 +44,48 @@ def get_filetype(path):
 
 class Base(object):
 
-    def __init__(self, root, href_pattern, active_columns=None):
+    def __init__(self, root, uri_template, active_columns=None):
         """
         Arguments:
 
         root
             The root directory; all entries will be generated from below
             this one.
-        href_pattern
-            This stores the implementation specific pattern that will be
-            applied to the final href that will be rendered for elements
-            that links to an actual object through the view that
-            implements the function.  The base implementation simply
-            treat this as the absolute path to the raw script name; see
-            the method ``path_to_client_href`` for details.
+        uri_template
+            This is the template for all the URIs that will be generated
+            for all the navigational links.  It should follow the
+            convention set forth by RFC 6570.
+
+            see the method ``format_uri`` for details.
         active_columns
             The columns that are active.
         """
 
         self.root = root
-        self.href_pattern = href_pattern
+        self.uri_template = uri_template
         if not active_columns:
             self.active_columns = columns
         else:
             # the specified columns have an order priority
             self.active_columns = [c for c in active_columns if c in columns]
 
-    def path_to_client_href(self, path):
+    def format_uri(self, path):
         """
         Subclasses should override this, as the default simply take over
         the entire query string with the path.
         """
 
-        return self.href_pattern + '?' + path
+        return self.uri_template.format(path=path)
 
-    def _fs_path_to_client_href(self, fs_path):
-        return self.href_pattern + '?' + '/'.join(
-            fs_path[len(self.root):].split(sep))
+    def _fs_format_uri(self, fs_path):
+        return self.format_uri('/'.join(
+            fs_path[len(self.root):].split(sep)))
 
     def _get_attrs(self, fs_path):
         attr = os.stat(fs_path)
         base = {
             '@id': basename(fs_path),
-            'href': self._fs_path_to_client_href(fs_path),
+            'href': self._fs_format_uri(fs_path),
         }
         f_type = to_filetype(attr.st_mode)
         result = {k: v for k, v in (
