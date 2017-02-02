@@ -25,7 +25,7 @@ define([
     }
 
     var init = function(self) {
-        addEventListeners($('[data-href]'), 'click', function(ev) {
+        addEventListeners($('[data-href]', self), 'click', function(ev) {
             json_nav(self, ev);
         });
     };
