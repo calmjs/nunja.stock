@@ -46,6 +46,7 @@ var exports = [
         }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navtree\">",
+        "<div data-config=\"\">",
         "<table class=\"\">",
         "  <thead>",
         "    <tr class=\"\">",
@@ -62,6 +63,7 @@ var exports = [
         "    </tr>",
         "  </tbody>",
         "</table>",
+        "</div>",
         "</div>"
     ]],
 
@@ -111,6 +113,7 @@ var exports = [
         }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navtree\">",
+        "<div data-config=\"\">",
         "<table class=\"\">",
         "  <thead>",
         "    <tr class=\"\">",
@@ -127,6 +130,7 @@ var exports = [
         "    </tr>",
         "  </tbody>",
         "</table>",
+        "</div>",
         "</div>"
     ]],
 ];

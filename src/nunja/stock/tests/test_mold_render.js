@@ -33,6 +33,7 @@ describe('Basic nunja.stock.molds/navtree rendering', function() {
         });
 
         expect(results).to.equal(
+            '<div data-config="">\n' +
             '<table class="">\n' +
             '  <thead>\n' +
             '    <tr class="">\n' +
@@ -42,7 +43,9 @@ describe('Basic nunja.stock.molds/navtree rendering', function() {
             '  <tbody>\n' +
             '    \n' +
             '  </tbody>\n' +
-            '</table>\n'
+            '</table>\n' +
+            '\n' +
+            '</div>\n'
         )
     });
 
