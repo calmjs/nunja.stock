@@ -11,11 +11,12 @@ window.mocha.setup('bdd');
 
 describe('nunja.stock.molds/navtree interactions', function() {
 
-    var defaultPopulate = function(test) {
+    var defaultPopulate = function(test, path) {
+        path = path || '/';
         // populate the body
         var div = document.createElement('div');
         div.innerHTML = '<div data-nunja="nunja.stock.molds/navtree"></div>';
-        test.engine.populate($('div', div)[0], data['/']);
+        test.engine.populate($('div', div)[0], data[path]);
         document.body.appendChild(div);
         test.clock.tick(500);
     };
@@ -60,9 +61,27 @@ describe('nunja.stock.molds/navtree interactions', function() {
         $('a')[0].click();
         this.clock.tick(500);
         expect($('a')[0].innerHTML).to.equal('nested');
-        // should trigger error handling.
+        // should trigger default error handling.
         $('a')[0].click();
         this.clock.tick(500);
+    });
+
+    it('Standard error handling', function() {
+        defaultPopulate(this);
+        triggerOnLoad(this);
+        expect($('a')[1].innerHTML).to.equal('bad_target');
+        $('a')[1].click();
+        this.clock.tick(500);
+    });
+
+    it('Custom error handling test', function() {
+        defaultPopulate(this, '/dir');
+        triggerOnLoad(this);
+        expect($('a')[1].innerHTML).to.equal('bad_target');
+        // should trigger custom error handling.
+        $('a')[1].click();
+        this.clock.tick(500);
+        expect($('tfoot')[0].innerHTML).to.contain('Error');
     });
 
     it('Ensure related anchors have the events.', function() {

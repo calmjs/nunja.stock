@@ -9,6 +9,7 @@ var exports = [
             "size"
         ],
         "cls": {},
+        "navtree_config": "{}",
         "column_map": {
             "name": "name",
             "size": "size",
@@ -46,7 +47,7 @@ var exports = [
         }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navtree\">",
-        "<div data-config=\"\">",
+        "<div data-config=\"{}\">",
         "<table class=\"\">",
         "  <thead>",
         "    <tr class=\"\">",
@@ -74,6 +75,7 @@ var exports = [
             "size"
         ],
         "cls": {},
+        "navtree_config": "{}",
         "column_map": {
             "name": "name",
             "size": "size",
@@ -113,7 +115,7 @@ var exports = [
         }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navtree\">",
-        "<div data-config=\"\">",
+        "<div data-config=\"{}\">",
         "<table class=\"\">",
         "  <thead>",
         "    <tr class=\"\">",

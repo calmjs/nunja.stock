@@ -7,15 +7,27 @@ define([
     var $ = utils.$;
     var addEventListeners = utils.addEventListeners;
 
-    var get = function(uri, cb) {
+    var Model = function(root) {
+        this.root = root;
+    };
+
+    Model.prototype.get = function(uri, cb, error_module) {
         var xhr = new XMLHttpRequest();
+        var self = this;
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 if (xhr.status == 200) {
                     cb(xhr);
                 }
                 else {
-                    console.error(uri + ' -> error ' + xhr.status);
+                    if (error_module) {
+                        require([error_module], function(handler) {
+                            handler(self, xhr);
+                        });
+                    }
+                    else {
+                        console.error(uri + ' -> error ' + xhr.status);
+                    }
                 }
             }
         };
@@ -24,24 +36,41 @@ define([
         xhr.send();
     }
 
-    var init = function(self) {
-        addEventListeners($('[data-href]', self), 'click', function(ev) {
-            json_nav(self, ev);
-        });
-    };
-
-    var json_nav = function(self, ev) {
+    Model.prototype.json_nav = function(ev) {
+        var self = this;
         var uri = ev.target.attributes.getNamedItem('data-href').value;
-        get(uri, function(xhr) {
+        var config = {};
+        try {
+            config = JSON.parse(self.root.querySelector('div').getAttribute(
+                'data-config'));
+        } catch (e) {}
+        this.get(uri, function(xhr) {
             var obj = JSON.parse(xhr.responseText);
-            core.engine.populate(self, obj);
-            init(self);  // reinitialize the hooks for the new elements.
-        });
+            core.engine.populate(self.root, obj);
+            init(self.root);  // reinitialize the hooks for the new elements.
+        }, config.error_handler);
         ev.preventDefault();
         return false;
     };
 
+    Model.prototype.hook = function() {
+        var self = this;
+        addEventListeners($('[data-href]', this.root), 'click', function(ev) {
+            self.json_nav(ev);
+        });
+    };
+
+    Model.prototype.init = function() {
+        this.hook();
+    };
+
+    var init = function(self) {
+        var model = new Model(self);
+        model.init();
+    };
+
     return {
-        'init': init,
+        'Model': Model,
+        'init': init
     };
 });

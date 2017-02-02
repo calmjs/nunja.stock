@@ -3,6 +3,7 @@
 Model for filesystem navtree
 """
 
+import json
 import os
 import stat
 from os.path import basename
@@ -47,7 +48,9 @@ class Base(object):
     def __init__(
             self, root, uri_template,
             uri_template_json=None,
-            active_columns=None):
+            active_columns=None,
+            config=None,
+            ):
         """
         Arguments:
 
@@ -68,6 +71,8 @@ class Base(object):
             Defaults to uri_template if left as unassigned.
         active_columns
             The columns that are active.
+        config
+            Optional configuration mapping.
         """
 
         self.root = root
@@ -78,6 +83,10 @@ class Base(object):
         else:
             # the specified columns have an order priority
             self.active_columns = [c for c in active_columns if c in columns]
+
+        self.config = {}
+        if isinstance(config, dict):
+            self.config.update(config)
 
     def format_uri(self, path, template=None):
         """
@@ -134,7 +143,11 @@ class Base(object):
         return {'result': result}
 
     def finalize(self, result):
+        config = {}
+        config.update(self.config)
+        config.update(result.get('navtree_config', {}))
         result['cls'] = result.get('cls', {})
+        result['navtree_config'] = json.dumps(config)
         return result
 
     def get_struct(self, path):

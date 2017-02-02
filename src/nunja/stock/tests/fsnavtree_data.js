@@ -6,6 +6,7 @@ var exports = {
             "size"
         ],
         "cls": {},
+        "navtree_config": "{}",
         "column_map": {
             "name": "name",
             "size": "size",
@@ -22,6 +23,14 @@ var exports = {
                     "name": "dir",
                     "size": 0,
                     "type": "folder"
+                },
+                {
+                    "@id": "bad_target",
+                    "href": "/bad_target",
+                    "data_href": "/bad_target",
+                    "name": "bad_target",
+                    "size": 0,
+                    "type": "file"
                 },
                 {
                     "@id": "file1",
@@ -50,6 +59,8 @@ var exports = {
             "size"
         ],
         "cls": {},
+        // XXX the error handler may be split out later
+        "navtree_config": "{\"error_handler\": \"nunja.stock.molds/navtree/error_footer\"}",
         "column_map": {
             "name": "name",
             "size": "size",
@@ -67,6 +78,14 @@ var exports = {
                     "name": "nested",
                     "size": 0,
                     "type": "folder"
+                },
+                {
+                    "@id": "bad_target",
+                    "href": "/bad_target",
+                    "data_href": "/bad_target",
+                    "name": "bad_target",
+                    "size": 0,
+                    "type": "file"
                 },
                 {
                     "@id": "file1",

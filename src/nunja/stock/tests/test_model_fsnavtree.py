@@ -62,9 +62,41 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
     def test_finalize(self):
         model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
-        self.assertEqual(model.finalize({}), {'cls': {}})
+        self.assertEqual(model.finalize({}), {
+            'cls': {},
+            'navtree_config': '{}',
+        })
         value = {'cls': {'test': 'class'}}
-        self.assertEqual(model.finalize(value), {'cls': {'test': 'class'}})
+        self.assertEqual(model.finalize(value), {
+            'cls': {'test': 'class'},
+            'navtree_config': '{}',
+        })
+
+    def test_finalize_config(self):
+        model = fsnavtree.Base(
+            self.tmpdir, '/script.py?{path}', config={'key1': 'value1'})
+        self.assertEqual(model.finalize({}), {
+            'cls': {},
+            'navtree_config': '{"key1": "value1"}',
+        })
+
+        value = {
+            'cls': {'test': 'class'},
+            'navtree_config': {'key2': 'value2'},
+        }
+        finalized = model.finalize(value)
+        self.assertEqual(finalized['cls'], {'test': 'class'})
+        self.assertEqual(json.loads(finalized['navtree_config']), {
+            "key1": "value1", "key2": "value2"})
+
+        value = {
+            'cls': {'test': 'class'},
+            'navtree_config': {'key1': 'alternative'},
+        }
+        self.assertEqual(model.finalize(value), {
+            'cls': {'test': 'class'},
+            'navtree_config': '{"key1": "alternative"}',
+        })
 
     def test_format_uri(self):
         model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
