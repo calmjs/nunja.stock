@@ -46,8 +46,10 @@ define([
         } catch (e) {}
         this.get(uri, function(xhr) {
             var obj = JSON.parse(xhr.responseText);
-            core.engine.populate(self.root, obj);
-            init(self.root);  // reinitialize the hooks for the new elements.
+            core.engine.populate(self.root, obj, function() {
+                // reinitialize the hooks for the new elements.
+                self.init();
+            });
         }, config.error_handler);
         ev.preventDefault();
         return false;
