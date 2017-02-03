@@ -1,0 +1,3 @@
+-e git+https://github.com/calmjs/nunja.git#egg=nunja
+-e git+https://github.com/calmjs/nunja.serve.git#egg=nunja.serve
+-e ..
