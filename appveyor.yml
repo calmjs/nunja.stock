@@ -1,0 +1,53 @@
+environment:
+  matrix:
+    - PYTHON: "C:\\Python27"
+      nodejs_version: "4.6"
+      BROWSER: "PhantomJS"
+    - PYTHON: "C:\\Python33"
+      nodejs_version: "4.6"
+      BROWSER: "Firefox"
+    - PYTHON: "C:\\Python34"
+      nodejs_version: "6.9"
+      BROWSER: "PhantomJS"
+    - PYTHON: "C:\\Python35"
+      nodejs_version: "6.9"
+      BROWSER: "Firefox"
+    - PYTHON: "C:\\Python36"
+      nodejs_version: "7.4"
+      BROWSER: "IE"
+matrix:
+  allow_failures:
+    - BROWSER: "IE"
+
+install:
+  - choco install firefox
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - ps: Install-Product node $env:nodejs_version
+  - pip install virtualenv
+  - virtualenv --clear venv
+  - "venv\\Scripts\\activate.bat"
+
+  # - pip install coverage calmjs.dev calmjs.rjs
+  - pip install coverage
+  - pip install -e git+https://github.com/calmjs/calmjs.dev.git#egg=calmjs.dev
+  - pip install -e git+https://github.com/calmjs/calmjs.rjs.git#egg=calmjs.rjs
+  - pip install -e git+https://github.com/calmjs/nunja.git#egg=nunja
+  - python setup.py develop
+
+  # doing the env in this directory to save build time/bandwidth
+  - calmjs npm --install nunja.stock[dev] -w -D
+  - npm install karma-ie-launcher
+  - "SET CALMJS_TEST_ENV=."
+
+test_script:
+  - coverage run -m unittest nunja.stock.tests.make_suite
+  - coverage report -m --include=src/*
+
+  # for the JS
+  - calmjs rjs nunja -w --export-target=nunja.js
+  - calmjs karma --artifact=nunja.js -c --cover-test --browser=%BROWSER% rjs nunja.stock --source-map-method=explicit -w
+
+artifacts:
+  - path: dist\*
+
+build: off

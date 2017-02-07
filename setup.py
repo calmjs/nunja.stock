@@ -31,6 +31,11 @@ setup(
     install_requires=[
         'nunja',
     ],
+    extras_require={
+        'dev': [
+            'calmjs.dev>=1.0.2,<2',
+        ],
+    },
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
     entry_points={
         'calmjs.module.tests': [

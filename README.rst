@@ -4,6 +4,13 @@ nunja.stock
 A set of stock parts and components (reusable modules and molds)
 provided as part of the |nunja|_ framework that goes beyond the basics.
 
+.. image:: https://travis-ci.org/calmjs/nunja.stock.svg?branch=master
+    :target: https://travis-ci.org/calmjs/nunja.stock
+.. image:: https://ci.appveyor.com/api/projects/status/k92o70dtscau4y85/branch/master?svg=true
+    :target: https://ci.appveyor.com/project/metatoaster/nunja-stock/branch/master
+.. image:: https://coveralls.io/repos/github/calmjs/nunja.stock/badge.svg?branch=master
+    :target: https://coveralls.io/github/calmjs/nunja.stock?branch=master
+
 .. |nunja| replace:: ``nunja``
 .. |nunja.stock| replace:: ``nunja.stock``
 .. _nunja: https://pypi.python.org/pypi/nunja
