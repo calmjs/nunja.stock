@@ -102,3 +102,30 @@ describe('nunja.stock.molds/navtree interactions', function() {
     });
 
 });
+
+
+describe('nunja.stock.molds/navtree inner model tests', function() {
+
+    beforeEach(function() {
+        this.clock = sinon.useFakeTimers();
+    });
+
+    afterEach(function() {
+        this.clock.restore();
+    });
+
+    it('async populate', function(done) {
+        var module = require('nunja.stock.molds/navtree/index');
+        var div = document.createElement('div');
+        div.setAttribute('data-nunja', 'nunja.stock.molds/navtree');
+
+        var model = new module.Model(div);
+        model._template_name = 'dummyvalue';
+        model.populate(data['/'], function() {
+            expect($('a', div)[0].innerHTML).to.equal('dir');
+            done();
+        });
+        this.clock.tick(500);
+    });
+
+});
