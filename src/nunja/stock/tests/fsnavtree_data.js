@@ -22,7 +22,8 @@ var exports = {
                     "data_href": "/script.py?/dir",
                     "name": "dir",
                     "size": 0,
-                    "type": "folder"
+                    "type": "folder",
+                    "@type": "folder"
                 },
                 {
                     "@id": "bad_target",
@@ -30,26 +31,30 @@ var exports = {
                     "data_href": "/bad_target",
                     "name": "bad_target",
                     "size": 0,
-                    "type": "file"
+                    "type": "file",
+                    "@type": "file"
                 },
                 {
                     "@id": "file1",
                     "href": "/script.py?/file1",
                     "name": "file1",
                     "size": 13,
-                    "type": "file"
+                    "type": "file",
+                    "@type": "file"
                 },
                 {
                     "@id": "file2",
                     "href": "/script.py?/file2",
                     "name": "file2",
                     "size": 13,
-                    "type": "file"
+                    "type": "file",
+                    "@type": "file"
                 }
             ],
             "name": "dummydir2",
             "size": 0,
-            "type": "folder"
+            "type": "folder",
+            "@type": "file"
         }
     },
     '/dir': {
@@ -77,7 +82,8 @@ var exports = {
                     "data_href": "/script.py?/dir/nested",
                     "name": "nested",
                     "size": 0,
-                    "type": "folder"
+                    "type": "folder",
+                    "@type": "folder"
                 },
                 {
                     "@id": "bad_target",
@@ -85,26 +91,30 @@ var exports = {
                     "data_href": "/bad_target",
                     "name": "bad_target",
                     "size": 0,
-                    "type": "file"
+                    "type": "file",
+                    "@type": "file"
                 },
                 {
                     "@id": "file1",
                     "href": "/script.py?/dir/file1",
                     "name": "file1",
                     "size": 13,
-                    "type": "file"
+                    "type": "file",
+                    "@type": "file"
                 },
                 {
                     "@id": "file2",
                     "href": "/script.py?/dir/file2",
                     "name": "file2",
                     "size": 13,
-                    "type": "file"
+                    "type": "file",
+                    "@type": "file"
                 }
             ],
             "name": "dir",
             "size": 0,
-            "type": "folder"
+            "type": "folder",
+            "@type": "folder"
         }
     },
 };

@@ -104,12 +104,13 @@ class Base(object):
 
     def _get_attrs(self, fs_path):
         attr = os.stat(fs_path)
+        f_type = to_filetype(attr.st_mode)
+
         base = {
             '@id': basename(fs_path),
+            '@type': f_type,
             'href': self._fs_format_uri(fs_path),
         }
-
-        f_type = to_filetype(attr.st_mode)
 
         if self.uri_template_json:
             if f_type == 'folder':
@@ -127,8 +128,10 @@ class Base(object):
         return result
 
     def _get_struct_dir(self, fs_path):
-        items = [
-            self._get_attrs(join(fs_path, n)) for n in os.listdir(fs_path)]
+        items = sorted(
+            [self._get_attrs(join(fs_path, n)) for n in os.listdir(fs_path)],
+            key=lambda x: (x['@type'] != 'folder', x['@id']),
+        )
         result = self._get_struct_file(fs_path)
         result['result']['items'] = items
 

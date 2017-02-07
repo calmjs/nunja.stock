@@ -117,6 +117,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
         self.assertEqual(
             _dict_clone_filtered(model._get_attrs(self.test_file)), {
+                '@type': 'file',
                 'type': 'file',
                 'size': 22,
                 '@id': 'test_file.txt',
@@ -129,6 +130,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             _dict_clone_filtered(model._get_attrs(self.dummydir1), [
                 'created', 'size',
             ]), {
+                '@type': 'folder',
                 'type': 'folder',
                 '@id': 'dummydir1',
                 'name': 'dummydir1',
@@ -138,6 +140,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
         self.assertEqual(
             _dict_clone_filtered(model._get_attrs(self.dummydirfile1)), {
+                '@type': 'file',
                 'type': 'file',
                 'size': 13,
                 '@id': 'file1',
@@ -154,6 +157,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
         self.assertEqual(
             _dict_clone_filtered(model._get_attrs(self.test_file)), {
+                '@type': 'file',
                 'type': 'file',
                 'size': 22,
                 '@id': 'test_file.txt',
@@ -167,6 +171,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'created', 'size',
             ]), {
                 'type': 'folder',
+                '@type': 'folder',
                 '@id': 'dummydir1',
                 'name': 'dummydir1',
                 'href': '/script.py?/dummydir1',
@@ -177,6 +182,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.assertEqual(
             _dict_clone_filtered(model._get_attrs(self.dummydirfile1)), {
                 'type': 'file',
+                '@type': 'file',
                 'size': 13,
                 '@id': 'file1',
                 'name': 'file1',
@@ -192,6 +198,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'result'
             ]), {
                 'type': 'file',
+                '@type': 'file',
                 'size': 22,
                 '@id': 'test_file.txt',
                 'name': 'test_file.txt',
@@ -204,6 +211,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'result'
             ]), {
                 'type': 'file',
+                '@type': 'file',
                 'size': 13,
                 '@id': 'file1',
                 'name': 'file1',
@@ -219,6 +227,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'created', 'size', 'items',
             ]), {
                 'type': 'folder',
+                '@type': 'folder',
                 '@id': 'dummydir1',
                 'name': 'dummydir1',
                 'href': '/script.py?/dummydir1'
@@ -231,6 +240,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'created', 'size', 'items',
             ]), {
                 'type': 'folder',
+                '@type': 'folder',
                 '@id': 'dummydir2',
                 'name': 'dummydir2',
                 'href': '/script.py?/dummydir2'
