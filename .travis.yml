@@ -128,12 +128,25 @@ script:
   # generate bundle/tests
   - mkdir manual
   - calmjs rjs nunja -w --export-target=nunja.js
+
+  # eslint 3 only works in nodejs 4+
+  - if [[ "$TRAVIS_NODE_VERSION" != "0.12" ]]; then
+      eslint "src/**/*.js" ;
+    fi
   - calmjs karma --artifact=nunja.js -c --cover-test --browser=$BROWSER rjs nunja.stock --build-dir=manual --source-map-method=explicit -w
   - coverage report -m
 
 # Alternatively without nose
 #  - coverage run --include=src/* -m unittest nunja.tests.make_suite
 #  - coverage report -m
+
+# Through a specific precompiled artifact
+#  - calmjs rjs --optional-advice=nunja --source-registry=calmjs.module nunja
+#  - calmjs karma --artifact=nunja.js --browser=$BROWSER --coverage --cover-test rjs --source-map-method=explicit -w nunja.stock
+
+# Finally, for the full standalone artifact for just this package
+#  - calmjs karma --artifact=nunja.js --browser=$BROWSER --coverage --cover-test rjs --source-map-method=explicit --bundle-map-method=none --optional-advice=nunja[slim] -w nunja.stock
+
 after_success:
   # only submit coverage when testing under linux.
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then

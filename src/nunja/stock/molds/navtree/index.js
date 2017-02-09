@@ -35,7 +35,7 @@ define([
         xhr.open('GET', uri, true);
         xhr.setRequestHeader('Accept', 'application/json');
         xhr.send();
-    }
+    };
 
     Model.prototype.json_nav = function(ev) {
         var self = this;
@@ -44,7 +44,9 @@ define([
         try {
             config = JSON.parse(self.root.querySelector('div').getAttribute(
                 'data-config'));
-        } catch (e) {}
+        } catch (e) {
+            // pass
+        }
         this.get(uri, function(xhr) {
             var obj = JSON.parse(xhr.responseText);
             self.populate(obj);
@@ -64,15 +66,11 @@ define([
             self.init();
         }
         else {
-            // while one may think this works:
-            // core.engine.populate(self.root, obj, self.init);
-            // JavaScript has a _very_ broken closure/scoping system so
-            // it doesn't.
             core.engine.populate(self.root, obj, function() {
                 self.init();
                 if (_cb instanceof Function) {
                     _cb();
-                };
+                }
             });
         }
     };

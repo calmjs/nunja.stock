@@ -1,5 +1,6 @@
 // the lines cannot be broken due to strict requirement that the content
 // must also be parsed as JSON from within Python.
+/* eslint max-len: "off" */
 
 var exports = [
     [{

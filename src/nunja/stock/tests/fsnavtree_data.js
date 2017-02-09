@@ -65,7 +65,8 @@ var exports = {
         ],
         "cls": {},
         // XXX the error handler may be split out later
-        "navtree_config": "{\"error_handler\": \"nunja.stock.molds/navtree/error_footer\"}",
+        "navtree_config":
+            "{\"error_handler\": \"nunja.stock.molds/navtree/error_footer\"}",
         "column_map": {
             "name": "name",
             "size": "size",

@@ -35,13 +35,13 @@ describe('nunja.stock.molds/navtree interactions', function() {
 
         for (var key in data) {
             var target = '/script.py?' + key;
-            this.server.respondWith('GET', target, function (xhr, id) {
+            this.server.respondWith('GET', target, function (xhr) {
                 var s = JSON.stringify(data[key]);
                 xhr.respond(200, {'Content-Type': 'application/json'}, s);
             });
         }
 
-        this.server.respondWith('GET', '/bad_target', function (xhr, id) {
+        this.server.respondWith('GET', '/bad_target', function (xhr) {
             markers['bad_target'] = true;
             xhr.respond(404, {'Content-Type': 'application/json'}, '{}');
         });

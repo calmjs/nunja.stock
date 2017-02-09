@@ -46,7 +46,7 @@ describe('Basic nunja.stock.molds/navtree rendering', function() {
             '</table>\n' +
             '\n' +
             '</div>\n'
-        )
+        );
     });
 
 });
