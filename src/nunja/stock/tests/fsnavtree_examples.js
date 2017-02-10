@@ -80,7 +80,7 @@ var exports = [
             "size"
         ],
         "cls": {},
-        "navtree_config": "{}",
+        "navtree_config": "{\"data_href\": \"/json.py?/dummydir2\"}",
         "column_map": {
             "name": "name",
             "size": "size",
@@ -124,7 +124,7 @@ var exports = [
         }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navtree\">",
-        "<div data-config=\"{}\">",
+        "<div data-config=\"{&quot;data_href&quot;: &quot;/json.py?/dummydir2&quot;}\">",
         "<table class=\"\">",
         "  <thead>",
         "    <tr class=\"\">",

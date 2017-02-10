@@ -145,13 +145,17 @@ class Base(object):
         result = self._get_attrs(fs_path)
         return {'result': result}
 
-    def finalize(self, result):
+    def finalize(self, obj):
         config = {}
         config.update(self.config)
-        config.update(result.get('navtree_config', {}))
-        result['cls'] = result.get('cls', {})
-        result['navtree_config'] = json.dumps(config)
-        return result
+        config.update(obj.get('navtree_config', {}))
+
+        if 'data_href' in obj.get('result', {}):
+            config['data_href'] = obj['result']['data_href']
+
+        obj['cls'] = obj.get('cls', {})
+        obj['navtree_config'] = json.dumps(config)
+        return obj
 
     def get_struct(self, path):
         """

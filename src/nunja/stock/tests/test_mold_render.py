@@ -14,8 +14,19 @@ with open(resource_filename(
         parse(fd.read()).children()[0].children()[0].initializer.to_ecma())
 
 
+# TODO move these normalizing helpers between jinja2 and nunjucks to its
+# own module.
+
+def entity_name_to_number(s):
+    # for turning html entity names into the numeric form that jinja2
+    # escapes into (rather than the actual name like nunjucks does).
+    # TODO provide a more generic solution rather than this on-demand
+    # method.
+    return s.replace('&quot;', '&#34;')
+
+
 def reconstitute(lines):
-    return '\n'.join(i for i in lines if i.strip())
+    return '\n'.join(entity_name_to_number(s) for s in lines if s.strip())
 
 
 class FSNavTreeRenderTestCase(unittest.TestCase):
