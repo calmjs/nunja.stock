@@ -33,12 +33,18 @@ describe('nunja.stock.molds/navtree interactions', function() {
         this.server = sinon.fakeServer.create();
         this.server.autoRespond = true;
 
+        var self = this;
+
         for (var key in data) {
-            var target = '/script.py?' + key;
-            this.server.respondWith('GET', target, function (xhr) {
-                var s = JSON.stringify(data[key]);
-                xhr.respond(200, {'Content-Type': 'application/json'}, s);
-            });
+            // form a proper closure via parameters to an anonymous
+            // function so that the inner function can use the right
+            // values.
+            (function(target, datum) {
+                self.server.respondWith('GET', target, function (xhr) {
+                    var s = JSON.stringify(datum);
+                    xhr.respond(200, {'Content-Type': 'application/json'}, s);
+                });
+            }('/script.py?' + key, data[key]));
         }
 
         this.server.respondWith('GET', '/bad_target', function (xhr) {
