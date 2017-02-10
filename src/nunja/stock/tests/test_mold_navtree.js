@@ -57,6 +57,8 @@ describe('nunja.stock.molds/navtree interactions', function() {
         markers = {};
         this.server.restore();
         this.clock.restore();
+        // TODO ideally, all the history should be wiped.
+        window.history.replaceState(null, '');
         document.body.innerHTML = "";
     });
 
@@ -70,6 +72,26 @@ describe('nunja.stock.molds/navtree interactions', function() {
         // should trigger default error handling.
         $('a')[0].click();
         this.clock.tick(500);
+    });
+
+    it('Pop state', function(done) {
+        // also apply a purposely bad state
+        window.history.replaceState('', '');
+        defaultPopulate(this);
+        triggerOnLoad(this);
+        $('a')[0].click();
+        this.clock.tick(500);
+        this.clock.restore();
+
+        // trigger a back event
+        window.history.back();
+        // actually had to wait for real for the event to be properly
+        // registered to PhantomJS/Chromium
+        setTimeout(function() {
+            expect($('a')[0].innerHTML).to.equal('dir');
+            done();
+        }, 100);
+
     });
 
     it('Standard error handling', function() {

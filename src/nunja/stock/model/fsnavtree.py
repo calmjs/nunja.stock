@@ -46,7 +46,7 @@ def get_filetype(path):
 class Base(object):
 
     def __init__(
-            self, root, uri_template,
+            self, id_, root, uri_template,
             uri_template_json=None,
             active_columns=None,
             config=None,
@@ -54,6 +54,9 @@ class Base(object):
         """
         Arguments:
 
+        id_
+            The id of the element - will be persisted into the template
+            as the id for the container node.
         root
             The root directory; all entries will be generated from below
             this one.
@@ -75,6 +78,7 @@ class Base(object):
             Optional configuration mapping.
         """
 
+        self.id_ = id_
         self.root = root
         self.uri_template = uri_template
         self.uri_template_json = uri_template_json
@@ -153,6 +157,7 @@ class Base(object):
         if 'data_href' in obj.get('result', {}):
             config['data_href'] = obj['result']['data_href']
 
+        obj['id_'] = self.id_
         obj['cls'] = obj.get('cls', {})
         obj['navtree_config'] = json.dumps(config)
         return obj

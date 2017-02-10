@@ -1,12 +1,13 @@
 var exports = {
     '/': {
+        "id_": "fsnav",
         "active_columns": [
             "name",
             "type",
             "size"
         ],
         "cls": {},
-        "navtree_config": "{}",
+        "navtree_config": "{\"data_href\": \"/script.py?/\"}",
         "column_map": {
             "name": "name",
             "size": "size",
@@ -15,6 +16,7 @@ var exports = {
         "result": {
             "@id": "/",
             "href": "/script.py?/",
+            "data_href": "/script.py?/",
             "items": [
                 {
                     "@id": "dir",
@@ -58,6 +60,7 @@ var exports = {
         }
     },
     '/dir': {
+        "id_": "fsnav",
         "active_columns": [
             "name",
             "type",
@@ -66,7 +69,8 @@ var exports = {
         "cls": {},
         // XXX the error handler may be split out later
         "navtree_config":
-            "{\"error_handler\": \"nunja.stock.molds/navtree/error_footer\"}",
+            "{\"error_handler\": \"nunja.stock.molds/navtree/error_footer\"," +
+            " \"data_href\": \"/script.py?/dir\"}",
         "column_map": {
             "name": "name",
             "size": "size",

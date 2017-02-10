@@ -4,6 +4,7 @@
 
 var exports = [
     [{
+        "id_": "fsnav",
         "active_columns": [
             "name",
             "type",
@@ -52,7 +53,7 @@ var exports = [
         }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navtree\">",
-        "<div data-config=\"{}\">",
+        "<div id=\"fsnav\" data-config=\"{}\">",
         "<table class=\"\">",
         "  <thead>",
         "    <tr class=\"\">",
@@ -74,6 +75,7 @@ var exports = [
     ]],
 
     [{
+        "id_": "fsnav",
         "active_columns": [
             "name",
             "type",
@@ -124,7 +126,7 @@ var exports = [
         }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navtree\">",
-        "<div data-config=\"{&quot;data_href&quot;: &quot;/json.py?/dummydir2&quot;}\">",
+        "<div id=\"fsnav\" data-config=\"{&quot;data_href&quot;: &quot;/json.py?/dummydir2&quot;}\">",
         "<table class=\"\">",
         "  <thead>",
         "    <tr class=\"\">",

@@ -54,37 +54,44 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.assertEqual(fsnavtree.get_filetype(self.test_file), 'file')
 
     def test_base_model_initialize(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
+        self.assertEqual(model.id_, 'fsnav')
         self.assertEqual(len(model.active_columns), 4)
         model = fsnavtree.Base(
-            self.tmpdir, '/script.py?{path}', active_columns=['size'])
+            'fsnav', self.tmpdir, '/script.py?{path}', active_columns=['size'])
         self.assertEqual(len(model.active_columns), 1)
 
     def test_finalize(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
         self.assertEqual(model.finalize({}), {
+            'id_': 'fsnav',
             'cls': {},
             'navtree_config': '{}',
         })
         value = {'cls': {'test': 'class'}}
         self.assertEqual(model.finalize(value), {
+            'id_': 'fsnav',
             'cls': {'test': 'class'},
             'navtree_config': '{}',
         })
 
     def test_finalize_config(self):
         model = fsnavtree.Base(
+            'static',
             self.tmpdir, '/script.py?{path}', config={'key1': 'value1'})
         self.assertEqual(model.finalize({}), {
+            'id_': 'static',
             'cls': {},
             'navtree_config': '{"key1": "value1"}',
         })
 
         value = {
+            'id_': 'replaced',
             'cls': {'test': 'class'},
             'navtree_config': {'key2': 'value2'},
         }
         finalized = model.finalize(value)
+        self.assertEqual(finalized['id_'], 'static')
         self.assertEqual(finalized['cls'], {'test': 'class'})
         self.assertEqual(json.loads(finalized['navtree_config']), {
             "key1": "value1", "key2": "value2"})
@@ -94,26 +101,27 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             'navtree_config': {'key1': 'alternative'},
         }
         self.assertEqual(model.finalize(value), {
+            'id_': 'static',
             'cls': {'test': 'class'},
             'navtree_config': '{"key1": "alternative"}',
         })
 
     def test_format_uri(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
         self.assertEqual(
             '/script.py?/some/path',
             model.format_uri('/some/path'),
         )
 
     def test_fs_format_uri(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
         self.assertEqual(
             '/script.py?/dummydir2/file1',
             model._fs_format_uri(self.dummydirfile1),
         )
 
     def test_get_attrs(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
 
         self.assertEqual(
             _dict_clone_filtered(model._get_attrs(self.test_file)), {
@@ -151,6 +159,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
     def test_get_attrs_data(self):
         model = fsnavtree.Base(
+            'fsnav',
             self.tmpdir, '/script.py?{path}',
             uri_template_json='/json.py{path}',
         )
@@ -191,7 +200,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         )
 
     def test_get_struct_file(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
 
         self.assertEqual(
             _dict_clone_filtered(model._get_struct_file(self.test_file)[
@@ -220,7 +229,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         )
 
     def test_get_struct_dir(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
 
         result = model._get_struct_dir(self.dummydir1)
         self.assertEqual(_dict_clone_filtered(result['result'], [
@@ -249,7 +258,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.assertEqual(len(result['result']['items']), 2)
 
     def test_path_to_fs_path(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
         with self.assertRaises(ValueError):
             model.path_to_fs_path('welp')
 
@@ -258,7 +267,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.assertTrue(result.endswith('readme.txt'))
 
     def test_get_struct(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
         with self.assertRaises(ValueError):
             model.get_struct('welp')
 
@@ -266,7 +275,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.assertIn('error', missing)
 
     def test_get_struct_errors(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
         with self.assertRaises(ValueError):
             model.get_struct('welp')
 
@@ -274,7 +283,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.assertEqual(errored['error'], 'path "/readme.txt" not found')
 
     def test_get_struct_success(self):
-        model = fsnavtree.Base(self.tmpdir, '/script.py?{path}')
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
         results = model.get_struct('/test_file.txt')
         self.assertEqual(results['result']['size'], 22)
         results = model.get_struct('/dummydir2')
@@ -304,6 +313,7 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
 
     def test_get_struct_success_limited_columns_no_data(self):
         model = fsnavtree.Base(
+            'fsnav',
             self.tmpdir, '/script.py?{path}', active_columns=[
                 'name', 'type', 'size',
             ]
@@ -314,6 +324,7 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
 
     def test_get_struct_success_limited_columns_with_data(self):
         model = fsnavtree.Base(
+            'fsnav',
             self.tmpdir, '/script.py?{path}',
             uri_template_json='/json.py?{path}',
             active_columns=[

@@ -9,6 +9,7 @@ from nunja.core import engine
 from nunja.stock.model import fsnavtree
 
 nav = fsnavtree.Base(
+    'baseid',
     getcwd(),
     basename(__file__) + '?{path}',
     uri_template_json=basename(__file__) + '?{path}',

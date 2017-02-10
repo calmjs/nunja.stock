@@ -26,14 +26,16 @@ describe('Basic nunja.stock.molds/navtree rendering', function() {
 
     it('Null rendering', function() {
         var results = this.engine.render('nunja.stock.molds/navtree', {
+            'id_': '',
             'active_columns': [],
             'column_map': {},
             'data': [],
             'css': {},
         });
 
+        // note that the id is empty
         expect(results).to.equal(
-            '<div data-config="">\n' +
+            '<div id="" data-config="">\n' +
             '<table class="">\n' +
             '  <thead>\n' +
             '    <tr class="">\n' +
