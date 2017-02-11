@@ -64,7 +64,7 @@ define([
                     // save this step?
                     self._fetch_populate(data_uri);
                 }
-            });
+            }, false);
         }
     };
 

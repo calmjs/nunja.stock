@@ -51,6 +51,17 @@ describe('nunja.stock.molds/navtree interactions', function() {
             markers['bad_target'] = true;
             xhr.respond(404, {'Content-Type': 'application/json'}, '{}');
         });
+
+        // setup the cleanup for window event listeners
+        var window_addEventListener = window.addEventListener;
+        this.window_listeners = [];
+        window.addEventListener = function(type, listener, options) {
+            self.window_listeners.push([type, listener, options]);
+            window_addEventListener(type, listener, options);
+        };
+        // only bind the original listener here after the method has
+        // been created above.
+        this.window_addEventListener = window_addEventListener;
     });
 
     afterEach(function() {
@@ -60,6 +71,12 @@ describe('nunja.stock.molds/navtree interactions', function() {
         // TODO ideally, all the history should be wiped.
         window.history.replaceState(null, '');
         document.body.innerHTML = "";
+
+        // cleanup window event listeners.
+        this.window_listeners.forEach(function(v) {
+            window.removeEventListener.apply(window, v);
+        });
+        window.addEventListener = this.window_addEventListener;
     });
 
     it('Click test', function() {
@@ -83,14 +100,16 @@ describe('nunja.stock.molds/navtree interactions', function() {
         this.clock.tick(500);
         this.clock.restore();
 
-        // trigger a back event
-        window.history.back();
-        // actually had to wait for real for the event to be properly
+        // must wait for the event to be registered/fired while under
         // registered to PhantomJS/Chromium
         setTimeout(function() {
-            expect($('a')[0].innerHTML).to.equal('dir');
-            done();
-        }, 100);
+            // trigger the back event
+            window.history.back();
+            setTimeout(function() {
+                expect($('a')[0].innerHTML).to.equal('dir');
+                done();
+            }, 50);
+        }, 50);
 
     });
 
