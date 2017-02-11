@@ -7,6 +7,20 @@ define([
     var $ = utils.$;
     var addEventListeners = utils.addEventListeners;
 
+    // XXX this should be moved to dedicated module
+    var modify_state = function(method, obj, title, url) {
+        var k;
+        var state = {};
+        // XXX assume window.history.state is already an object
+        for (k in window.history.state) {
+            state[k] = window.history.state[k];
+        }
+        for (k in obj) {
+            state[k] = obj[k];
+        }
+        window.history[method](state, title, url || null);
+    };
+
     var Model = function(root) {
         var self = this;
 
@@ -134,13 +148,13 @@ define([
         if (!(self._id in window.history.state)) {
             // assign this object as a subkey
             // XXX similar to the pushState call...
-            window.history.state[self._id] = {
+            var state = {};
+            state[self._id] = {
                 'data_href': this.data_href,
                 // XXX seems a bit redundant?
                 'model': self._id,
             };
-            // need to call this to get it into the stack
-            window.history.replaceState(window.history.state, document.title);
+            modify_state('replaceState', state, document.title);
         }
 
         var href = ev.target.attributes.getNamedItem('href').value;
@@ -151,11 +165,13 @@ define([
             // things into a standalone cohesive unit
             if (self.has_push_state) {
                 // take the current state, then push it in
-                window.history.state[self._id] = {
+                var state = {};
+                state[self._id] = {
                     'data_href': data_uri,
+                    // XXX seems a bit redundant?
                     'model': self._id,
                 };
-                window.history.pushState(window.history.state, null, href);
+                modify_state('pushState', state, document.title, href);
             }
         };
 
