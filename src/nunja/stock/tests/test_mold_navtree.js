@@ -98,19 +98,23 @@ describe('nunja.stock.molds/navtree interactions', function() {
         triggerOnLoad(this);
         $('a')[0].click();
         this.clock.tick(500);
-        this.clock.restore();
 
-        // must wait for the event to be registered/fired while under
-        // registered to PhantomJS/Chromium
-        setTimeout(function() {
-            // trigger the back event
-            window.history.back();
-            setTimeout(function() {
-                expect($('a')[0].innerHTML).to.equal('dir');
-                done();
-            }, 50);
-        }, 50);
+        // this is a bit tricky: since the WebKit family of browsers
+        // (i.e. PhantomJS, Chromium, Safari) take their sweet, sweet
+        // time to actually register the event listener, and that they
+        // will _eventually_ fire in the order they were registered in,
+        // take advantage of that fact and register one of our own here
+        // to finish off the test.
+        var self = this;
+        window.addEventListener('popstate', function() {
+            // tick to ensure fake server responds to trigger render.
+            self.clock.tick(500);
+            expect($('a')[0].innerHTML).to.equal('dir');
+            done();
+        }, false);
 
+        // naturally, trigger the back action first.
+        window.history.back();
     });
 
     it('Standard error handling', function() {
