@@ -49,6 +49,7 @@ class Base(object):
             self, id_, root, uri_template,
             uri_template_json=None,
             active_columns=None,
+            cls=None,
             config=None,
             ):
         """
@@ -74,6 +75,8 @@ class Base(object):
             Defaults to uri_template if left as unassigned.
         active_columns
             The columns that are active.
+        cls
+            CSS classes assignment
         config
             Optional configuration mapping.
         """
@@ -87,6 +90,8 @@ class Base(object):
         else:
             # the specified columns have an order priority
             self.active_columns = [c for c in active_columns if c in columns]
+
+        self.cls = cls if cls else {}
 
         self.config = {}
         if isinstance(config, dict):
@@ -158,7 +163,10 @@ class Base(object):
             config['data_href'] = obj['result']['data_href']
 
         obj['id_'] = self.id_
-        obj['cls'] = obj.get('cls', {})
+        cls = {}
+        cls.update(self.cls)
+        cls.update(obj.get('cls', {}))
+        obj['cls'] = cls
         obj['navtree_config'] = json.dumps(config)
         return obj
 

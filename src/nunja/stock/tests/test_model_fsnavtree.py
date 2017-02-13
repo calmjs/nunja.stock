@@ -57,9 +57,16 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
         self.assertEqual(model.id_, 'fsnav')
         self.assertEqual(len(model.active_columns), 4)
+        self.assertEqual(model.cls, {})
+
         model = fsnavtree.Base(
             'fsnav', self.tmpdir, '/script.py?{path}', active_columns=['size'])
         self.assertEqual(len(model.active_columns), 1)
+
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}', cls={
+            'table': 'tbl main',
+        })
+        self.assertEqual(model.cls, {'table': 'tbl main'})
 
     def test_finalize(self):
         model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
@@ -72,6 +79,25 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.assertEqual(model.finalize(value), {
             'id_': 'fsnav',
             'cls': {'test': 'class'},
+            'navtree_config': '{}',
+        })
+
+        # apply the class directly to the model
+        model.cls = {'table': 'some-table'}
+        value = {'cls': {'test': 'class'}}
+        self.assertEqual(model.finalize(value), {
+            'id_': 'fsnav',
+            'cls': {'test': 'class', 'table': 'some-table'},
+            'navtree_config': '{}',
+        })
+
+        # apply the class directly to the model
+        model.cls = {'table': 'some-table'}
+        # the provided value has priority
+        value = {'cls': {'table': 'provided'}}
+        self.assertEqual(model.finalize(value), {
+            'id_': 'fsnav',
+            'cls': {'table': 'provided'},
             'navtree_config': '{}',
         })
 
