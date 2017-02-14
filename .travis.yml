@@ -104,7 +104,7 @@ before_install:
   - npm --version
 
 install:
-  - pip install nose coverage flake8
+  - pip install coverage flake8
   # install the required development dependencies as wheels first
   # - pip install calmjs.rjs calmjs.dev
   # need development version of calmjs.dev for now
@@ -123,7 +123,7 @@ install:
   - export CALMJS_TEST_ENV=.
 script:
   - flake8 setup.py src
-  - nosetests --with-coverage --cover-package=nunja.stock --with-doctest
+  - coverage run --include=src/* -m unittest nunja.stock.tests.make_suite
 
   # generate bundle/tests
   - mkdir manual
@@ -135,10 +135,6 @@ script:
     fi
   - calmjs karma --artifact=nunja.js -c --cover-test --browser=$BROWSER rjs nunja.stock --build-dir=manual --source-map-method=explicit -w
   - coverage report -m
-
-# Alternatively without nose
-#  - coverage run --include=src/* -m unittest nunja.tests.make_suite
-#  - coverage report -m
 
 # Through a specific precompiled artifact
 #  - calmjs rjs --optional-advice=nunja --source-registry=calmjs.module nunja

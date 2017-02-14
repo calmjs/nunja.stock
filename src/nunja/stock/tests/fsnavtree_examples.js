@@ -2,7 +2,33 @@
 // must also be parsed as JSON from within Python.
 /* eslint max-len: "off" */
 
-var exports = [
+var exports = {
+    "null rendering":
+    [{
+        "id_": "",
+        "active_columns": [],
+        "column_map": {},
+        "data": [],
+        "cls": {},
+        "result": {
+            "items": []
+        },
+    }, [
+        "<div data-nunja=\"nunja.stock.molds/navtree\">",
+        "<div id=\"\" data-config=\"\">",
+        "<table class=\"\">",
+        "  <thead>",
+        "    <tr class=\"\">",
+        "    </tr>",
+        "  </thead>",
+        "  <tbody>",
+        "  </tbody>",
+        "</table>",
+        "</div>",
+        "</div>"
+    ]],
+
+    "standard rendering":
     [{
         "id_": "fsnav",
         "active_columns": [
@@ -74,6 +100,7 @@ var exports = [
         "</div>"
     ]],
 
+    "configured rendering":
     [{
         "id_": "fsnav",
         "active_columns": [
@@ -146,7 +173,7 @@ var exports = [
         "</div>",
         "</div>"
     ]],
-];
+};
 
 // requirejs export shim
 define([], function() {

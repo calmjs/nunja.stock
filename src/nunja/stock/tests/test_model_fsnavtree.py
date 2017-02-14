@@ -346,7 +346,7 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
         )
         self.maxDiff = None
         results = model.get_struct('/dummydir2')
-        self.assertEqual(results, self.data[0][0])
+        self.assertEqual(results, self.data['standard rendering'][0])
 
     def test_get_struct_success_limited_columns_with_data(self):
         model = fsnavtree.Base(
@@ -359,4 +359,4 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
         )
         self.maxDiff = None
         results = model.get_struct('/dummydir2')
-        self.assertEqual(results, self.data[1][0])
+        self.assertEqual(results, self.data['configured rendering'][0])

@@ -1,55 +1,12 @@
 'use strict';
 
-var core = require('nunja/core');
+var loader = require('nunja/stock/tests/loader');
+
 window.mocha.setup('bdd');
 
-describe('Basic nunja.stock.molds/navtree rendering', function() {
-    beforeEach(function() {
-        this.clock = sinon.useFakeTimers();
-        this.engine = core.engine;
 
-        /*
-        // A barebone mock scaffold that should be enough to trigger
-        // the loading and compilation of the template into memory,
-        // if it's not there already.
-        document.body.innerHTML = (
-            '<div data-nunja="nunja.molds/table"></div>');
-        this.engine.do_onload(document.body);
-        this.clock.tick(500);
-        */
-    });
-
-    afterEach(function() {
-        this.clock.restore();
-        document.body.innerHTML = "";
-    });
-
-    it('Null rendering', function() {
-        var results = this.engine.render('nunja.stock.molds/navtree', {
-            'id_': '',
-            'active_columns': [],
-            'column_map': {},
-            'data': [],
-            'css': {},
-        });
-
-        // note that the id is empty
-        expect(results).to.equal(
-            '<div id="" data-config="">\n' +
-            '<table class="">\n' +
-            '  <thead>\n' +
-            '    <tr class="">\n' +
-            '    \n' +
-            '    </tr>\n' +
-            '  </thead>\n' +
-            '  <tbody>\n' +
-            '    \n' +
-            '  </tbody>\n' +
-            '</table>\n' +
-            '\n' +
-            '</div>\n'
-        );
-    });
-
-});
-
+loader.generate_test(
+    'nunja.stock.molds/navtree rendering from JSON module',
+    'nunja.stock.molds/navtree',
+    'nunja/stock/tests/fsnavtree_examples'
+);
