@@ -9,9 +9,11 @@ import stat
 from os.path import basename
 from os.path import exists
 from os.path import join
+from os.path import isdir
+from os.path import normpath
 from os.path import sep
 
-from posixpath import normpath
+from posixpath import normpath as normuri
 
 
 statmap = (
@@ -107,9 +109,12 @@ class Base(object):
             template = self.uri_template
         return template.format(path=path)
 
-    def _fs_format_uri(self, fs_path, template=None):
+    def _fs_path_format_uri(self, fs_path, template=None):
+        # the reason for the normpath is that some instances the pardir
+        # might be appended; normalize it for uniformity.
+        trail = [''] if isdir(fs_path) else []
         return self.format_uri('/'.join(
-            fs_path[len(self.root):].split(sep)), template)
+            normpath(fs_path)[len(self.root):].split(sep) + trail), template)
 
     def _get_attrs(self, fs_path):
         attr = os.stat(fs_path)
@@ -118,13 +123,13 @@ class Base(object):
         base = {
             '@id': basename(fs_path),
             '@type': f_type,
-            'href': self._fs_format_uri(fs_path),
+            'href': self._fs_path_format_uri(fs_path),
         }
 
         if self.uri_template_json:
             if f_type == 'folder':
                 # only hook this up for folders.
-                base['data_href'] = self._fs_format_uri(
+                base['data_href'] = self._fs_path_format_uri(
                     fs_path, self.uri_template_json)
 
         result = {k: v for k, v in (
@@ -141,6 +146,7 @@ class Base(object):
             [self._get_attrs(join(fs_path, n)) for n in os.listdir(fs_path)],
             key=lambda x: (x['@type'] != 'folder', x['@id']),
         )
+
         result = self._get_struct_file(fs_path)
         result['result']['items'] = items
 
@@ -188,12 +194,13 @@ class Base(object):
 
     def path_to_fs_path(self, path):
         """
-        Turn a path into a filesystem path.
+        Turn a path into a filesystem path.  The filesystem path must be
+        fully sanitized.
         """
 
         if not path or path[0] != '/':
             raise ValueError("path must start with '/'")
 
-        subpath = normpath(path)
+        subpath = normuri(path)
         fs_path = join(self.root, subpath[1:])
         return fs_path

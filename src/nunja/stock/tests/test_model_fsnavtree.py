@@ -4,6 +4,7 @@ import json
 from pkg_resources import resource_filename
 from os import makedirs
 from os.path import join
+from os.path import pardir
 
 from nunja.stock.model import fsnavtree
 from calmjs.rjs.ecma import parse
@@ -29,9 +30,11 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.tmpdir = mkdtemp(self)
         self.dummydir1 = join(self.tmpdir, 'dummydir1')
         self.dummydir2 = join(self.tmpdir, 'dummydir2')
+        self.dummydir23 = join(self.tmpdir, 'dummydir2', 'dummydir3')
 
         makedirs(self.dummydir1)
         makedirs(self.dummydir2)
+        makedirs(self.dummydir23)
 
         self.test_file = join(self.tmpdir, 'test_file.txt')
         self.dummydirfile1 = join(self.dummydir2, 'file1')
@@ -132,18 +135,39 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             'navtree_config': '{"key1": "alternative"}',
         })
 
-    def test_format_uri(self):
+    def test_format_uri_root(self):
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
+        self.assertEqual(
+            '/script.py?/',
+            model.format_uri('/'),
+        )
+
+    def test_format_uri_path(self):
         model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
         self.assertEqual(
             '/script.py?/some/path',
             model.format_uri('/some/path'),
         )
 
-    def test_fs_format_uri(self):
+    def test_fs_path_format_uri_root(self):
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
+        self.assertEqual(
+            '/script.py?/',
+            model._fs_path_format_uri(self.tmpdir),
+        )
+
+    def test_fs_path_format_uri_file(self):
         model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
         self.assertEqual(
             '/script.py?/dummydir2/file1',
-            model._fs_format_uri(self.dummydirfile1),
+            model._fs_path_format_uri(self.dummydirfile1),
+        )
+
+    def test_fs_path_format_uri_pardir(self):
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
+        self.assertEqual(
+            '/script.py?/dummydir2/',
+            model._fs_path_format_uri(join(self.dummydir23, pardir)),
         )
 
     def test_get_attrs(self):
@@ -168,7 +192,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'type': 'folder',
                 '@id': 'dummydir1',
                 'name': 'dummydir1',
-                'href': '/script.py?/dummydir1'
+                'href': '/script.py?/dummydir1/'
             }
         )
 
@@ -209,8 +233,8 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@type': 'folder',
                 '@id': 'dummydir1',
                 'name': 'dummydir1',
-                'href': '/script.py?/dummydir1',
-                'data_href': '/json.py/dummydir1',
+                'href': '/script.py?/dummydir1/',
+                'data_href': '/json.py/dummydir1/',
             }
         )
 
@@ -222,6 +246,29 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@id': 'file1',
                 'name': 'file1',
                 'href': '/script.py?/dummydir2/file1',
+            }
+        )
+
+    def test_get_attrs_data_pardir(self):
+        # for the case where legitimate parent dir entry is required
+
+        model = fsnavtree.Base(
+            'fsnav',
+            self.tmpdir, '/script.py?{path}',
+            uri_template_json='/json.py{path}',
+        )
+
+        self.assertEqual(
+            _dict_clone_filtered(model._get_attrs(
+                join(self.dummydir2, pardir)
+            )), {
+                'type': 'folder',
+                '@type': 'folder',
+                'size': 0,
+                '@id': '..',
+                'name': '..',
+                'data_href': '/json.py/',
+                'href': '/script.py?/',
             }
         )
 
@@ -265,7 +312,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@type': 'folder',
                 '@id': 'dummydir1',
                 'name': 'dummydir1',
-                'href': '/script.py?/dummydir1'
+                'href': '/script.py?/dummydir1/'
             }
         )
         self.assertEqual(len(result['result']['items']), 0)
@@ -278,10 +325,10 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@type': 'folder',
                 '@id': 'dummydir2',
                 'name': 'dummydir2',
-                'href': '/script.py?/dummydir2'
+                'href': '/script.py?/dummydir2/'
             }
         )
-        self.assertEqual(len(result['result']['items']), 2)
+        self.assertEqual(len(result['result']['items']), 3)
 
     def test_path_to_fs_path(self):
         model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
@@ -313,7 +360,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         results = model.get_struct('/test_file.txt')
         self.assertEqual(results['result']['size'], 22)
         results = model.get_struct('/dummydir2')
-        self.assertEqual(len(results['result']['items']), 2)
+        self.assertEqual(len(results['result']['items']), 3)
 
 
 class FSNavTreeModelMirrorTestCase(unittest.TestCase):

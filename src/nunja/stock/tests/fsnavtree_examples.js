@@ -45,11 +45,11 @@ var exports = {
         },
         "result": {
             "@id": "dummydir2",
-            "href": "/script.py?/dummydir2",
+            "href": "/script.py?/dummydir2/",
             "items": [
                 {
                     "@id": "dir",
-                    "href": "/script.py?/dummydir2/dir",
+                    "href": "/script.py?/dummydir2/dir/",
                     "name": "dir",
                     "size": 0,
                     "type": "folder",
@@ -88,7 +88,7 @@ var exports = {
         "  </thead>",
         "  <tbody>",
         "    <tr class=\"\">",
-        "      <td><a href=\"/script.py?/dummydir2/dir\">dir</a></td><td>folder</td><td>0</td>",
+        "      <td><a href=\"/script.py?/dummydir2/dir/\">dir</a></td><td>folder</td><td>0</td>",
         "    </tr><tr class=\"\">",
         "      <td><a href=\"/script.py?/dummydir2/file1\">file1</a></td><td>file</td><td>13</td>",
         "    </tr><tr class=\"\">",
@@ -109,7 +109,7 @@ var exports = {
             "size"
         ],
         "cls": {},
-        "navtree_config": "{\"data_href\": \"/json.py?/dummydir2\"}",
+        "navtree_config": "{\"data_href\": \"/json.py?/dummydir2/\"}",
         "column_map": {
             "name": "name",
             "size": "size",
@@ -117,13 +117,13 @@ var exports = {
         },
         "result": {
             "@id": "dummydir2",
-            "href": "/script.py?/dummydir2",
-            "data_href": "/json.py?/dummydir2",
+            "href": "/script.py?/dummydir2/",
+            "data_href": "/json.py?/dummydir2/",
             "items": [
                 {
                     "@id": "dir",
-                    "href": "/script.py?/dummydir2/dir",
-                    "data_href": "/json.py?/dummydir2/dir",
+                    "href": "/script.py?/dummydir2/dir/",
+                    "data_href": "/json.py?/dummydir2/dir/",
                     "name": "dir",
                     "size": 0,
                     "type": "folder",
@@ -153,7 +153,7 @@ var exports = {
         }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navtree\">",
-        "<div id=\"fsnav\" data-config=\"{&quot;data_href&quot;: &quot;/json.py?/dummydir2&quot;}\">",
+        "<div id=\"fsnav\" data-config=\"{&quot;data_href&quot;: &quot;/json.py?/dummydir2/&quot;}\">",
         "<table class=\"\">",
         "  <thead>",
         "    <tr class=\"\">",
@@ -162,7 +162,7 @@ var exports = {
         "  </thead>",
         "  <tbody>",
         "    <tr class=\"\">",
-        "      <td><a href=\"/script.py?/dummydir2/dir\" data-href=\"/json.py?/dummydir2/dir\">dir</a></td><td>folder</td><td>0</td>",
+        "      <td><a href=\"/script.py?/dummydir2/dir/\" data-href=\"/json.py?/dummydir2/dir/\">dir</a></td><td>folder</td><td>0</td>",
         "    </tr><tr class=\"\">",
         "      <td><a href=\"/script.py?/dummydir2/file1\">file1</a></td><td>file</td><td>13</td>",
         "    </tr><tr class=\"\">",
