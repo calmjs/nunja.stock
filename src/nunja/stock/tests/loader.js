@@ -1,8 +1,8 @@
 'use strict';
 
-define([], function() {
+define(['nunja/core'], function(core) {
 
-    var core = require('nunja/core');
+    // var core = require('nunja/core');
 
     var generate_test = function(name, mold_id, data_module) {
         /*
