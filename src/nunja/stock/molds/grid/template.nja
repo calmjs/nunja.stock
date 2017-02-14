@@ -1,0 +1,26 @@
+<table class="{{ cls['table'] }}">
+  <thead>
+    {% if colnames|length -%}
+    <tr class="{{ cls['table.thead.tr'] }}">
+      {% if rownames|length -%}
+        <th>{{ first_header_cell }}</th>
+      {%- endif -%}
+      {%- for colname in colnames -%}
+        <th>{{ colname }}</th>
+      {%- endfor %}
+    </tr>
+    {%- endif %}
+  </thead>
+  <tbody>
+    {%- for row in rows %}
+    <tr class="{{ cls['table.tbody.tr'] }}">
+      {% if rownames|length -%}
+        <th>{{ rownames[loop.index0] }}</th>
+      {%- endif %}
+      {% for cell in row -%}
+        <td>{{ cell }}</td>
+      {% endfor %}
+    </tr>
+    {%- endfor %}
+  </tbody>
+</table>

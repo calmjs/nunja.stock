@@ -20,7 +20,7 @@ define([], function() {
             var rendered = core.engine.execute(
                 mold_id, data
             ).split('\n').filter(function(v) {
-                return v.length > 0;
+                return v.trim().length > 0;
             }).join('\n');
             expect(rendered).to.equal(answer.join('\n'));
         };

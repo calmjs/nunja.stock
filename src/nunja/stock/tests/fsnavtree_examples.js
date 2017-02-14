@@ -12,7 +12,7 @@ var exports = {
         "cls": {},
         "result": {
             "items": []
-        },
+        }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navtree\">",
         "<div id=\"\" data-config=\"\">",
