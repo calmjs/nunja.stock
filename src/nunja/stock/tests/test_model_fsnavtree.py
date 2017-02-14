@@ -5,6 +5,7 @@ from pkg_resources import resource_filename
 from os import makedirs
 from os.path import join
 from os.path import pardir
+from os.path import sep
 
 from nunja.stock.model import fsnavtree
 from calmjs.rjs.ecma import parse
@@ -207,6 +208,21 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             }
         )
 
+    def test_listdir(self):
+        model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
+        self.assertEqual(sorted(model.listdir(sep)), [])
+
+        # No issue between this or the one with a separtor
+        self.assertEqual(sorted(model.listdir(self.tmpdir)), [
+            'dummydir1', 'dummydir2', 'test_file.txt'])
+        self.assertEqual(sorted(model.listdir(self.tmpdir + sep)), [
+            'dummydir1', 'dummydir2', 'test_file.txt'])
+
+        self.assertEqual(sorted(model.listdir(self.dummydir1)), ['..'])
+
+        self.assertEqual(sorted(model.listdir(self.dummydir2)), [
+            '..', 'dummydir3', 'file1', 'file2'])
+
     def test_get_attrs_data(self):
         model = fsnavtree.Base(
             'fsnav',
@@ -315,7 +331,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'href': '/script.py?/dummydir1/'
             }
         )
-        self.assertEqual(len(result['result']['items']), 0)
+        self.assertEqual(len(result['result']['items']), 1)
 
         result = model._get_struct_dir(self.dummydir2)
         self.assertEqual(_dict_clone_filtered(result['result'], [
@@ -328,7 +344,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'href': '/script.py?/dummydir2/'
             }
         )
-        self.assertEqual(len(result['result']['items']), 3)
+        self.assertEqual(len(result['result']['items']), 4)
 
     def test_path_to_fs_path(self):
         model = fsnavtree.Base('fsnav', self.tmpdir, '/script.py?{path}')
@@ -360,7 +376,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         results = model.get_struct('/test_file.txt')
         self.assertEqual(results['result']['size'], 22)
         results = model.get_struct('/dummydir2')
-        self.assertEqual(len(results['result']['items']), 3)
+        self.assertEqual(len(results['result']['items']), 4)
 
 
 class FSNavTreeModelMirrorTestCase(unittest.TestCase):

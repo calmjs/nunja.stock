@@ -48,6 +48,14 @@ var exports = {
             "href": "/script.py?/dummydir2/",
             "items": [
                 {
+                    "@id": "..",
+                    "href": "/script.py?/",
+                    "name": "..",
+                    "size": 0,
+                    "type": "folder",
+                    "@type": "folder"
+                },
+                {
                     "@id": "dir",
                     "href": "/script.py?/dummydir2/dir/",
                     "name": "dir",
@@ -88,6 +96,8 @@ var exports = {
         "  </thead>",
         "  <tbody>",
         "    <tr class=\"\">",
+        "      <td><a href=\"/script.py?/\">..</a></td><td>folder</td><td>0</td>",
+        "    </tr><tr class=\"\">",
         "      <td><a href=\"/script.py?/dummydir2/dir/\">dir</a></td><td>folder</td><td>0</td>",
         "    </tr><tr class=\"\">",
         "      <td><a href=\"/script.py?/dummydir2/file1\">file1</a></td><td>file</td><td>13</td>",
@@ -120,6 +130,15 @@ var exports = {
             "href": "/script.py?/dummydir2/",
             "data_href": "/json.py?/dummydir2/",
             "items": [
+                {
+                    "@id": "..",
+                    "href": "/script.py?/",
+                    "data_href": "/json.py?/",
+                    "name": "..",
+                    "size": 0,
+                    "type": "folder",
+                    "@type": "folder"
+                },
                 {
                     "@id": "dir",
                     "href": "/script.py?/dummydir2/dir/",
@@ -162,6 +181,8 @@ var exports = {
         "  </thead>",
         "  <tbody>",
         "    <tr class=\"\">",
+        "      <td><a href=\"/script.py?/\" data-href=\"/json.py?/\">..</a></td><td>folder</td><td>0</td>",
+        "    </tr><tr class=\"\">",
         "      <td><a href=\"/script.py?/dummydir2/dir/\" data-href=\"/json.py?/dummydir2/dir/\">dir</a></td><td>folder</td><td>0</td>",
         "    </tr><tr class=\"\">",
         "      <td><a href=\"/script.py?/dummydir2/file1\">file1</a></td><td>file</td><td>13</td>",

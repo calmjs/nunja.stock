@@ -141,9 +141,25 @@ class Base(object):
         result.update(base)
         return result
 
+    def listdir(self, path):
+        """
+        Will only list path within the root.
+        """
+
+        root = normpath(self.path_to_fs_path('/'))
+        n_path = normpath(path)
+        if not n_path.startswith(root):
+            return
+
+        if n_path != root:
+            yield '..'
+
+        for i in os.listdir(n_path):
+            yield i
+
     def _get_struct_dir(self, fs_path):
         items = sorted(
-            [self._get_attrs(join(fs_path, n)) for n in os.listdir(fs_path)],
+            [self._get_attrs(join(fs_path, n)) for n in self.listdir(fs_path)],
             key=lambda x: (x['@type'] != 'folder', x['@id']),
         )
 
