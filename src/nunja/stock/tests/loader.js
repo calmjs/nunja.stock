@@ -4,7 +4,7 @@ define(['nunja/core'], function(core) {
 
     // var core = require('nunja/core');
 
-    var generate_test = function(name, mold_id, data_module) {
+    var generate_test = function(name, mold_id, data_module, lib) {
         /*
         name
             description of the test
@@ -14,6 +14,14 @@ define(['nunja/core'], function(core) {
             The module to load the data from
         */
 
+        if (!(lib)) {
+            lib = {
+                it: it,
+                describe: describe,
+                expect: expect,
+            }
+        }
+
         var data = require(data_module);
 
         var test = function(data, answer) {
@@ -22,15 +30,16 @@ define(['nunja/core'], function(core) {
             ).split('\n').filter(function(v) {
                 return v.trim().length > 0;
             }).join('\n');
-            expect(rendered).to.equal(answer.join('\n'));
+            lib.expect(rendered).to.equal(answer.join('\n'));
         };
 
-        describe(name, function() {
+        lib.describe(name, function() {
             for (var t_name in data) {
-                it(t_name, function() {
-                    test.apply(this, data[t_name]);
-                });
-
+                (function(args) {
+                    lib.it(t_name, function() {
+                        test.apply(test, args);
+                    });
+                })(data[t_name]);
             }
         });
     };
