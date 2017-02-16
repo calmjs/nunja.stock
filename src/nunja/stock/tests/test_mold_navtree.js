@@ -5,7 +5,7 @@ var utils = require('nunja/utils');
 var $ = utils.$;
 
 var markers = {};
-var data = require('nunja/stock/tests/fsnavtree_data');
+var data = require('nunja/stock/tests/fsnav_data');
 
 window.mocha.setup('bdd');
 

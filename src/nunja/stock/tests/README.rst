@@ -20,7 +20,9 @@ be clearly mapped to a specific usage.
     renderer for a target mold, and the expected results.
 
     The loader libraries for each of the two langauges will be able to
-    execute each of these as if they are individual tests.
+    execute each of these as if they are individual tests.  Refer to the
+    files ``test_render_mold.js`` and ``test_render_mold.py`` for the
+    invocation in the respective languages.
 
 ``*_data.js``
     Standalone data modules for the JavaScript tests.

@@ -6,7 +6,7 @@ FSNavTreeRenderTestCase = generate_test(
     name='FSNavTreeRenderTestCase',
     mold_id='nunja.stock.molds/navtree',
     test_module_ns='nunja.stock.tests',
-    data_module='fsnavtree_examples',
+    data_module='fsnav_examples',
 )
 
 
