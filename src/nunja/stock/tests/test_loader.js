@@ -96,11 +96,13 @@ describe('test loader tests', function() {
             describe: fake_describe,
             it: fake_it,
         };
-        loader.generate_test(
+
+        var generate_test = loader.GenerateTestFactory(core, lib);
+
+        generate_test(
             'Test runner example',
             'dummy/mold',
-            'data',
-            lib
+            'data'
         );
 
         expect(results).to.deep.equal([
