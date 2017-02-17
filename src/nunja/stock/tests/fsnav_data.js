@@ -1,6 +1,6 @@
 var exports = {
     '/': {
-        "id_": "fsnav",
+        "navtree_id": "fsnav",
         "active_columns": [
             "name",
             "type",
@@ -60,7 +60,7 @@ var exports = {
         }
     },
     '/dir': {
-        "id_": "fsnav",
+        "navtree_id": "fsnav",
         "active_columns": [
             "name",
             "type",

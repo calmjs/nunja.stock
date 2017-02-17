@@ -5,7 +5,7 @@
 var exports = {
     "null rendering":
     [{
-        "id_": "",
+        "navtree_id": "",
         "active_columns": [],
         "column_map": {},
         "data": [],
@@ -30,7 +30,7 @@ var exports = {
 
     "standard rendering":
     [{
-        "id_": "fsnav",
+        "navtree_id": "fsnav",
         "active_columns": [
             "name",
             "type",
@@ -112,7 +112,7 @@ var exports = {
 
     "configured rendering":
     [{
-        "id_": "fsnav",
+        "navtree_id": "fsnav",
         "active_columns": [
             "name",
             "type",

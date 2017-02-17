@@ -59,7 +59,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
     def test_base_model_initialize(self):
         model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
-        self.assertEqual(model.id_, 'fsnav')
+        self.assertEqual(model.navtree_id, 'fsnav')
         self.assertEqual(len(model.active_columns), 4)
         self.assertEqual(model.cls, {})
 
@@ -75,13 +75,13 @@ class FSNavTreeModelTestCase(unittest.TestCase):
     def test_finalize(self):
         model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
         self.assertEqual(model.finalize({}), {
-            'id_': 'fsnav',
+            'navtree_id': 'fsnav',
             'cls': {},
             'navtree_config': '{}',
         })
         value = {'cls': {'test': 'class'}}
         self.assertEqual(model.finalize(value), {
-            'id_': 'fsnav',
+            'navtree_id': 'fsnav',
             'cls': {'test': 'class'},
             'navtree_config': '{}',
         })
@@ -90,7 +90,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         model.cls = {'table': 'some-table'}
         value = {'cls': {'test': 'class'}}
         self.assertEqual(model.finalize(value), {
-            'id_': 'fsnav',
+            'navtree_id': 'fsnav',
             'cls': {'test': 'class', 'table': 'some-table'},
             'navtree_config': '{}',
         })
@@ -100,7 +100,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         # the provided value has priority
         value = {'cls': {'table': 'provided'}}
         self.assertEqual(model.finalize(value), {
-            'id_': 'fsnav',
+            'navtree_id': 'fsnav',
             'cls': {'table': 'provided'},
             'navtree_config': '{}',
         })
@@ -110,18 +110,18 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             'static',
             self.tmpdir, '/script.py?{path}', config={'key1': 'value1'})
         self.assertEqual(model.finalize({}), {
-            'id_': 'static',
+            'navtree_id': 'static',
             'cls': {},
             'navtree_config': '{"key1": "value1"}',
         })
 
         value = {
-            'id_': 'replaced',
+            'navtree_id': 'replaced',
             'cls': {'test': 'class'},
             'navtree_config': {'key2': 'value2'},
         }
         finalized = model.finalize(value)
-        self.assertEqual(finalized['id_'], 'static')
+        self.assertEqual(finalized['navtree_id'], 'static')
         self.assertEqual(finalized['cls'], {'test': 'class'})
         self.assertEqual(json.loads(finalized['navtree_config']), {
             "key1": "value1", "key2": "value2"})
@@ -131,7 +131,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             'navtree_config': {'key1': 'alternative'},
         }
         self.assertEqual(model.finalize(value), {
-            'id_': 'static',
+            'navtree_id': 'static',
             'cls': {'test': 'class'},
             'navtree_config': '{"key1": "alternative"}',
         })
