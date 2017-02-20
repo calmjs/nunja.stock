@@ -4,12 +4,12 @@
 
 var exports = {
     "null rendering":
-    [{
+    [{"result": {
         "colnames": [],
         "rownames": [],
         "rows": [],
         "cls": {}
-    }, [
+    }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
         "  <thead>",
@@ -21,12 +21,12 @@ var exports = {
     ]],
 
     "column rendering":
-    [{
+    [{"result": {
         "colnames": ["Jan", "Feb", "Mar", "Apr", "May"],
         "rownames": [],
         "rows": [["31", "28", "31", "30", "31"]],
         "cls": {}
-    }, [
+    }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
         "  <thead>",
@@ -48,12 +48,12 @@ var exports = {
     ]],
 
     "column rendering with header row":
-    [{
+    [{"result": {
         "colnames": ["Jan", "Feb", "Mar", "Apr", "May"],
         "rownames": ["Days"],
         "rows": [["31", "28", "31", "30", "31"]],
         "cls": {}
-    }, [
+    }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
         "  <thead>",
@@ -76,12 +76,12 @@ var exports = {
     ]],
 
     "row rendering":
-    [{
+    [{"result": {
         "colnames": [],
         "rownames": ["Jan", "Feb", "Mar", "Apr", "May"],
         "rows": [["31"], ["28"], ["31"], ["30"], ["31"]],
         "cls": {}
-    }, [
+    }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
         "  <thead>",
@@ -113,13 +113,13 @@ var exports = {
     ]],
 
     "row rendering with header row with first header cell":
-    [{
+    [{"result": {
         "first_header_cell": "Month",
         "colnames": ["Days"],
         "rownames": ["Jan", "Feb", "Mar", "Apr", "May"],
         "rows": [["31"], ["28"], ["31"], ["30"], ["31"]],
         "cls": {}
-    }, [
+    }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
         "  <thead>",
@@ -154,12 +154,12 @@ var exports = {
     ]],
 
     "incomplete row names":
-    [{
+    [{"result": {
         "colnames": ["Days"],
         "rownames": ["Jan", "Feb"],
         "rows": [["31"], ["28"], ["31"], ["30"], ["31"]],
         "cls": {}
-    }, [
+    }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
         "  <thead>",
@@ -194,13 +194,13 @@ var exports = {
     ]],
 
     "multi row/col":
-    [{
+    [{"result": {
         "first_header_cell": "x",
         "colnames": ["1", "2", "3"],
         "rownames": ["1", "2", "3"],
         "rows": [[1, 2, 3], [2, 4, 6], [3, 6, 9]],
         "cls": {}
-    }, [
+    }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
         "  <thead>",

@@ -1,21 +1,21 @@
-<table class="{{ cls['table'] }}">
+<table class="{{ result.cls['table'] }}">
   <thead>
-    {% if colnames|length -%}
-    <tr class="{{ cls['table.thead.tr'] }}">
-      {% if rownames|length -%}
-        <th>{{ first_header_cell }}</th>
+    {% if result.colnames|length -%}
+    <tr class="{{ result.cls['table.thead.tr'] }}">
+      {% if result.rownames|length -%}
+        <th>{{ result.first_header_cell }}</th>
       {%- endif -%}
-      {%- for colname in colnames -%}
+      {%- for colname in result.colnames -%}
         <th>{{ colname }}</th>
       {%- endfor %}
     </tr>
     {%- endif %}
   </thead>
   <tbody>
-    {%- for row in rows %}
-    <tr class="{{ cls['table.tbody.tr'] }}">
-      {% if rownames|length -%}
-        <th>{{ rownames[loop.index0] }}</th>
+    {%- for row in result.rows %}
+    <tr class="{{ result.cls['table.tbody.tr'] }}">
+      {% if result.rownames|length -%}
+        <th>{{ result.rownames[loop.index0] }}</th>
       {%- endif %}
       {% for cell in row -%}
         <td>{{ cell }}</td>
