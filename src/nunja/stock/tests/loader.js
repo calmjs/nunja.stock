@@ -15,19 +15,22 @@ var GenerateTestFactory = function(core, test_lib) {
 
         var data = require(data_module);
 
-        var test = function(data, answer) {
-            var rendered = core.engine.execute(
-                mold_id, data
-            ).split('\n').filter(function(v) {
-                return v.trim().length > 0;
-            }).join('\n');
-            test_lib.expect(rendered).to.equal(answer.join('\n'));
+        var test = function(data, answer, done) {
+            core.engine.execute(mold_id, data, function(err, result) {
+                test_lib.expect(err).to.be.null;
+                var rendered = result.split('\n').filter(function(v) {
+                    return v.trim().length > 0;
+                }).join('\n');
+                test_lib.expect(rendered).to.equal(answer.join('\n'));
+                done();
+            });
         };
 
         test_lib.describe(name, function() {
             for (var t_name in data) {
                 (function(args) {
-                    test_lib.it(t_name, function() {
+                    test_lib.it(t_name, function(done) {
+                        args.push(done);
                         test.apply(test, args);
                     });
                 })(data[t_name]);

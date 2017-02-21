@@ -49,32 +49,54 @@ describe('test loader tests', function() {
         // also ensure the template is loaded.
         core.engine.load_template('dummy/mold/template.nja', function() {});
         this.clock.tick(500);
+        // restore immediately.
+        this.clock.restore();
     });
 
     afterEach(function() {
         window.nunjucksPrecompiled = this.nunjucksPrecompiled;
         requirejs.undef('__nunja__/dummy/mold');
         requirejs.undef('data');
-        this.clock.restore();
     });
 
-    it('test_run', function() {
+    it('test_run', function(done) {
         // As there is literally no way to test the test framework from
         // within itself due to copious amounts of callbacks and nested
         // callbacks (thus the inability to trap thing), just stub all
         // the things and make sure the values to be tested are actually
         // what we expect.
+        var self = this;
         var results = [];
         var tests = [];
 
+        var check = function() {
+            // since there is a bunch of async stuff, do the final
+            // checks here when we have collated all the data.
+            expect(results).to.deep.equal([
+                [
+                    '<div data-nunja="dummy/mold">\nhello\n</div>',
+                    '<div data-nunja="dummy/mold">\nhello\n</div>'
+                ],
+                [
+                    '<div data-nunja="dummy/mold">\nhello\n</div>',
+                    '<div data-nunja="dummy/mold">\ngoodbye\n</div>'
+                ]
+            ]);
+            done();
+        };
+
         var fake_expect = function(first) {
             var result = [first];
-            results.push(result);
             return {
                 'to': {
                     'equal': function(second) {
                         result.push(second);
-                    }
+                        results.push(result);
+                        if (results.length == Object.keys(fake_data).length) {
+                            check();
+                        }
+                    },
+                    'be': {'null': true},
                 }
             };
         };
@@ -82,7 +104,8 @@ describe('test loader tests', function() {
         var fake_describe = function(desc, f) {
             f();
             tests.forEach(function(test) {
-                test();
+                test(function() {});
+                self.clock.tick(500);
             });
         };
 
@@ -104,17 +127,6 @@ describe('test loader tests', function() {
             'dummy/mold',
             'data'
         );
-
-        expect(results).to.deep.equal([
-            [
-                '<div data-nunja="dummy/mold">\nhello\n</div>',
-                '<div data-nunja="dummy/mold">\nhello\n</div>'
-            ],
-            [
-                '<div data-nunja="dummy/mold">\nhello\n</div>',
-                '<div data-nunja="dummy/mold">\ngoodbye\n</div>'
-            ]
-        ]);
 
     });
 
