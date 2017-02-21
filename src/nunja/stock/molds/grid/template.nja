@@ -1,26 +1,2 @@
-<table class="{{ result.cls['table'] }}">
-  <thead>
-    {% if result.colnames|length -%}
-    <tr class="{{ result.cls['table.thead.tr'] }}">
-      {% if result.rownames|length -%}
-        <th>{{ result.first_header_cell }}</th>
-      {%- endif -%}
-      {%- for colname in result.colnames -%}
-        <th>{{ colname }}</th>
-      {%- endfor %}
-    </tr>
-    {%- endif %}
-  </thead>
-  <tbody>
-    {%- for row in result.rows %}
-    <tr class="{{ result.cls['table.tbody.tr'] }}">
-      {% if result.rownames|length -%}
-        <th>{{ result.rownames[loop.index0] }}</th>
-      {%- endif %}
-      {% for cell in row -%}
-        <td>{{ cell }}</td>
-      {% endfor %}
-    </tr>
-    {%- endfor %}
-  </tbody>
-</table>
+{% from "nunja.stock.molds/grid/macro.nja" import main %}
+{{ main(result=result) }}

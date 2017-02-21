@@ -1,0 +1,37 @@
+{% macro _main(rows, colnames=[], rownames=[], first_header_cell="", cls={}) %}
+<table class="{{ cls['table'] }}">
+  <thead>
+    {% if colnames|length -%}
+    <tr class="{{ cls['table.thead.tr'] }}">
+      {% if rownames|length -%}
+        <th>{{ first_header_cell }}</th>
+      {%- endif -%}
+      {%- for colname in colnames -%}
+        <th>{{ colname }}</th>
+      {%- endfor %}
+    </tr>
+    {%- endif %}
+  </thead>
+  <tbody>
+    {%- for row in rows %}
+    <tr class="{{ cls['table.tbody.tr'] }}">
+      {% if rownames|length -%}
+        <th>{{ rownames[loop.index0] }}</th>
+      {%- endif %}
+      {% for cell in row -%}
+        <td>{{ cell }}</td>
+      {% endfor %}
+    </tr>
+    {%- endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+
+{% macro main(result) %}
+{% set rows = result.rows %}
+{% set colnames = result.colnames or [] %}
+{% set rownames = result.rownames or [] %}
+{% set first_header_cell = result.first_header_cell or "" %}
+{% set cls = result.cls or {} %}
+{{ _main(rows, colnames, rownames, first_header_cell, cls) }}
+{% endmacro %}
