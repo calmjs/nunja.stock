@@ -1,2 +1,2 @@
 {% from "nunja.stock.molds/grid/macro.nja" import main %}
-{{ main(result=result) }}
+{{ main(result) }}

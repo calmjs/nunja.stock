@@ -1,4 +1,4 @@
-{% macro _main(rows, colnames=[], rownames=[], first_header_cell="", cls={}) %}
+{% macro render(rows, colnames=[], rownames=[], first_header_cell="", cls={}) %}
 <table class="{{ cls['table'] }}">
   <thead>
     {% if colnames|length -%}
@@ -33,5 +33,5 @@
 {% set rownames = result.rownames or [] %}
 {% set first_header_cell = result.first_header_cell or "" %}
 {% set cls = result.cls or {} %}
-{{ _main(rows, colnames, rownames, first_header_cell, cls) }}
+{{ render(rows, colnames, rownames, first_header_cell, cls) }}
 {% endmacro %}
