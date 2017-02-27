@@ -1,0 +1,35 @@
+{% macro render(itemListElement, key_label_map, active_keys, css_class={}) %}
+<table class="{{ css_class['table'] }}">
+  <thead>
+    <tr class="{{ css_class['table.thead.tr'] }}">
+    {% for id in active_keys -%}
+      <td>{{ key_label_map[id] }}</td>
+    {%- endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in itemListElement -%}
+    <tr class="{{ css_class['table.tbody.tr'] }}">
+      {% for id in active_keys -%}
+        {%- if id == active_keys[0] and item['@id'] -%}
+          <td><a href="{{ item['href'] }}"
+          {%- if item['data_href'] %} data-href="{{ item['data_href'] }}"
+          {%- endif -%}
+          >{{ item[id] }}</a></td>
+        {%- else -%}
+          <td>{{ item[id] }}</td>
+        {%- endif -%}
+      {%- endfor %}
+    </tr>
+    {%- endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+
+{% macro main(result, meta={}) %}
+{% set itemListElement = result.itemListElement or [] %}
+{% set key_label_map = result.key_label_map or [] %}
+{% set active_keys = result.active_keys or [] %}
+{% set css_class = meta.css_class or {} %}
+{{ render(itemListElement, key_label_map, active_keys, css_class) }}
+{% endmacro %}
