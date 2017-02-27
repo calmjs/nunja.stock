@@ -8,7 +8,6 @@ var exports = {
         "colnames": [],
         "rownames": [],
         "rows": [],
-        "cls": {}
     }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
@@ -24,8 +23,7 @@ var exports = {
     [{"result": {
         "colnames": ["Jan", "Feb", "Mar", "Apr", "May"],
         "rownames": [],
-        "rows": [["31", "28", "31", "30", "31"]],
-        "cls": {}
+        "rows": [["31", "28", "31", "30", "31"]]
     }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
@@ -51,8 +49,7 @@ var exports = {
     [{"result": {
         "colnames": ["Jan", "Feb", "Mar", "Apr", "May"],
         "rownames": ["Days"],
-        "rows": [["31", "28", "31", "30", "31"]],
-        "cls": {}
+        "rows": [["31", "28", "31", "30", "31"]]
     }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
@@ -79,8 +76,7 @@ var exports = {
     [{"result": {
         "colnames": [],
         "rownames": ["Jan", "Feb", "Mar", "Apr", "May"],
-        "rows": [["31"], ["28"], ["31"], ["30"], ["31"]],
-        "cls": {}
+        "rows": [["31"], ["28"], ["31"], ["30"], ["31"]]
     }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
@@ -117,8 +113,7 @@ var exports = {
         "first_header_cell": "Month",
         "colnames": ["Days"],
         "rownames": ["Jan", "Feb", "Mar", "Apr", "May"],
-        "rows": [["31"], ["28"], ["31"], ["30"], ["31"]],
-        "cls": {}
+        "rows": [["31"], ["28"], ["31"], ["30"], ["31"]]
     }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
@@ -157,8 +152,7 @@ var exports = {
     [{"result": {
         "colnames": ["Days"],
         "rownames": ["Jan", "Feb"],
-        "rows": [["31"], ["28"], ["31"], ["30"], ["31"]],
-        "cls": {}
+        "rows": [["31"], ["28"], ["31"], ["30"], ["31"]]
     }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
@@ -199,7 +193,6 @@ var exports = {
         "colnames": ["1", "2", "3"],
         "rownames": ["1", "2", "3"],
         "rows": [[1, 2, 3], [2, 4, 6], [3, 6, 9]],
-        "cls": {}
     }}, [
         "<div data-nunja=\"nunja.stock.molds/grid\">",
         "<table class=\"\">",
@@ -222,6 +215,50 @@ var exports = {
         "      <td>6</td>",
         "    </tr>",
         "    <tr class=\"\">",
+        "      <th>3</th>",
+        "      <td>3</td>",
+        "      <td>6</td>",
+        "      <td>9</td>",
+        "    </tr>",
+        "  </tbody>",
+        "</table>",
+        "</div>"
+    ]],
+
+    "multi row/col with meta css":
+    [{"result": {
+        "first_header_cell": "x",
+        "colnames": ["1", "2", "3"],
+        "rownames": ["1", "2", "3"],
+        "rows": [[1, 2, 3], [2, 4, 6], [3, 6, 9]]
+    }, "meta": {
+        "css_class": {
+            "table": "table",
+            "table.thead.tr": "main header",
+            "table.tbody.tr": "body row"
+        }
+    }}, [
+        "<div data-nunja=\"nunja.stock.molds/grid\">",
+        "<table class=\"table\">",
+        "  <thead>",
+        "    <tr class=\"main header\">",
+        "      <th>x</th><th>1</th><th>2</th><th>3</th>",
+        "    </tr>",
+        "  </thead>",
+        "  <tbody>",
+        "    <tr class=\"body row\">",
+        "      <th>1</th>",
+        "      <td>1</td>",
+        "      <td>2</td>",
+        "      <td>3</td>",
+        "    </tr>",
+        "    <tr class=\"body row\">",
+        "      <th>2</th>",
+        "      <td>2</td>",
+        "      <td>4</td>",
+        "      <td>6</td>",
+        "    </tr>",
+        "    <tr class=\"body row\">",
         "      <th>3</th>",
         "      <td>3</td>",
         "      <td>6</td>",

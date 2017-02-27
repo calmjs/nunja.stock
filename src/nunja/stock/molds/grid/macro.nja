@@ -1,8 +1,10 @@
-{% macro render(rows, colnames=[], rownames=[], first_header_cell="", cls={}) %}
-<table class="{{ cls['table'] }}">
+{% macro render(
+    rows, colnames=[], rownames=[], first_header_cell="", css_class={}
+) -%}
+<table class="{{ css_class['table'] }}">
   <thead>
     {% if colnames|length -%}
-    <tr class="{{ cls['table.thead.tr'] }}">
+    <tr class="{{ css_class['table.thead.tr'] }}">
       {% if rownames|length -%}
         <th>{{ first_header_cell }}</th>
       {%- endif -%}
@@ -14,7 +16,7 @@
   </thead>
   <tbody>
     {%- for row in rows %}
-    <tr class="{{ cls['table.tbody.tr'] }}">
+    <tr class="{{ css_class['table.tbody.tr'] }}">
       {% if rownames|length -%}
         <th>{{ rownames[loop.index0] }}</th>
       {%- endif %}
@@ -27,11 +29,11 @@
 </table>
 {% endmacro %}
 
-{% macro main(result) %}
+{% macro main(result, meta={}) %}
 {% set rows = result.rows %}
 {% set colnames = result.colnames or [] %}
 {% set rownames = result.rownames or [] %}
 {% set first_header_cell = result.first_header_cell or "" %}
-{% set cls = result.cls or {} %}
-{{ render(rows, colnames, rownames, first_header_cell, cls) }}
+{% set css_class = meta.css_class or {} %}
+{{ render(rows, colnames, rownames, first_header_cell, css_class) }}
 {% endmacro %}
