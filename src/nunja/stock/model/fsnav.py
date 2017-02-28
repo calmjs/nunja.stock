@@ -3,7 +3,6 @@
 Model for filesystem navtree
 """
 
-import json
 import os
 import stat
 from os.path import basename
@@ -26,7 +25,9 @@ statmap = (
     (stat.S_ISSOCK, 'socket'),
 )
 
-columns = ['type', 'name', 'size', 'created']
+# using alternativeType from schema.org due to JSON-LD aliasing of @type
+# to type
+columns = ['alternativeType', 'name', 'size', 'created']
 
 
 def to_filetype(mode):
@@ -48,16 +49,17 @@ def get_filetype(path):
 class Base(object):
 
     def __init__(
-            self, navtree_id, root, uri_template,
+            self, nunja_model_id, root, uri_template,
             uri_template_json=None,
             active_columns=None,
-            cls=None,
+            css_class=None,
             config=None,
+            context='https://schema.org/',
             ):
         """
         Arguments:
 
-        navtree_id
+        nunja_model_id
             The id of the element - will be persisted into the template
             as the id for the container node.
         root
@@ -77,13 +79,16 @@ class Base(object):
             Defaults to uri_template if left as unassigned.
         active_columns
             The columns that are active.
-        cls
+        css_class
             CSS classes assignment
         config
             Optional configuration mapping.
+        context
+            The context for the linked data.
+            Defaults to https://schema.org
         """
 
-        self.navtree_id = navtree_id
+        self.nunja_model_id = nunja_model_id
         self.root = root
         self.uri_template = uri_template
         self.uri_template_json = uri_template_json
@@ -93,11 +98,12 @@ class Base(object):
             # the specified columns have an order priority
             self.active_columns = [c for c in active_columns if c in columns]
 
-        self.cls = cls if cls else {}
+        self.css_class = css_class if css_class else {}
 
         self.config = {}
         if isinstance(config, dict):
             self.config.update(config)
+        self.context = context
 
     def format_uri(self, path, template=None):
         """
@@ -119,10 +125,11 @@ class Base(object):
     def _get_attrs(self, fs_path):
         attr = os.stat(fs_path)
         f_type = to_filetype(attr.st_mode)
+        ld_type = 'ItemList' if f_type == 'folder' else 'CreativeWork'
 
         base = {
             '@id': basename(fs_path),
-            '@type': f_type,
+            '@type': ld_type,
             'href': self._fs_path_format_uri(fs_path),
         }
 
@@ -133,7 +140,7 @@ class Base(object):
                     fs_path, self.uri_template_json)
 
         result = {k: v for k, v in (
-            ('type', f_type),
+            ('alternativeType', f_type),
             ('name', basename(fs_path)),
             ('size', 0 if f_type == 'folder' else attr.st_size),
             ('created', attr.st_ctime),
@@ -179,17 +186,18 @@ class Base(object):
     def finalize(self, obj):
         config = {}
         config.update(self.config)
-        config.update(obj.get('navtree_config', {}))
+        config.update(obj.get('nunja_model_config', {}))
 
         if 'data_href' in obj.get('result', {}):
             config['data_href'] = obj['result']['data_href']
 
-        obj['navtree_id'] = self.navtree_id
-        cls = {}
-        cls.update(self.cls)
-        cls.update(obj.get('cls', {}))
-        obj['cls'] = cls
-        obj['navtree_config'] = json.dumps(config)
+        obj['nunja_model_id'] = self.nunja_model_id
+        css_class = {}
+        css_class.update(self.css_class)
+        css_class.update(obj.get('css_class', {}))
+        obj['css_class'] = css_class
+        obj['nunja_model_config'] = config
+        obj['@context'] = obj.get('@context', self.context)
         return obj
 
     def get_struct(self, path):
