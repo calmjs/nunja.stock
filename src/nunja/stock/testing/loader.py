@@ -48,7 +48,11 @@ def generate_test(name, mold_id, test_module_ns, data_module):
         data = json.loads(
             parse(fd.read()).children()[0].children()[0].initializer.to_ecma())
 
-    return type(name, (unittest.TestCase,), {
+    attrs = {
+        'maxDiff': None,
+    }
+    attrs.update({
         'test_' + t_name: create_test_method(*values)
         for t_name, values in data.items()
     })
+    return type(name, (unittest.TestCase,), attrs)
