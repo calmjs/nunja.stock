@@ -1,0 +1,6 @@
+<div id="{{ nunja_model_id }}" data-config="{{ nunja_model_config | dump }}">
+{% if nunja_model_config and 'mold_id' in nunja_model_config %}
+{% from nunja_model_config['mold_id'] + "/macro.nja" import main %}
+{{ main(result=result, meta=meta | default({})) }}
+{% endif %}
+</div>

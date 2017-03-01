@@ -2,14 +2,6 @@
 from nunja.stock.testing.loader import generate_test
 
 
-FSNavTreeRenderTestCase = generate_test(
-    name='FSNavTreeRenderTestCase',
-    mold_id='nunja.stock.molds/navtree',
-    test_module_ns='nunja.stock.tests',
-    data_module='fsnav_examples',
-)
-
-
 GridRenderTestCase = generate_test(
     name='GridRenderTestCase',
     mold_id='nunja.stock.molds/grid',
@@ -23,4 +15,12 @@ NavGridRenderTestCase = generate_test(
     mold_id='nunja.stock.molds/navgrid',
     test_module_ns='nunja.stock.tests',
     data_module='navgrid_examples',
+)
+
+
+ModelRenderTestCase = generate_test(
+    name='ModelRenderTestCase',
+    mold_id='nunja.stock.molds/model',
+    test_module_ns='nunja.stock.tests',
+    data_module='model_examples',
 )

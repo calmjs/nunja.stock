@@ -1,3 +1,0 @@
-<div id="{{ navtree_id }}" data-config="{{ navtree_config }}">
-{% include "nunja.stock.molds/navtree/table.nja" %}
-</div>

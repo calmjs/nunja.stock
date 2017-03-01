@@ -5,18 +5,20 @@ var utils = require('nunja/utils');
 var $ = utils.$;
 
 var markers = {};
-var data = require('nunja/stock/tests/fsnav_data');
+var model_navgrid_data = require('nunja/stock/tests/model_navgrid_data');
 
 window.mocha.setup('bdd');
 
-describe('nunja.stock.molds/navtree interactions', function() {
+describe('nunja.stock.molds/model test cases', function() {
 
-    var defaultPopulate = function(test, path) {
-        path = path || '/';
+    var data = model_navgrid_data;
+
+    var defaultPopulate = function(test, arg) {
+        var obj = arg instanceof Object ? arg : data[arg || '/'];
         // populate the body
         var div = document.createElement('div');
-        div.innerHTML = '<div data-nunja="nunja.stock.molds/navtree"></div>';
-        test.engine.populate($('div', div)[0], data[path]);
+        div.innerHTML = '<div data-nunja="nunja.stock.molds/model"></div>';
+        test.engine.populate($('div', div)[0], obj);
         document.body.appendChild(div);
         test.clock.tick(500);
     };
@@ -25,6 +27,64 @@ describe('nunja.stock.molds/navtree interactions', function() {
         // apply the onload trigger on the document body.
         test.engine.do_onload(document.body);
         test.clock.tick(500);
+    };
+
+    var activate_custom = function(test) {
+        // some unrelated data.
+        var custom_data = {
+            "@context": "http://schema.org",
+            "nunja_model_id": "model_grid",
+            "nunja_model_config": {
+                "data_href": "custom/",
+                "mold_id": "nunja.stock.molds/navgrid",
+                "error_handler": "nunja.stock.custom/error_handler"
+            },
+            "result": {
+                "@id": "custom",
+                "href": "custom/",
+                "data_href": "custom/",
+                "name": "custom",
+                "size": 0,
+                "additionalType": "folder",
+                "@type": "ItemList",
+                "itemListElement": [
+                    {
+                        "@id": "bad_target",
+                        "href": "/bad_target",
+                        "data_href": "/bad_target",
+                        "name": "bad_target",
+                        "size": 0,
+                        "additionalType": "file",
+                        "@type": "CreativeWork"
+                    }
+                ],
+                "key_label_map": {
+                    "name": "name",
+                    "size": "size",
+                    "additionalType": "type"
+                },
+                "active_keys": [
+                    "name",
+                    "additionalType",
+                    "size"
+                ]
+            }
+        };
+
+        // define the custom error handler.
+        define('nunja.stock.custom/error_handler', [], function() {
+            return function (model, xhr) {
+                // XXX this is just a proof of concept.
+                var footer = document.createElement('tfoot');
+                footer.innerHTML = (
+                    '<tr><td>Error fetching content (' + xhr.status +
+                    ')</td></tr>'
+                );
+                model.root.querySelector('table').appendChild(footer);
+            };
+        });
+        test.clock.tick(500);
+        return custom_data;
     };
 
     beforeEach(function() {
@@ -66,6 +126,7 @@ describe('nunja.stock.molds/navtree interactions', function() {
 
     afterEach(function() {
         markers = {};
+        requirejs.undef('nunja.stock.custom/error_handler');
         this.server.restore();
         this.clock.restore();
         // TODO ideally, all the history should be wiped.
@@ -85,9 +146,9 @@ describe('nunja.stock.molds/navtree interactions', function() {
         expect($('a')[0].innerHTML).to.equal('dir');
         $('a')[0].click();
         this.clock.tick(500);
-        expect($('a')[0].innerHTML).to.equal('nested');
+        expect($('a')[1].innerHTML).to.equal('nested');
         // should trigger default error handling.
-        $('a')[0].click();
+        $('a')[1].click();
         this.clock.tick(500);
     });
 
@@ -123,14 +184,17 @@ describe('nunja.stock.molds/navtree interactions', function() {
         expect($('a')[1].innerHTML).to.equal('bad_target');
         $('a')[1].click();
         this.clock.tick(500);
+        // nothing should change?
+        expect($('a')[1].innerHTML).to.equal('bad_target');
     });
 
     it('Custom error handling test', function() {
-        defaultPopulate(this, '/dir');
+        var obj = activate_custom(this);
+        defaultPopulate(this, obj);
         triggerOnLoad(this);
-        expect($('a')[1].innerHTML).to.equal('bad_target');
+        expect($('a')[0].innerHTML).to.equal('bad_target');
         // should trigger custom error handling.
-        $('a')[1].click();
+        $('a')[0].click();
         this.clock.tick(500);
         expect($('tfoot')[0].innerHTML).to.contain('Error');
     });
@@ -155,7 +219,9 @@ describe('nunja.stock.molds/navtree interactions', function() {
 });
 
 
-describe('nunja.stock.molds/navtree inner model tests', function() {
+describe('nunja.stock.molds/model inner model tests', function() {
+
+    var data = model_navgrid_data;
 
     beforeEach(function() {
         this.clock = sinon.useFakeTimers();
@@ -166,9 +232,9 @@ describe('nunja.stock.molds/navtree inner model tests', function() {
     });
 
     it('async populate', function(done) {
-        var module = require('nunja.stock.molds/navtree/index');
+        var module = require('nunja.stock.molds/model/index');
         var div = document.createElement('div');
-        div.setAttribute('data-nunja', 'nunja.stock.molds/navtree');
+        div.setAttribute('data-nunja', 'nunja.stock.molds/model');
 
         var model = new module.Model(div);
         model._template_name = 'dummyvalue';

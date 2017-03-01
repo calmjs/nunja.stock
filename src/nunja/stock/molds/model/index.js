@@ -7,7 +7,6 @@ define([
     var $ = utils.$;
     var addEventListeners = utils.addEventListeners;
 
-    // XXX this should be moved to dedicated module
     var modify_state = function(method, obj, title, url) {
         var k;
         var state = {};
@@ -21,49 +20,46 @@ define([
         window.history[method](state, title, url || null);
     };
 
-    var Model = function(root) {
+    var Model = function(root, selector) {
+        /*
+        Create a view model that is associated the root element with a
+        selector for the immediate node that will be updated via JSON.
+        */
+
         var self = this;
+        this.selector = selector || 'div';
 
         this.root = root;
-        this._template_name = 'nunja.stock.molds/navtree/table.nja';
+
+        // @type reference lookup for the template?
+        this._template_name = 'nunja.stock.molds/model/table.nja';
+
         this.has_push_state = (
             window.history && window.history.pushState) instanceof Function;
 
         /*
-        XXX
-        A bit of a chicken and egg problem - the updates provided over
-        JSON will always be available as that is the prerequisite for
-        doing the rendering, but the initial view will not have any
-        cached.  The *only* guaranteed hint is through the data_href
-        for the element, but as that is NOT sent with the HTML the
-        remaining way is to have this be available in the config.
-
-        Reason this is needed simply because if the user navigates down,
-        then back up, the state MUST be restored to the original form
-        somehow as this was rendered, but given that this data will
-        need to be retrieved it needs to be marked down.  Now the
-        question is, if client-side rendering is not possible due to the
-        data_href being unknown, is triggering a full reload acceptable?
-
-        Alternatively, enforcing the requirement that the data-href for
-        the root element could introduce other problems if the source
-        data is somewhat asymmetrical in what they provide.
+        data-href is _required_ for this element simply because that is
+        the data that will be fetched for the restoration of this state
+        when user traverses back into here through the back button.  It
+        is to be provided through the config since href is associated
+        with the anchor node.
         */
 
-        // XXX just assume this is available for now, deal with the
-        // other not really but kind of supported cases later.
         this.config = {};
-        var div = this.root.querySelector('div');
-        if (div === null) {
+        var child = this.root.querySelector(this.selector);
+        if (child === null) {
             // XXX this should be an error
             // using surrogate values for now...
             this._id = Math.random();
             this.data_href = window.location.toString();
         }
         else {
-            this._id = div.getAttribute('id');
+            // XXX none of this is guaranteed to work
+            // TODO write test cases for various cases of missing data
+            // TODO define behavior for missing data.
+            this._id = child.getAttribute('id');
             try {
-                this.config = JSON.parse(div.getAttribute('data-config'));
+                this.config = JSON.parse(child.getAttribute('data-config'));
             } catch(e) {
                 // pass
             }
