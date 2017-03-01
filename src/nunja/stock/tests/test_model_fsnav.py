@@ -60,12 +60,12 @@ class FSNavTreeModelTestCase(unittest.TestCase):
     def test_base_model_initialize(self):
         model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
         self.assertEqual(model.nunja_model_id, 'fsnav')
-        self.assertEqual(len(model.active_columns), 4)
+        self.assertEqual(len(model.active_keys), 4)
         self.assertEqual(model.css_class, {})
 
         model = fsnav.Base(
-            'fsnav', self.tmpdir, '/script.py?{path}', active_columns=['size'])
-        self.assertEqual(len(model.active_columns), 1)
+            'fsnav', self.tmpdir, '/script.py?{path}', active_keys=['size'])
+        self.assertEqual(len(model.active_keys), 1)
 
         model = fsnav.Base(
             'fsnav', self.tmpdir, '/script.py?{path}', css_class={
@@ -362,29 +362,45 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
         result = model._get_struct_dir(self.dummydir1)
         self.assertEqual(_dict_clone_filtered(result['result'], [
-                'created', 'size', 'items',
+                'created', 'size', 'itemListElement',
             ]), {
                 'alternativeType': 'folder',
                 '@type': 'ItemList',
                 '@id': 'dummydir1',
                 'name': 'dummydir1',
-                'href': '/script.py?/dummydir1/'
+                'href': '/script.py?/dummydir1/',
+
+                'key_label_map': {
+                    'alternativeType': 'type',
+                    'created': 'created',
+                    'name': 'name',
+                    'size': 'size',
+                },
+                'active_keys': ['alternativeType', 'name', 'size', 'created'],
             }
         )
-        self.assertEqual(len(result['result']['items']), 1)
+        self.assertEqual(len(result['result']['itemListElement']), 1)
 
         result = model._get_struct_dir(self.dummydir2)
         self.assertEqual(_dict_clone_filtered(result['result'], [
-                'created', 'size', 'items',
+                'created', 'size', 'itemListElement',
             ]), {
                 'alternativeType': 'folder',
                 '@type': 'ItemList',
                 '@id': 'dummydir2',
                 'name': 'dummydir2',
-                'href': '/script.py?/dummydir2/'
+                'href': '/script.py?/dummydir2/',
+
+                'key_label_map': {
+                    'alternativeType': 'type',
+                    'created': 'created',
+                    'name': 'name',
+                    'size': 'size',
+                },
+                'active_keys': ['alternativeType', 'name', 'size', 'created'],
             }
         )
-        self.assertEqual(len(result['result']['items']), 4)
+        self.assertEqual(len(result['result']['itemListElement']), 4)
 
     def test_path_to_fs_path(self):
         model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
@@ -416,15 +432,14 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         results = model.get_struct('/test_file.txt')
         self.assertEqual(results['result']['size'], 22)
         results = model.get_struct('/dummydir2')
-        self.assertEqual(len(results['result']['items']), 4)
+        self.assertEqual(len(results['result']['itemListElement']), 4)
 
 
-@unittest.skip
 class FSNavTreeModelMirrorTestCase(unittest.TestCase):
 
     def setUp(self):
         with open(resource_filename(
-                'nunja.stock.tests', 'fsnav_examples.js')) as fd:
+                'nunja.stock.tests', 'navgrid_examples.js')) as fd:
             self.data = json.loads(parse(fd.read()).children()[0].children(
                 )[0].initializer.to_ecma())
 
@@ -444,7 +459,7 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
     def test_get_struct_success_limited_columns_no_data(self):
         model = fsnav.Base(
             'fsnav',
-            self.tmpdir, '/script.py?{path}', active_columns=[
+            self.tmpdir, '/script.py?{path}', active_keys=[
                 'name', 'alternativeType', 'size',
             ]
         )
@@ -457,7 +472,7 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
             'fsnav',
             self.tmpdir, '/script.py?{path}',
             uri_template_json='/json.py?{path}',
-            active_columns=[
+            active_keys=[
                 'name', 'alternativeType', 'size',
             ]
         )

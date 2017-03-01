@@ -27,7 +27,8 @@ statmap = (
 
 # using alternativeType from schema.org due to JSON-LD aliasing of @type
 # to type
-columns = ['alternativeType', 'name', 'size', 'created']
+fsnav_keys = ['alternativeType', 'name', 'size', 'created']
+fsnav_keys_value = ['type', 'name', 'size', 'created']
 
 
 def to_filetype(mode):
@@ -51,7 +52,7 @@ class Base(object):
     def __init__(
             self, nunja_model_id, root, uri_template,
             uri_template_json=None,
-            active_columns=None,
+            active_keys=None,
             css_class=None,
             config=None,
             context='https://schema.org/',
@@ -77,8 +78,8 @@ class Base(object):
             that particular record.
 
             Defaults to uri_template if left as unassigned.
-        active_columns
-            The columns that are active.
+        active_keys
+            The keys that are active.
         css_class
             CSS classes assignment
         config
@@ -92,11 +93,11 @@ class Base(object):
         self.root = root
         self.uri_template = uri_template
         self.uri_template_json = uri_template_json
-        if not active_columns:
-            self.active_columns = columns
+        if not active_keys:
+            self.active_keys = fsnav_keys
         else:
-            # the specified columns have an order priority
-            self.active_columns = [c for c in active_columns if c in columns]
+            # the specified keys have an order priority
+            self.active_keys = [c for c in active_keys if c in fsnav_keys]
 
         self.css_class = css_class if css_class else {}
 
@@ -144,7 +145,7 @@ class Base(object):
             ('name', basename(fs_path)),
             ('size', 0 if f_type == 'folder' else attr.st_size),
             ('created', attr.st_ctime),
-        ) if k in self.active_columns}
+        ) if k in self.active_keys}
         result.update(base)
         return result
 
@@ -171,12 +172,14 @@ class Base(object):
         )
 
         result = self._get_struct_file(fs_path)
-        result['result']['items'] = items
+        result['result']['itemListElement'] = items
 
         # other metadata
-        result['active_columns'] = self.active_columns
-        result['column_map'] = {
-            k: k for k in columns if k in self.active_columns}
+        result['result']['active_keys'] = self.active_keys
+        result['result']['key_label_map'] = {
+            k: v for k, v in zip(fsnav_keys, fsnav_keys_value)
+            if k in self.active_keys
+        }
         return result
 
     def _get_struct_file(self, fs_path):

@@ -4,13 +4,18 @@
 
 var exports = {
     "null rendering":
-    [{"result": {
-        "@context": "http://schema.org",
-        "@type": "ItemList",
-        "itemListElement": [],
-        "key_label_map": {},
-        "active_keys": []
-    }}, [
+    [{
+        "@context": "https://schema.org/",
+        "css_class": {},
+        "nunja_model_config": {},
+        "nunja_model_id": "fsnav",
+        "result": {
+            "@type": "ItemList",
+            "itemListElement": [],
+            "key_label_map": {},
+            "active_keys": []
+        }
+    }, [
         "<div data-nunja=\"nunja.stock.molds/navgrid\">",
         "<table class=\"\">",
         "  <thead>",
@@ -24,59 +29,64 @@ var exports = {
     ]],
 
     "standard rendering":
-    [{"result": {
-        "@context": "http://schema.org",
-        "@type": "ItemList",
-        "itemListElement": [
-            {
-                "@id": "..",
-                "href": "/script.py?/",
-                "name": "..",
-                "size": 0,
-                "type": "folder",
-                "@type": "ItemList"
+    [{
+        "@context": "https://schema.org/",
+        "css_class": {},
+        "nunja_model_config": {},
+        "nunja_model_id": "fsnav",
+        "result": {
+            "@id": "dummydir2",
+            "@type": "ItemList",
+            "name": "dummydir2",
+            "href": "/script.py?/dummydir2/",
+            "size": 0,
+            "alternativeType": "folder",
+            "itemListElement": [
+                {
+                    "@id": "..",
+                    "href": "/script.py?/",
+                    "name": "..",
+                    "size": 0,
+                    "alternativeType": "folder",
+                    "@type": "ItemList"
+                },
+                {
+                    "@id": "dir",
+                    "href": "/script.py?/dummydir2/dir/",
+                    "name": "dir",
+                    "size": 0,
+                    "alternativeType": "folder",
+                    "@type": "ItemList"
+                },
+                {
+                    "@id": "file1",
+                    "href": "/script.py?/dummydir2/file1",
+                    "name": "file1",
+                    "size": 13,
+                    "alternativeType": "file",
+                    "@type": "CreativeWork"
+                },
+                {
+                    "@id": "file2",
+                    "href": "/script.py?/dummydir2/file2",
+                    "name": "file2",
+                    "size": 13,
+                    "alternativeType": "file",
+                    "@type": "CreativeWork"
+                }
+            ],
+            "key_label_map": {
+                "name": "name",
+                "size": "size",
+                "alternativeType": "type"
             },
-            {
-                "@id": "dir",
-                "href": "/script.py?/dummydir2/dir/",
-                "name": "dir",
-                "size": 0,
-                "type": "folder",
-                "@type": "ItemList"
-            },
-            {
-                "@id": "file1",
-                "href": "/script.py?/dummydir2/file1",
-                "name": "file1",
-                "size": 13,
-                "type": "file",
-                "@type": "CreativeWork"
-            },
-            {
-                "@id": "file2",
-                "href": "/script.py?/dummydir2/file2",
-                "name": "file2",
-                "size": 13,
-                "type": "file",
-                "@type": "CreativeWork"
-            }
-        ],
-        "key_label_map": {
-            "name": "name",
-            "size": "size",
-            "type": "type"
-        },
-        "active_keys": [
-            "name",
-            "type",
-            "size"
-        ],
-        "href": "/script.py?/dummydir2/",
-        "@id": "dummydir2",
-        "name": "dummydir2",
-        "size": 0,
-        "type": "folder",
-    }}, [
+            "active_keys": [
+                "name",
+                "alternativeType",
+                "size"
+            ]
+        }
+    }, [
         "<div data-nunja=\"nunja.stock.molds/navgrid\">",
         "<table class=\"\">",
         "  <thead>",
@@ -100,62 +110,69 @@ var exports = {
     ]],
 
     "configured rendering":
-    [{"result": {
-        "@context": "http://schema.org",
-        "@type": "ItemList",
-        "itemListElement": [
-            {
-                "@id": "..",
-                "href": "/script.py?/",
-                "data_href": "/json.py?/",
-                "name": "..",
-                "size": 0,
-                "type": "folder",
-                "@type": "ItemList"
-            },
-            {
-                "@id": "dir",
-                "href": "/script.py?/dummydir2/dir/",
-                "data_href": "/json.py?/dummydir2/dir/",
-                "name": "dir",
-                "size": 0,
-                "type": "folder",
-                "@type": "ItemList"
-            },
-            {
-                "@id": "file1",
-                "href": "/script.py?/dummydir2/file1",
-                "name": "file1",
-                "size": 13,
-                "type": "file",
-                "@type": "CreativeWork"
-            },
-            {
-                "@id": "file2",
-                "href": "/script.py?/dummydir2/file2",
-                "name": "file2",
-                "size": 13,
-                "type": "file",
-                "@type": "CreativeWork"
-            }
-        ],
-        "key_label_map": {
-            "name": "name",
-            "size": "size",
-            "type": "type"
+    [{
+        "@context": "https://schema.org/",
+        "css_class": {},
+        "nunja_model_config": {
+            "data_href": "/json.py?/dummydir2/",
         },
-        "active_keys": [
-            "name",
-            "type",
-            "size"
-        ],
-        "href": "/script.py?/dummydir2/",
-        "data_href": "/json.py?/dummydir2/",
-        "@id": "dummydir2",
-        "name": "dummydir2",
-        "size": 0,
-        "type": "folder",
-    }}, [
+        "nunja_model_id": "fsnav",
+        "result": {
+            "@id": "dummydir2",
+            "@type": "ItemList",
+            "href": "/script.py?/dummydir2/",
+            "data_href": "/json.py?/dummydir2/",
+            "name": "dummydir2",
+            "size": 0,
+            "alternativeType": "folder",
+            "itemListElement": [
+                {
+                    "@id": "..",
+                    "href": "/script.py?/",
+                    "data_href": "/json.py?/",
+                    "name": "..",
+                    "size": 0,
+                    "alternativeType": "folder",
+                    "@type": "ItemList"
+                },
+                {
+                    "@id": "dir",
+                    "href": "/script.py?/dummydir2/dir/",
+                    "data_href": "/json.py?/dummydir2/dir/",
+                    "name": "dir",
+                    "size": 0,
+                    "alternativeType": "folder",
+                    "@type": "ItemList"
+                },
+                {
+                    "@id": "file1",
+                    "href": "/script.py?/dummydir2/file1",
+                    "name": "file1",
+                    "size": 13,
+                    "alternativeType": "file",
+                    "@type": "CreativeWork"
+                },
+                {
+                    "@id": "file2",
+                    "href": "/script.py?/dummydir2/file2",
+                    "name": "file2",
+                    "size": 13,
+                    "alternativeType": "file",
+                    "@type": "CreativeWork"
+                }
+            ],
+            "key_label_map": {
+                "name": "name",
+                "size": "size",
+                "alternativeType": "type"
+            },
+            "active_keys": [
+                "name",
+                "alternativeType",
+                "size"
+            ]
+        }
+    }, [
         "<div data-nunja=\"nunja.stock.molds/navgrid\">",
         "<table class=\"\">",
         "  <thead>",
