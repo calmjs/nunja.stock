@@ -237,7 +237,6 @@ describe('nunja.stock.molds/model inner model tests', function() {
         div.setAttribute('data-nunja', 'nunja.stock.molds/model');
 
         var model = new module.Model(div);
-        model._template_name = 'dummyvalue';
         model.populate(data['/'], function() {
             expect($('a', div)[0].innerHTML).to.equal('dir');
             done();

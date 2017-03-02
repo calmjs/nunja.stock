@@ -31,9 +31,6 @@ define([
 
         this.root = root;
 
-        // @type reference lookup for the template?
-        this._template_name = 'nunja.stock.molds/model/table.nja';
-
         this.has_push_state = (
             window.history && window.history.pushState) instanceof Function;
 
@@ -182,7 +179,8 @@ define([
         // an optional callback in the case that the codepath was forced
         // or triggered.
         var self = this;
-        if (core.engine.query_template(self._template_name)) {
+        var template_name = obj.nunja_model_config.mold_id + '/macro.nja';
+        if (core.engine.query_template(template_name) && (_cb == null)) {
             core.engine.populate(self.root, obj);
             self.init();
         }

@@ -6,15 +6,18 @@ from os import environ
 import json
 
 from nunja.core import engine
-from nunja.stock.model import fsnavtree
+from nunja.stock.model import fsnav
 
-nav = fsnavtree.Base(
+nav = fsnav.Base(
     'baseid',
     getcwd(),
     basename(__file__) + '?{path}',
     uri_template_json=basename(__file__) + '?{path}',
-    cls={
+    css_class={
         'table': 'pure-table',
+    },
+    config={
+        'mold_id': 'nunja.stock.molds/navgrid',
     },
 )
 
@@ -44,7 +47,7 @@ else:
     print("")
 
     body = body_tmpl % engine.execute(
-        'nunja.stock.molds/navtree', data=nav.get_struct(target))
+        'nunja.stock.molds/model', data=nav.get_struct(target))
     html = engine.render('nunja.molds/html5', data={
         'title': 'Example page',
         'js': [
