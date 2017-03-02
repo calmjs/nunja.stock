@@ -6,7 +6,6 @@ var exports = {
     "null rendering":
     [{
         "@context": "https://schema.org/",
-        "css_class": {},
         "nunja_model_config": {},
         "nunja_model_id": "fsnav",
         "result": {
@@ -14,6 +13,9 @@ var exports = {
             "itemListElement": [],
             "key_label_map": {},
             "active_keys": []
+        },
+        "meta": {
+            "css_class": {},
         }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navgrid\">",
@@ -28,10 +30,39 @@ var exports = {
         "</div>",
     ]],
 
+    "null rendering with css":
+    [{
+        "@context": "https://schema.org/",
+        "nunja_model_config": {},
+        "nunja_model_id": "fsnav",
+        "result": {
+            "@type": "ItemList",
+            "itemListElement": [],
+            "key_label_map": {},
+            "active_keys": []
+        },
+        "meta": {
+            "css_class": {
+                "table": "testclass",
+                "table.thead.tr": "header"
+            }
+        }
+    }, [
+        "<div data-nunja=\"nunja.stock.molds/navgrid\">",
+        "<table class=\"testclass\">",
+        "  <thead>",
+        "    <tr class=\"header\">",
+        "    </tr>",
+        "  </thead>",
+        "  <tbody>",
+        "  </tbody>",
+        "</table>",
+        "</div>",
+    ]],
+
     "standard rendering":
     [{
         "@context": "https://schema.org/",
-        "css_class": {},
         "nunja_model_config": {},
         "nunja_model_id": "fsnav",
         "result": {
@@ -85,6 +116,9 @@ var exports = {
                 "alternativeType",
                 "size"
             ]
+        },
+        "meta": {
+            "css_class": {},
         }
     }, [
         "<div data-nunja=\"nunja.stock.molds/navgrid\">",
@@ -112,7 +146,6 @@ var exports = {
     "configured rendering":
     [{
         "@context": "https://schema.org/",
-        "css_class": {},
         "nunja_model_config": {
             "data_href": "/json.py?/dummydir2/",
         },
@@ -171,7 +204,10 @@ var exports = {
                 "alternativeType",
                 "size"
             ]
-        }
+        },
+        "meta": {
+            "css_class": {},
+        },
     }, [
         "<div data-nunja=\"nunja.stock.molds/navgrid\">",
         "<table class=\"\">",

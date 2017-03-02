@@ -78,35 +78,43 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             '@context': 'https://schema.org/',
             'nunja_model_id': 'fsnav',
             'nunja_model_config': {},
-            'css_class': {},
+            'meta': {
+                'css_class': {},
+            },
         })
-        value = {'css_class': {'test': 'class'}}
+        value = {'meta': {'css_class': {'test': 'class'}}}
         self.assertEqual(model.finalize(value), {
             '@context': 'https://schema.org/',
             'nunja_model_id': 'fsnav',
             'nunja_model_config': {},
-            'css_class': {'test': 'class'},
+            'meta': {
+                'css_class': {'test': 'class'},
+            },
         })
 
         # apply the class directly to the model
         model.css_class = {'table': 'some-table'}
-        value = {'css_class': {'test': 'class'}}
+        value = {'meta': {'css_class': {'test': 'class'}}}
         self.assertEqual(model.finalize(value), {
             '@context': 'https://schema.org/',
             'nunja_model_id': 'fsnav',
             'nunja_model_config': {},
-            'css_class': {'test': 'class', 'table': 'some-table'},
+            'meta': {
+                'css_class': {'test': 'class', 'table': 'some-table'},
+            },
         })
 
         # apply the class directly to the model
         model.css_class = {'table': 'some-table'}
         # the provided value has priority
-        value = {'css_class': {'table': 'provided'}}
+        value = {'meta': {'css_class': {'table': 'provided'}}}
         self.assertEqual(model.finalize(value), {
             '@context': 'https://schema.org/',
             'nunja_model_id': 'fsnav',
             'nunja_model_config': {},
-            'css_class': {'table': 'provided'},
+            'meta': {
+                'css_class': {'table': 'provided'},
+            },
         })
 
     def test_finalize_config(self):
@@ -117,29 +125,35 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             '@context': 'https://schema.org/',
             'nunja_model_id': 'static',
             'nunja_model_config': {"key1": "value1"},
-            'css_class': {},
+            'meta': {
+                'css_class': {},
+            },
         })
 
         value = {
             'nunja_model_id': 'replaced',
             'nunja_model_config': {'key2': 'value2'},
-            'css_class': {'test': 'class'},
+            'meta': {
+                'css_class': {'test': 'class'},
+            },
         }
         finalized = model.finalize(value)
         self.assertEqual(finalized['nunja_model_id'], 'static')
-        self.assertEqual(finalized['css_class'], {'test': 'class'})
+        self.assertEqual(finalized['meta']['css_class'], {'test': 'class'})
         self.assertEqual(finalized['nunja_model_config'], {
             "key1": "value1", "key2": "value2"})
 
         value = {
-            'css_class': {'test': 'class'},
+            'meta': {'css_class': {'test': 'class'}},
             'nunja_model_config': {'key1': 'alternative'},
         }
         self.assertEqual(model.finalize(value), {
             '@context': 'https://schema.org/',
             'nunja_model_id': 'static',
             'nunja_model_config': {"key1": "alternative"},
-            'css_class': {'test': 'class'},
+            'meta': {
+                'css_class': {'test': 'class'},
+            },
         })
 
     def test_finalize_value_result(self):
@@ -150,7 +164,9 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             '@context': 'https://schema.org/',
             'nunja_model_id': 'static',
             'nunja_model_config': {},
-            'css_class': {},
+            'meta': {
+                'css_class': {},
+            },
             'result': {},
         })
 
@@ -159,8 +175,10 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             '@context': 'https://example.com/custom/',
             'nunja_model_id': 'static',
             'nunja_model_config': {},
-            'css_class': {},
             'result': {},
+            'meta': {
+                'css_class': {},
+            },
         })
 
         value = {'result': {'data_href': '/json.py?/somewhere'}}
@@ -170,9 +188,11 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             'nunja_model_config': {
                 'data_href': '/json.py?/somewhere',
             },
-            'css_class': {},
             'result': {
                 'data_href': '/json.py?/somewhere',
+            },
+            'meta': {
+                'css_class': {},
             },
         })
 

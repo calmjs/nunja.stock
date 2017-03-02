@@ -194,12 +194,15 @@ class Base(object):
         if 'data_href' in obj.get('result', {}):
             config['data_href'] = obj['result']['data_href']
 
-        obj['nunja_model_id'] = self.nunja_model_id
+        meta = obj.get('meta', {})
         css_class = {}
         css_class.update(self.css_class)
-        css_class.update(obj.get('css_class', {}))
-        obj['css_class'] = css_class
+        css_class.update(meta.get('css_class', {}))
+        meta['css_class'] = css_class
+
+        obj['meta'] = meta
         obj['nunja_model_config'] = config
+        obj['nunja_model_id'] = self.nunja_model_id
         obj['@context'] = obj.get('@context', self.context)
         return obj
 
