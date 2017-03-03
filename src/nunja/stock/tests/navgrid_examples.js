@@ -63,7 +63,9 @@ var exports = {
     "standard rendering":
     [{
         "@context": "https://schema.org/",
-        "nunja_model_config": {},
+        "nunja_model_config": {
+            "mold_id": "nunja.stock.molds/navgrid"
+        },
         "nunja_model_id": "fsnav",
         "result": {
             "@id": "dummydir2",
@@ -148,6 +150,7 @@ var exports = {
         "@context": "https://schema.org/",
         "nunja_model_config": {
             "data_href": "/json.py?/dummydir2/",
+            "mold_id": "nunja.stock.molds/navgrid"
         },
         "nunja_model_id": "fsnav",
         "result": {

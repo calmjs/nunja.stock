@@ -180,6 +180,9 @@ class Base(object):
             k: v for k, v in zip(fsnav_keys, fsnav_keys_value)
             if k in self.active_keys
         }
+        result['nunja_model_config'] = {
+            'mold_id': 'nunja.stock.molds/navgrid',
+        }
         return result
 
     def _get_struct_file(self, fs_path):

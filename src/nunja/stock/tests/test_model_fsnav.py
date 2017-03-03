@@ -400,6 +400,9 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             }
         )
         self.assertEqual(len(result['result']['itemListElement']), 1)
+        self.assertEqual(result['nunja_model_config'], {
+            'mold_id': 'nunja.stock.molds/navgrid',
+        })
 
         result = model._get_struct_dir(self.dummydir2)
         self.assertEqual(_dict_clone_filtered(result['result'], [
@@ -420,6 +423,9 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'active_keys': ['alternativeType', 'name', 'size', 'created'],
             }
         )
+        self.assertEqual(result['nunja_model_config'], {
+            'mold_id': 'nunja.stock.molds/navgrid',
+        })
         self.assertEqual(len(result['result']['itemListElement']), 4)
 
     def test_path_to_fs_path(self):

@@ -16,9 +16,6 @@ nav = fsnav.Base(
     css_class={
         'table': 'pure-table',
     },
-    config={
-        'mold_id': 'nunja.stock.molds/navgrid',
-    },
 )
 
 target = environ.get('QUERY_STRING') or '/'
