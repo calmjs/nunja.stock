@@ -166,7 +166,7 @@ class Base(object):
         items = sorted(
             [dict(self._get_attrs(join(fs_path, n))) for n in self.listdir(
                 fs_path)],
-            key=lambda x: (x['@type'] != 'folder', x['@id']),
+            key=lambda x: (x['alternativeType'] != 'folder', x['@id']),
         )
 
         result = {'result': dict(self._get_attrs(fs_path))}
