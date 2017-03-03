@@ -128,25 +128,22 @@ class Base(object):
         f_type = to_filetype(attr.st_mode)
         ld_type = 'ItemList' if f_type == 'folder' else 'CreativeWork'
 
-        base = {
-            '@id': basename(fs_path),
-            '@type': ld_type,
-            'href': self._fs_path_format_uri(fs_path),
-        }
+        result = [
+            ('@id', basename(fs_path)),
+            ('@type', ld_type),
+            ('href', self._fs_path_format_uri(fs_path)),
+        ]
 
         if self.uri_template_json:
-            if f_type == 'folder':
-                # only hook this up for folders.
-                base['data_href'] = self._fs_path_format_uri(
-                    fs_path, self.uri_template_json)
+            result.append(('data_href', self._fs_path_format_uri(
+                fs_path, self.uri_template_json)))
 
-        result = {k: v for k, v in (
+        result.extend([(k, v) for k, v in [
             ('alternativeType', f_type),
             ('name', basename(fs_path)),
             ('size', 0 if f_type == 'folder' else attr.st_size),
             ('created', attr.st_ctime),
-        ) if k in self.active_keys}
-        result.update(base)
+        ] if k in self.active_keys])
         return result
 
     def listdir(self, path):
@@ -167,11 +164,12 @@ class Base(object):
 
     def _get_struct_dir(self, fs_path):
         items = sorted(
-            [self._get_attrs(join(fs_path, n)) for n in self.listdir(fs_path)],
+            [dict(self._get_attrs(join(fs_path, n))) for n in self.listdir(
+                fs_path)],
             key=lambda x: (x['@type'] != 'folder', x['@id']),
         )
 
-        result = self._get_struct_file(fs_path)
+        result = {'result': dict(self._get_attrs(fs_path))}
         result['result']['itemListElement'] = items
 
         # other metadata
@@ -186,8 +184,25 @@ class Base(object):
         return result
 
     def _get_struct_file(self, fs_path):
-        result = self._get_attrs(fs_path)
-        return {'result': result}
+        result = dict(self._get_attrs(fs_path))
+
+        result['rows'], result['rownames'] = [], []
+        for key, value in self._get_attrs(fs_path):
+            if key not in self.active_keys:
+                continue
+            result['rownames'].append(key)
+            result['rows'].append([value])
+
+        # This result is bad form as it is redundant as we are trying to
+        # fit the data into the mold, rather the other way around where
+        # a mold is provided for the data.  Must consider it from the
+        # perspective of actual webservice consumers.
+        return {
+            'result': result,
+            'nunja_model_config': {
+                'mold_id': 'nunja.stock.molds/grid',
+            },
+        }
 
     def finalize(self, obj):
         config = {}

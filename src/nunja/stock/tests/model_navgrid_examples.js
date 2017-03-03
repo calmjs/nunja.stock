@@ -3,63 +3,6 @@
 /* eslint max-len: "off" */
 
 var exports = {
-    "null rendering":
-    [{
-        "@context": "https://schema.org/",
-        "nunja_model_config": {},
-        "nunja_model_id": "fsnav",
-        "result": {
-            "@type": "ItemList",
-            "itemListElement": [],
-            "key_label_map": {},
-            "active_keys": []
-        },
-        "meta": {
-            "css_class": {},
-        }
-    }, [
-        "<div data-nunja=\"nunja.stock.molds/navgrid\">",
-        "<table class=\"\">",
-        "  <thead>",
-        "    <tr class=\"\">",
-        "    </tr>",
-        "  </thead>",
-        "  <tbody>",
-        "  </tbody>",
-        "</table>",
-        "</div>",
-    ]],
-
-    "null rendering with css":
-    [{
-        "@context": "https://schema.org/",
-        "nunja_model_config": {},
-        "nunja_model_id": "fsnav",
-        "result": {
-            "@type": "ItemList",
-            "itemListElement": [],
-            "key_label_map": {},
-            "active_keys": []
-        },
-        "meta": {
-            "css_class": {
-                "table": "testclass",
-                "table.thead.tr": "header"
-            }
-        }
-    }, [
-        "<div data-nunja=\"nunja.stock.molds/navgrid\">",
-        "<table class=\"testclass\">",
-        "  <thead>",
-        "    <tr class=\"header\">",
-        "    </tr>",
-        "  </thead>",
-        "  <tbody>",
-        "  </tbody>",
-        "</table>",
-        "</div>",
-    ]],
-
     "standard dir rendering":
     [{
         "@context": "https://schema.org/",
@@ -123,7 +66,8 @@ var exports = {
             "css_class": {},
         }
     }, [
-        "<div data-nunja=\"nunja.stock.molds/navgrid\">",
+        "<div data-nunja=\"nunja.stock.molds/model\">",
+        "<div id=\"fsnav\" data-config=\"{&quot;mold_id&quot;:&quot;nunja.stock.molds/navgrid&quot;}\">",
         "<table class=\"\">",
         "  <thead>",
         "    <tr class=\"\">",
@@ -142,6 +86,7 @@ var exports = {
         "    </tr>",
         "  </tbody>",
         "</table>",
+        "</div>",
         "</div>"
     ]],
 
@@ -214,7 +159,8 @@ var exports = {
             "css_class": {},
         },
     }, [
-        "<div data-nunja=\"nunja.stock.molds/navgrid\">",
+        "<div data-nunja=\"nunja.stock.molds/model\">",
+        "<div id=\"fsnav\" data-config=\"{&quot;data_href&quot;:&quot;/json.py?/dummydir2/&quot;,&quot;mold_id&quot;:&quot;nunja.stock.molds/navgrid&quot;}\">",
         "<table class=\"\">",
         "  <thead>",
         "    <tr class=\"\">",
@@ -233,6 +179,95 @@ var exports = {
         "    </tr>",
         "  </tbody>",
         "</table>",
+        "</div>",
+        "</div>"
+    ]],
+
+    "standard file rendering":
+    [{
+        "@context": "https://schema.org/",
+        "nunja_model_config": {
+            "mold_id": "nunja.stock.molds/grid"
+        },
+        "nunja_model_id": "fsnav",
+        "result": {
+            "@id": "file1",
+            "@type": "CreativeWork",
+            "alternativeType": "file",
+            "href": "/script.py?/dummydir2/file1",
+            "name": "file1",
+            "size": 13,
+            "rownames": ["alternativeType", "name", "size"],
+            "rows": [["file"], ["file1"], [13]],
+        },
+        "meta": {"css_class": {}}
+    }, [
+        "<div data-nunja=\"nunja.stock.molds/model\">",
+        "<div id=\"fsnav\" data-config=\"{&quot;mold_id&quot;:&quot;nunja.stock.molds/grid&quot;}\">",
+        "<table class=\"\">",
+        "  <thead>",
+        "  </thead>",
+        "  <tbody>",
+        "    <tr class=\"\">",
+        "      <th>alternativeType</th>",
+        "      <td>file</td>",
+        "    </tr>",
+        "    <tr class=\"\">",
+        "      <th>name</th>",
+        "      <td>file1</td>",
+        "    </tr>",
+        "    <tr class=\"\">",
+        "      <th>size</th>",
+        "      <td>13</td>",
+        "    </tr>",
+        "  </tbody>",
+        "</table>",
+        "</div>",
+        "</div>"
+    ]],
+
+    "configured file rendering":
+    [{
+        "@context": "https://schema.org/",
+        "nunja_model_config": {
+            "data_href": "/json.py?/dummydir2/file1",
+            "mold_id": "nunja.stock.molds/grid"
+        },
+        "nunja_model_id": "fsnav",
+        "result": {
+            "@id": "file1",
+            "@type": "CreativeWork",
+            "alternativeType": "file",
+            "href": "/script.py?/dummydir2/file1",
+            "data_href": "/json.py?/dummydir2/file1",
+            "name": "file1",
+            "size": 13,
+            "rownames": ["alternativeType", "name", "size"],
+            "rows": [["file"], ["file1"], [13]],
+        },
+        "meta": {"css_class": {}}
+    }, [
+        "<div data-nunja=\"nunja.stock.molds/model\">",
+        "<div id=\"fsnav\" data-config=\"{&quot;data_href&quot;:&quot;/json.py?/dummydir2/file1&quot;,&quot;mold_id&quot;:&quot;nunja.stock.molds/grid&quot;}\">",
+        "<table class=\"\">",
+        "  <thead>",
+        "  </thead>",
+        "  <tbody>",
+        "    <tr class=\"\">",
+        "      <th>alternativeType</th>",
+        "      <td>file</td>",
+        "    </tr>",
+        "    <tr class=\"\">",
+        "      <th>name</th>",
+        "      <td>file1</td>",
+        "    </tr>",
+        "    <tr class=\"\">",
+        "      <th>size</th>",
+        "      <td>13</td>",
+        "    </tr>",
+        "  </tbody>",
+        "</table>",
+        "</div>",
         "</div>"
     ]],
 

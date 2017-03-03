@@ -13,8 +13,9 @@ from calmjs.rjs.ecma import parse
 from calmjs.testing.utils import mkdtemp
 
 
-def _dict_clone_filtered(d, filtered=['created']):
-    return {k: v for k, v in d.items() if k not in filtered}
+def _dict_clone_filtered(value, filtered=['created']):
+    items = value.items() if isinstance(value, dict) else value
+    return {k: v for k, v in items if k not in filtered}
 
 
 class MiscTestCase(unittest.TestCase):
@@ -298,6 +299,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@id': 'test_file.txt',
                 'name': 'test_file.txt',
                 'href': '/script.py?/test_file.txt',
+                'data_href': '/json.py/test_file.txt',
             }
         )
 
@@ -322,6 +324,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@id': 'file1',
                 'name': 'file1',
                 'href': '/script.py?/dummydir2/file1',
+                'data_href': '/json.py/dummydir2/file1',
             }
         )
 
@@ -349,7 +352,9 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         )
 
     def test_get_struct_file(self):
-        model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
+        model = fsnav.Base(
+            'fsnav', self.tmpdir, '/script.py?{path}', active_keys=[
+                'alternativeType', 'name', 'size'])
 
         self.assertEqual(
             _dict_clone_filtered(model._get_struct_file(self.test_file)[
@@ -360,7 +365,9 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'size': 22,
                 '@id': 'test_file.txt',
                 'name': 'test_file.txt',
-                'href': '/script.py?/test_file.txt'
+                'href': '/script.py?/test_file.txt',
+                'rownames': ['alternativeType', 'name', 'size'],
+                'rows': [['file'], ['test_file.txt'], [22]],
             }
         )
 
@@ -373,7 +380,9 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'size': 13,
                 '@id': 'file1',
                 'name': 'file1',
-                'href': '/script.py?/dummydir2/file1'
+                'href': '/script.py?/dummydir2/file1',
+                'rownames': ['alternativeType', 'name', 'size'],
+                'rows': [['file'], ['file1'], [13]],
             }
         )
 
@@ -453,10 +462,13 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         errored = model.get_struct('/readme.txt')
         self.assertEqual(errored['error'], 'path "/readme.txt" not found')
 
-    def test_get_struct_success(self):
+    def test_get_struct_file_success(self):
         model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
         results = model.get_struct('/test_file.txt')
         self.assertEqual(results['result']['size'], 22)
+
+    def test_get_struct_dir_success(self):
+        model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
         results = model.get_struct('/dummydir2')
         self.assertEqual(len(results['result']['itemListElement']), 4)
 
@@ -465,7 +477,7 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
 
     def setUp(self):
         with open(resource_filename(
-                'nunja.stock.tests', 'navgrid_examples.js')) as fd:
+                'nunja.stock.tests', 'model_navgrid_examples.js')) as fd:
             self.data = json.loads(parse(fd.read()).children()[0].children(
                 )[0].initializer.to_ecma())
 
@@ -482,7 +494,7 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
         with open(self.dummydirfile2, 'w') as fd:
             fd.write('dummydirfile2')
 
-    def test_get_struct_success_limited_columns_no_data(self):
+    def test_get_struct_dir_success_limited_columns_no_data(self):
         model = fsnav.Base(
             'fsnav',
             self.tmpdir, '/script.py?{path}', active_keys=[
@@ -491,9 +503,9 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
         )
         self.maxDiff = None
         results = model.get_struct('/dummydir2')
-        self.assertEqual(results, self.data['standard rendering'][0])
+        self.assertEqual(results, self.data['standard dir rendering'][0])
 
-    def test_get_struct_success_limited_columns_with_data(self):
+    def test_get_struct_dir_success_limited_columns_with_data(self):
         model = fsnav.Base(
             'fsnav',
             self.tmpdir, '/script.py?{path}',
@@ -504,4 +516,28 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
         )
         self.maxDiff = None
         results = model.get_struct('/dummydir2')
-        self.assertEqual(results, self.data['configured rendering'][0])
+        self.assertEqual(results, self.data['configured dir rendering'][0])
+
+    def test_get_struct_file_success_limited_columns_no_data(self):
+        model = fsnav.Base(
+            'fsnav',
+            self.tmpdir, '/script.py?{path}', active_keys=[
+                'name', 'alternativeType', 'size',
+            ]
+        )
+        self.maxDiff = None
+        results = model.get_struct('/dummydir2/file1')
+        self.assertEqual(results, self.data['standard file rendering'][0])
+
+    def test_get_struct_file_success_limited_columns_with_data(self):
+        model = fsnav.Base(
+            'fsnav',
+            self.tmpdir, '/script.py?{path}',
+            uri_template_json='/json.py?{path}',
+            active_keys=[
+                'name', 'alternativeType', 'size',
+            ]
+        )
+        self.maxDiff = None
+        results = model.get_struct('/dummydir2/file1')
+        self.assertEqual(results, self.data['configured file rendering'][0])

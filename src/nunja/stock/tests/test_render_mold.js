@@ -24,3 +24,10 @@ loader.generate_test(
     'nunja.stock.molds/model',
     'nunja/stock/tests/model_examples'
 );
+
+
+loader.generate_test(
+    'nunja.stock.molds/model navgrid rendering from JSON module',
+    'nunja.stock.molds/model',
+    'nunja/stock/tests/model_navgrid_examples'
+);

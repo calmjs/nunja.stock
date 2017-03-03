@@ -24,3 +24,11 @@ ModelRenderTestCase = generate_test(
     test_module_ns='nunja.stock.tests',
     data_module='model_examples',
 )
+
+
+ModelNavGridRenderTestCase = generate_test(
+    name='ModelNavGridRenderTestCase',
+    mold_id='nunja.stock.molds/model',
+    test_module_ns='nunja.stock.tests',
+    data_module='model_navgrid_examples',
+)
