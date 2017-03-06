@@ -67,11 +67,16 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         model = fsnav.Base(
             'fsnav', self.tmpdir, '/script.py?{path}', active_keys=['size'])
         self.assertEqual(len(model.active_keys), 1)
+        self.assertIsNone(model.anchor_key)
 
         model = fsnav.Base(
             'fsnav', self.tmpdir, '/script.py?{path}', css_class={
                 'table': 'tbl main'})
         self.assertEqual(model.css_class, {'table': 'tbl main'})
+
+        model = fsnav.Base(
+            'fsnav', self.tmpdir, '/script.py?{path}', anchor_key='name')
+        self.assertEqual(model.anchor_key, 'name')
 
     def test_finalize(self):
         model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
@@ -387,7 +392,8 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         )
 
     def test_get_struct_dir(self):
-        model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
+        model = fsnav.Base(
+            'fsnav', self.tmpdir, '/script.py?{path}', anchor_key='name')
 
         result = model._get_struct_dir(self.dummydir1)
         self.assertEqual(_dict_clone_filtered(result['result'], [
@@ -406,6 +412,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                     'size': 'size',
                 },
                 'active_keys': ['alternativeType', 'name', 'size', 'created'],
+                'anchor_key': 'name',
             }
         )
         self.assertEqual(len(result['result']['itemListElement']), 1)
@@ -430,6 +437,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                     'size': 'size',
                 },
                 'active_keys': ['alternativeType', 'name', 'size', 'created'],
+                'anchor_key': 'name',
             }
         )
         self.assertEqual(result['nunja_model_config'], {

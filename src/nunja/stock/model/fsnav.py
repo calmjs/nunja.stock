@@ -53,6 +53,7 @@ class Base(object):
             self, nunja_model_id, root, uri_template,
             uri_template_json=None,
             active_keys=None,
+            anchor_key=None,
             css_class=None,
             config=None,
             context='https://schema.org/',
@@ -80,6 +81,8 @@ class Base(object):
             Defaults to uri_template if left as unassigned.
         active_keys
             The keys that are active.
+        anchor_key
+            The column to render the anchor.
         css_class
             CSS classes assignment
         config
@@ -99,6 +102,8 @@ class Base(object):
             # the specified keys have an order priority
             self.active_keys = [c for c in active_keys if c in fsnav_keys]
 
+        # TODO restrict it to available active_keys
+        self.anchor_key = anchor_key
         self.css_class = css_class if css_class else {}
 
         self.config = {}
@@ -174,6 +179,9 @@ class Base(object):
 
         # other metadata
         result['result']['active_keys'] = self.active_keys
+        if self.anchor_key:
+            result['result']['anchor_key'] = self.anchor_key
+
         result['result']['key_label_map'] = {
             k: v for k, v in zip(fsnav_keys, fsnav_keys_value)
             if k in self.active_keys

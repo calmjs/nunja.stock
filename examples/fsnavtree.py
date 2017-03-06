@@ -13,6 +13,7 @@ nav = fsnav.Base(
     getcwd(),
     basename(__file__) + '?{path}',
     uri_template_json=basename(__file__) + '?{path}',
+    anchor_key='name',
     css_class={
         'table': 'pure-table',
     },
