@@ -1,24 +1,12 @@
 define([
     'nunja/core',
-    'nunja/utils'
-], function(core, utils) {
+    'nunja/utils',
+    'nunja/stock/history',
+], function(core, utils, history) {
     'use strict';
 
     var $ = utils.$;
     var addEventListeners = utils.addEventListeners;
-
-    var modify_state = function(method, obj, title, url) {
-        var k;
-        var state = {};
-        // XXX assume window.history.state is already an object
-        for (k in window.history.state) {
-            state[k] = window.history.state[k];
-        }
-        for (k in obj) {
-            state[k] = obj[k];
-        }
-        window.history[method](state, title, url || null);
-    };
 
     var Model = function(root, selector) {
         /*
@@ -30,9 +18,6 @@ define([
         this.selector = selector || 'div';
 
         this.root = root;
-
-        this.has_push_state = (
-            window.history && window.history.pushState) instanceof Function;
 
         /*
         data-href is _required_ for this element simply because that is
@@ -63,7 +48,7 @@ define([
             this.data_href = this.config['data_href'];
         }
 
-        if (this.has_push_state) {
+        if (history.has_push_state) {
             window.addEventListener('popstate', function(ev) {
                 if ((ev.state instanceof Object) && (self._id in ev.state)) {
                     var data_uri = ev.state[self._id].data_href;
@@ -121,21 +106,7 @@ define([
 
     Model.prototype.json_nav = function(ev) {
         var self = this;
-        // XXX could be a common function provided by nunja or similar
-        // library for initializing the initial state
-        if (self.has_push_state) {
-            // dump in a new state to manipulate with if one has not
-            // already been created
-            if (window.history.state === null) {
-                window.history.replaceState({}, document.title);
-            }
-            // sanity check - a standard object can be worked with.
-            else if (!(window.history.state instanceof Object)) {
-                console.warn(
-                    'window.history.state was not an object; fixing...');
-                window.history.replaceState({}, document.title);
-            }
-        }
+        history.initialize();
 
         // XXX this block too should be a separate common function
         if (!(self._id in window.history.state)) {
@@ -147,7 +118,7 @@ define([
                 // XXX seems a bit redundant?
                 'model': self._id,
             };
-            modify_state('replaceState', state, document.title);
+            history.modify_state('replaceState', state, document.title);
         }
 
         var href = ev.target.attributes.getNamedItem('href').value;
@@ -156,7 +127,7 @@ define([
         var _do_push = function(self, data_uri) {
             // XXX like previous, figure out how to factor the pushState
             // things into a standalone cohesive unit
-            if (self.has_push_state) {
+            if (history.has_push_state) {
                 // take the current state, then push it in
                 var state = {};
                 state[self._id] = {
@@ -164,7 +135,7 @@ define([
                     // XXX seems a bit redundant?
                     'model': self._id,
                 };
-                modify_state('pushState', state, document.title, href);
+                history.modify_state('pushState', state, document.title, href);
             }
         };
 

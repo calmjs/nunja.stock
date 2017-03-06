@@ -55,6 +55,9 @@ setup(
     },
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
     entry_points={
+        'calmjs.module': [
+            'nunja.stock = nunja.stock',
+        ],
         'calmjs.module.tests': [
             'nunja.stock.tests = nunja.stock.tests',
         ],
