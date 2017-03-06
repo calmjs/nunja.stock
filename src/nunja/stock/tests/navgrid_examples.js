@@ -236,6 +236,112 @@ var exports = {
         "</div>"
     ]],
 
+    "anchor_key":
+    [{
+        "@context": "https://schema.org/",
+        "nunja_model_config": {
+            "mold_id": "nunja.stock.molds/navgrid"
+        },
+        "nunja_model_id": "fsnav",
+        "result": {
+            "@id": "dummydir2",
+            "@type": "ItemList",
+            "name": "dummydir2",
+            "href": "/script.py?/dummydir2/",
+            "size": 0,
+            "alternativeType": "folder",
+            "itemListElement": [
+                {
+                    "@id": "..",
+                    "href": "/script.py?/",
+                    "data_href": "/json.py?/",
+                    "name": "..",
+                    "size": 0,
+                    "alternativeType": "folder",
+                    "@type": "ItemList"
+                },
+            ],
+            "key_label_map": {
+                "name": "name",
+                "size": "size",
+                "alternativeType": "type"
+            },
+            "anchor_key": "size",
+            "active_keys": [
+                "name",
+                "alternativeType",
+                "size"
+            ]
+        },
+        "meta": {
+            "css_class": {},
+        }
+    }, [
+        "<div data-nunja=\"nunja.stock.molds/navgrid\">",
+        "<table class=\"\">",
+        "  <thead>",
+        "    <tr class=\"\">",
+        "    <td>name</td><td>type</td><td>size</td>",
+        "    </tr>",
+        "  </thead>",
+        "  <tbody>",
+        "    <tr class=\"\">",
+        "      <td>..</td><td>folder</td><td><a href=\"/script.py?/\" data-href=\"/json.py?/\">0</a></td>",
+        "    </tr>",
+        "  </tbody>",
+        "</table>",
+        "</div>"
+    ]],
+
+    "empty active_keys":
+    [{
+        "@context": "https://schema.org/",
+        "nunja_model_config": {
+            "mold_id": "nunja.stock.molds/navgrid"
+        },
+        "nunja_model_id": "fsnav",
+        "result": {
+            "@id": "dummydir2",
+            "@type": "ItemList",
+            "name": "dummydir2",
+            "href": "/script.py?/dummydir2/",
+            "size": 0,
+            "alternativeType": "folder",
+            "itemListElement": [
+                {
+                    "@id": "..",
+                    "href": "/script.py?/",
+                    "name": "..",
+                    "size": 0,
+                    "alternativeType": "folder",
+                    "@type": "ItemList"
+                },
+            ],
+            "key_label_map": {
+                "name": "name",
+                "size": "size",
+                "alternativeType": "type"
+            },
+            "active_keys": []
+        },
+        "meta": {
+            "css_class": {},
+        }
+    }, [
+        "<div data-nunja=\"nunja.stock.molds/navgrid\">",
+        "<table class=\"\">",
+        "  <thead>",
+        "    <tr class=\"\">",
+        "    </tr>",
+        "  </thead>",
+        "  <tbody>",
+        "    <tr class=\"\">",
+        "    </tr>",
+        "  </tbody>",
+        "</table>",
+        "</div>"
+    ]],
+
 };
 
 // requirejs export shim
