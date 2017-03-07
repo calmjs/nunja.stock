@@ -47,6 +47,7 @@ setup(
     package_json=package_json,
     install_requires=[
         'nunja',
+        'uritemplate',
     ],
     extras_require={
         'dev': [
