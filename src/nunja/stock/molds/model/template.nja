@@ -5,5 +5,5 @@
 {% set mold_macro = "nunja.stock.molds/model/macro.nja" %}
 {% endif %}
 {% from mold_macro import main %}
-{{ main(result=result, meta=meta | default({})) }}
+{{ main(mainEntity=mainEntity, meta=meta | default({})) }}
 </div>

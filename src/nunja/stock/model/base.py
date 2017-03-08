@@ -87,8 +87,8 @@ class Base(object):
         # end point.  Must make decision on how to address this, either
         # keep and refactor out to external method, or figure out the
         # proper ontological term to represent this within the system.
-        if 'data_href' in obj.get('result', {}):
-            config['data_href'] = obj['result']['data_href']
+        if 'data_href' in obj.get('mainEntity', {}):
+            config['data_href'] = obj['mainEntity']['data_href']
 
         meta = obj.get('meta', {})
         css_class = clone_dict(self.definition.css_class)

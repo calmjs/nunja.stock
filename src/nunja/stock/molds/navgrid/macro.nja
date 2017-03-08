@@ -26,11 +26,11 @@
 </table>
 {% endmacro -%}
 
-{%- macro main(result, meta={}) %}
-{%- set itemListElement = result.itemListElement or [] %}
-{%- set key_label_map = result.key_label_map or [] %}
-{%- set active_keys = result.active_keys or [] %}
-{%- set anchor_key = result.anchor_key or (
+{%- macro main(mainEntity, meta={}) %}
+{%- set itemListElement = mainEntity.itemListElement or [] %}
+{%- set key_label_map = mainEntity.key_label_map or [] %}
+{%- set active_keys = mainEntity.active_keys or [] %}
+{%- set anchor_key = mainEntity.anchor_key or (
     active_keys|length and active_keys[0]) %}
 {%- set css_class = meta.css_class or {} %}
 {{ render(itemListElement, key_label_map, active_keys, anchor_key, css_class) }}

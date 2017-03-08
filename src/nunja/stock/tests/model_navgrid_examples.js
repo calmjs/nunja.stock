@@ -10,7 +10,7 @@ var exports = {
             "mold_id": "nunja.stock.molds/navgrid"
         },
         "nunja_model_id": "fsnav",
-        "result": {
+        "mainEntity": {
             "@id": "dummydir2",
             "@type": "ItemList",
             "name": "dummydir2",
@@ -98,7 +98,7 @@ var exports = {
             "mold_id": "nunja.stock.molds/navgrid"
         },
         "nunja_model_id": "fsnav",
-        "result": {
+        "mainEntity": {
             "@id": "dummydir2",
             "@type": "ItemList",
             "href": "/script.py?/dummydir2/",
@@ -190,7 +190,7 @@ var exports = {
             "mold_id": "nunja.stock.molds/grid"
         },
         "nunja_model_id": "fsnav",
-        "result": {
+        "mainEntity": {
             "@id": "file1",
             "@type": "CreativeWork",
             "alternativeType": "file",
@@ -234,7 +234,7 @@ var exports = {
             "mold_id": "nunja.stock.molds/grid"
         },
         "nunja_model_id": "fsnav",
-        "result": {
+        "mainEntity": {
             "@id": "file1",
             "@type": "CreativeWork",
             "alternativeType": "file",

@@ -174,15 +174,15 @@ class Base(object):
             key=lambda x: (x['alternativeType'] != 'folder', x['@id']),
         )
 
-        result = {'result': dict(self._get_attrs(fs_path))}
-        result['result']['itemListElement'] = items
+        result = {'mainEntity': dict(self._get_attrs(fs_path))}
+        result['mainEntity']['itemListElement'] = items
 
         # other metadata
-        result['result']['active_keys'] = self.active_keys
+        result['mainEntity']['active_keys'] = self.active_keys
         if self.anchor_key:
-            result['result']['anchor_key'] = self.anchor_key
+            result['mainEntity']['anchor_key'] = self.anchor_key
 
-        result['result']['key_label_map'] = {
+        result['mainEntity']['key_label_map'] = {
             k: v for k, v in zip(fsnav_keys, fsnav_keys_value)
             if k in self.active_keys
         }
@@ -206,7 +206,7 @@ class Base(object):
         # a mold is provided for the data.  Must consider it from the
         # perspective of actual webservice consumers.
         return {
-            'result': result,
+            'mainEntity': result,
             'nunja_model_config': {
                 'mold_id': 'nunja.stock.molds/grid',
             },
@@ -217,8 +217,8 @@ class Base(object):
         config.update(self.config)
         config.update(obj.get('nunja_model_config', {}))
 
-        if 'data_href' in obj.get('result', {}):
-            config['data_href'] = obj['result']['data_href']
+        if 'data_href' in obj.get('mainEntity', {}):
+            config['data_href'] = obj['mainEntity']['data_href']
 
         meta = obj.get('meta', {})
         css_class = {}

@@ -8,7 +8,7 @@ var exports = {
             "data_href": "/script.py?/",
             "mold_id": "nunja.stock.molds/navgrid"
         },
-        "result": {
+        "mainEntity": {
             "@id": "/",
             "href": "/script.py?/",
             "data_href": "/script.py?/",
@@ -72,7 +72,7 @@ var exports = {
             "data_href": "/script.py?/dir/",
             "mold_id": "nunja.stock.molds/navgrid"
         },
-        "result": {
+        "mainEntity": {
             "@id": "dir",
             "href": "/script.py?/dir/",
             "name": "dir",

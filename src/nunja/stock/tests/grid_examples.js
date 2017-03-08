@@ -4,7 +4,7 @@
 
 var exports = {
     "null rendering":
-    [{"result": {
+    [{"mainEntity": {
         "colnames": [],
         "rownames": [],
         "rows": [],
@@ -20,7 +20,7 @@ var exports = {
     ]],
 
     "column rendering":
-    [{"result": {
+    [{"mainEntity": {
         "colnames": ["Jan", "Feb", "Mar", "Apr", "May"],
         "rownames": [],
         "rows": [["31", "28", "31", "30", "31"]]
@@ -46,7 +46,7 @@ var exports = {
     ]],
 
     "column rendering with header row":
-    [{"result": {
+    [{"mainEntity": {
         "colnames": ["Jan", "Feb", "Mar", "Apr", "May"],
         "rownames": ["Days"],
         "rows": [["31", "28", "31", "30", "31"]]
@@ -73,7 +73,7 @@ var exports = {
     ]],
 
     "row rendering":
-    [{"result": {
+    [{"mainEntity": {
         "colnames": [],
         "rownames": ["Jan", "Feb", "Mar", "Apr", "May"],
         "rows": [["31"], ["28"], ["31"], ["30"], ["31"]]
@@ -109,7 +109,7 @@ var exports = {
     ]],
 
     "row rendering with header row with first header cell":
-    [{"result": {
+    [{"mainEntity": {
         "first_header_cell": "Month",
         "colnames": ["Days"],
         "rownames": ["Jan", "Feb", "Mar", "Apr", "May"],
@@ -149,7 +149,7 @@ var exports = {
     ]],
 
     "incomplete row names":
-    [{"result": {
+    [{"mainEntity": {
         "colnames": ["Days"],
         "rownames": ["Jan", "Feb"],
         "rows": [["31"], ["28"], ["31"], ["30"], ["31"]]
@@ -188,7 +188,7 @@ var exports = {
     ]],
 
     "multi row/col":
-    [{"result": {
+    [{"mainEntity": {
         "first_header_cell": "x",
         "colnames": ["1", "2", "3"],
         "rownames": ["1", "2", "3"],
@@ -226,7 +226,7 @@ var exports = {
     ]],
 
     "multi row/col with meta css":
-    [{"result": {
+    [{"mainEntity": {
         "first_header_cell": "x",
         "colnames": ["1", "2", "3"],
         "rownames": ["1", "2", "3"],

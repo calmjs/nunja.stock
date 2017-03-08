@@ -29,11 +29,11 @@
 </table>
 {% endmacro %}
 
-{% macro main(result, meta={}) %}
-{% set rows = result.rows %}
-{% set colnames = result.colnames or [] %}
-{% set rownames = result.rownames or [] %}
-{% set first_header_cell = result.first_header_cell or "" %}
+{% macro main(mainEntity, meta={}) %}
+{% set rows = mainEntity.rows %}
+{% set colnames = mainEntity.colnames or [] %}
+{% set rownames = mainEntity.rownames or [] %}
+{% set first_header_cell = mainEntity.first_header_cell or "" %}
 {% set css_class = meta.css_class or {} %}
 {{ render(rows, colnames, rownames, first_header_cell, css_class) }}
 {% endmacro %}

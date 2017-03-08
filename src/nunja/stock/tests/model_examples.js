@@ -21,7 +21,7 @@ var exports = {
             "data_href": "/script/somewhere",
             "mold_id": "nunja.stock.molds/grid"
         },
-        "result" : {
+        "mainEntity" : {
             "colnames": [],
             "rownames": ["Jan", "Feb", "Mar", "Apr", "May"],
             "rows": [["31"], ["28"], ["31"], ["30"], ["31"]],
@@ -66,7 +66,7 @@ var exports = {
             "data_href": "/script/somewhere",
             "mold_id": "nunja.stock.molds/grid"
         },
-        "result" : {
+        "mainEntity" : {
             "colnames": [],
             "rownames": ["Jan"],
             "rows": [["31"]]
@@ -101,7 +101,7 @@ var exports = {
             "data_href": "/json.py?/dummydir2/",
             "mold_id": "nunja.stock.molds/navgrid"
         },
-        "result": {
+        "mainEntity": {
             "@id": "dummydir2",
             "@type": "ItemList",
             "href": "/script.py?/dummydir2/",

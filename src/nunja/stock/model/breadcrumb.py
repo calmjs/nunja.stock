@@ -50,7 +50,7 @@ class Simple(Base):
         # defined for this object?
         fragments = self.pattern.findall(urlparse(url).path)
 
-        return {
+        return {"mainEntity": {
             "@type": "BreadcrumbList",
             "itemListElement": [
                 {
@@ -62,7 +62,7 @@ class Simple(Base):
                     fragments, self.start_position)
                 if fragment
             ]
-        }
+        }}
 
     def get_breadcrumb(self, url):
         return self.finalize(self.make_breadcrumb(url))

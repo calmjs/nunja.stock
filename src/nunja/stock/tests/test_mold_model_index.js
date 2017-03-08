@@ -39,7 +39,7 @@ describe('nunja.stock.molds/model test cases', function() {
                 "mold_id": "nunja.stock.molds/navgrid",
                 "error_handler": "nunja.stock.custom/error_handler"
             },
-            "result": {
+            "mainEntity": {
                 "@id": "custom",
                 "href": "custom/",
                 "data_href": "custom/",

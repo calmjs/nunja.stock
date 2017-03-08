@@ -6,7 +6,7 @@ var exports = {
     "null rendering":
     [{
         "@context": "http://schema.org",
-        "result": {
+        "mainEntity": {
             "@type": "BreadcrumbList",
             "itemListElement": []
         }
@@ -15,18 +15,21 @@ var exports = {
     ]],
 
     "root item":
-    [{"@context": "https://schema.org/",
-        "@type": "BreadcrumbList",
+    [{
+        "@context": "https://schema.org/",
         "nunja_model_config": {},
         "nunja_model_id": "model_id",
-        "itemListElement": [{
-            "@type": "ListItem",
-            "position": 1,
-            "item": {
-                "@id": "https://example.com/",
-                "name": "Home",
-            },
-        }],
+        "mainEntity": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                    "@id": "https://example.com/",
+                    "name": "Home",
+                },
+            }]
+        },
         "meta": {"css_class": {}}
     }, [
         ""
@@ -35,31 +38,33 @@ var exports = {
     "two items":
     [{
         "@context": "https://schema.org/",
-        "@type": "BreadcrumbList",
         "nunja_model_config": {},
         "nunja_model_id": "model_id",
-        "itemListElement": [{
-            "@type": "ListItem",
-            "position": 1,
-            "item": {
-                "@id": "https://example.com/",
-                "name": "Home",
-            },
-        }, {
-            "@type": "ListItem",
-            "position": 2,
-            "item": {
-                "@id": "https://example.com/documents/",
-                "name": "documents/",
-            },
-        }, {
-            "@type": "ListItem",
-            "position": 3,
-            "item": {
-                "@id": "https://example.com/documents/item",
-                "name": "item",
-            },
-        }],
+        "mainEntity": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                    "@id": "https://example.com/",
+                    "name": "Home",
+                },
+            }, {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@id": "https://example.com/documents/",
+                    "name": "documents/",
+                },
+            }, {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                    "@id": "https://example.com/documents/item",
+                    "name": "item",
+                },
+            }]
+        },
         "meta": {"css_class": {}},
     }, [
         ""

@@ -71,7 +71,7 @@ class BaseTestCase(unittest.TestCase):
         obj = base.Base(base.Definition(
             'model_id', 'https://example.com/{path}'))
         result = obj.finalize({
-            'result': {'data_href': 'https://example.com/data'},
+            'mainEntity': {'data_href': 'https://example.com/data'},
         })
         self.assertEqual(result, {
             '@context': 'https://schema.org/',
@@ -82,7 +82,7 @@ class BaseTestCase(unittest.TestCase):
             'meta': {
                 'css_class': {},
             },
-            'result': {
+            'mainEntity': {
                 'data_href': 'https://example.com/data',
             },
         })

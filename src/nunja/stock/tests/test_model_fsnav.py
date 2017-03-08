@@ -163,7 +163,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
     def test_finalize_value_result(self):
         model = fsnav.Base('static', self.tmpdir, '/script.py?{path}')
 
-        value = {'result': {}}
+        value = {'mainEntity': {}}
         self.assertEqual(model.finalize(value), {
             '@context': 'https://schema.org/',
             'nunja_model_id': 'static',
@@ -171,28 +171,28 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             'meta': {
                 'css_class': {},
             },
-            'result': {},
+            'mainEntity': {},
         })
 
-        value = {'result': {}, '@context': 'https://example.com/custom/'}
+        value = {'mainEntity': {}, '@context': 'https://example.com/custom/'}
         self.assertEqual(model.finalize(value), {
             '@context': 'https://example.com/custom/',
             'nunja_model_id': 'static',
             'nunja_model_config': {},
-            'result': {},
+            'mainEntity': {},
             'meta': {
                 'css_class': {},
             },
         })
 
-        value = {'result': {'data_href': '/json.py?/somewhere'}}
+        value = {'mainEntity': {'data_href': '/json.py?/somewhere'}}
         self.assertEqual(model.finalize(value), {
             '@context': 'https://schema.org/',
             'nunja_model_id': 'static',
             'nunja_model_config': {
                 'data_href': '/json.py?/somewhere',
             },
-            'result': {
+            'mainEntity': {
                 'data_href': '/json.py?/somewhere',
             },
             'meta': {
@@ -361,7 +361,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
         self.assertEqual(
             _dict_clone_filtered(model._get_struct_file(self.test_file)[
-                'result'
+                'mainEntity'
             ]), {
                 'alternativeType': 'file',
                 '@type': 'CreativeWork',
@@ -376,7 +376,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
         self.assertEqual(
             _dict_clone_filtered(model._get_struct_file(self.dummydirfile1)[
-                'result'
+                'mainEntity'
             ]), {
                 'alternativeType': 'file',
                 '@type': 'CreativeWork',
@@ -394,7 +394,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             'fsnav', self.tmpdir, '/script.py?{path}', anchor_key='name')
 
         result = model._get_struct_dir(self.dummydir1)
-        self.assertEqual(_dict_clone_filtered(result['result'], [
+        self.assertEqual(_dict_clone_filtered(result['mainEntity'], [
                 'created', 'size', 'itemListElement',
             ]), {
                 'alternativeType': 'folder',
@@ -413,13 +413,13 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'anchor_key': 'name',
             }
         )
-        self.assertEqual(len(result['result']['itemListElement']), 1)
+        self.assertEqual(len(result['mainEntity']['itemListElement']), 1)
         self.assertEqual(result['nunja_model_config'], {
             'mold_id': 'nunja.stock.molds/navgrid',
         })
 
         result = model._get_struct_dir(self.dummydir2)
-        self.assertEqual(_dict_clone_filtered(result['result'], [
+        self.assertEqual(_dict_clone_filtered(result['mainEntity'], [
                 'created', 'size', 'itemListElement',
             ]), {
                 'alternativeType': 'folder',
@@ -441,7 +441,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.assertEqual(result['nunja_model_config'], {
             'mold_id': 'nunja.stock.molds/navgrid',
         })
-        self.assertEqual(len(result['result']['itemListElement']), 4)
+        self.assertEqual(len(result['mainEntity']['itemListElement']), 4)
 
     def test_path_to_fs_path(self):
         model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
@@ -471,12 +471,12 @@ class FSNavTreeModelTestCase(unittest.TestCase):
     def test_get_struct_file_success(self):
         model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
         results = model.get_struct('/test_file.txt')
-        self.assertEqual(results['result']['size'], 22)
+        self.assertEqual(results['mainEntity']['size'], 22)
 
     def test_get_struct_dir_success(self):
         model = fsnav.Base('fsnav', self.tmpdir, '/script.py?{path}')
         results = model.get_struct('/dummydir2')
-        self.assertEqual(len(results['result']['itemListElement']), 4)
+        self.assertEqual(len(results['mainEntity']['itemListElement']), 4)
 
 
 class FSNavTreeModelMirrorTestCase(ExamplesTestCase):
