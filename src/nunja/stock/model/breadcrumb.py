@@ -37,7 +37,7 @@ class Simple(Base):
             "name": (
                 self.home
                 if position == self.start_position and fragment == '/' else
-                fragment
+                fragment.strip('/')
             ),
         }
 

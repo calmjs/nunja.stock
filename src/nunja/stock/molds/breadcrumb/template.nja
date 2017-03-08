@@ -1,0 +1,2 @@
+{% from "nunja.stock.molds/breadcrumb/macro.nja" import main %}
+{{ main(mainEntity, meta | default({})) }}

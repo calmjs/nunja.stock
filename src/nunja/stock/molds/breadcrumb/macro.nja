@@ -1,0 +1,13 @@
+{% macro render(itemListElement, css_class={}) %}
+<ol class="{{ css_class['ol'] }}">
+  {%- for item in itemListElement %}
+  <li><a href="{{ item.item['@id'] }}">{{ item.item['name'] }}</a></li>
+  {%- endfor %}
+</ol>
+{% endmacro -%}
+
+{%- macro main(mainEntity, meta={}) %}
+{%- set itemListElement = mainEntity.itemListElement or [] %}
+{%- set css_class = meta.css_class or {} %}
+{{ render(itemListElement, css_class) }}
+{%- endmacro %}

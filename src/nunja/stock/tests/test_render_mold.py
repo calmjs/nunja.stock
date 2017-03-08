@@ -2,6 +2,14 @@
 from nunja.stock.testing.loader import generate_test
 
 
+BreadcrumbRenderTestCase = generate_test(
+    name='BreadcrumbRenderTestCase',
+    mold_id='nunja.stock.molds/breadcrumb',
+    test_module_ns='nunja.stock.tests',
+    data_module='breadcrumb_examples',
+)
+
+
 GridRenderTestCase = generate_test(
     name='GridRenderTestCase',
     mold_id='nunja.stock.molds/grid',
