@@ -50,7 +50,7 @@ else:
         'title': 'Example page',
         'js': [
             '/node_modules/requirejs/require.js',
-            '/nunja.js',
+            '/nunja.stock.js',
             '/nunja/config.js',
             'init.js'
         ],

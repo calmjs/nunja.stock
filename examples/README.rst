@@ -12,9 +12,8 @@ Python module activated.
 .. code:: sh
 
     $ calmjs npm --install -P nunja.stock
-    $ calmjs rjs nunja
+    $ calmjs rjs nunja.stock
     $ python -m nunja.serve.simple.rjs
-
 
 Installing Prerequisites
 ------------------------
@@ -63,20 +62,24 @@ this (``nunja.stock``) package.  It should install ``requirejs``,
 
 Lastly, generate the necessary artifact required for the client-side
 rendering to function, as ``calmjs.rjs`` by default does not support the
-hot-reloading of client-side code for infrastructure libraries, (which
-``nunja`` does support as that is for flexible client-side libraries).
-Build this artifact in a way that only include the infrastructure
-library so that the templates and scripts in development packages can be
-manipulated to see that the hot-reloading works while developing client-
-side libraries.
+hot-reloading of client-side code for infrastructure libraries, which
+the ``nunja`` templating system is structured to support that for
+flexible and ease of development of client-side libraries.  However, in
+order to enable the hot-reloading it requires that the artifact be built
+to only include the infrastructure level code, which can be done like
+so:
 
 .. code:: sh
 
-    (env) $ calmjs rjs nunja --source-registry=calmjs.module
+    (env) $ calmjs rjs nunja.stock --source-registry=calmjs.module
 
 There may be warnings from the ``slimit`` module due the package having
 pregenerated modules that may not match its dependencies that are
 installed (they can be removed so they can be correctly regenerated).
+
+If the command was executed much like the simple introductory method,
+i.e. omitting the ``--source-registry`` flag, all the templates will
+be sourced from the artifact file and thus not as useful.
 
 Now that the ``nunja.js`` is written, try serving that via:
 
