@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 import unittest
-import json
-from pkg_resources import resource_filename
 from os import makedirs
 from os.path import join
 from os.path import pardir
 from os.path import sep
 
 from nunja.stock.model import fsnav
-from calmjs.rjs.ecma import parse
 
 from calmjs.testing.utils import mkdtemp
+from nunja.stock.testing.case import ExamplesTestCase
 
 
 def _dict_clone_filtered(value, filtered=['created']):
@@ -481,14 +479,11 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.assertEqual(len(results['result']['itemListElement']), 4)
 
 
-class FSNavTreeModelMirrorTestCase(unittest.TestCase):
+class FSNavTreeModelMirrorTestCase(ExamplesTestCase):
+
+    test_examples = 'model_navgrid_examples.js'
 
     def setUp(self):
-        with open(resource_filename(
-                'nunja.stock.tests', 'model_navgrid_examples.js')) as fd:
-            self.data = json.loads(parse(fd.read()).children()[0].children(
-                )[0].initializer.to_ecma())
-
         self.tmpdir = mkdtemp(self)
         self.dummydir2 = join(self.tmpdir, 'dummydir2')
         self.dummydir2dir = join(self.tmpdir, 'dummydir2', 'dir')
@@ -509,9 +504,8 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
                 'name', 'alternativeType', 'size',
             ]
         )
-        self.maxDiff = None
         results = model.get_struct('/dummydir2')
-        self.assertEqual(results, self.data['standard dir rendering'][0])
+        self.assertDataEqual('standard dir rendering', results)
 
     def test_get_struct_dir_success_limited_columns_with_data(self):
         model = fsnav.Base(
@@ -522,9 +516,8 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
                 'name', 'alternativeType', 'size',
             ]
         )
-        self.maxDiff = None
         results = model.get_struct('/dummydir2')
-        self.assertEqual(results, self.data['configured dir rendering'][0])
+        self.assertDataEqual('configured dir rendering', results)
 
     def test_get_struct_file_success_limited_columns_no_data(self):
         model = fsnav.Base(
@@ -535,7 +528,7 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
         )
         self.maxDiff = None
         results = model.get_struct('/dummydir2/file1')
-        self.assertEqual(results, self.data['standard file rendering'][0])
+        self.assertDataEqual('standard file rendering', results)
 
     def test_get_struct_file_success_limited_columns_with_data(self):
         model = fsnav.Base(
@@ -548,4 +541,4 @@ class FSNavTreeModelMirrorTestCase(unittest.TestCase):
         )
         self.maxDiff = None
         results = model.get_struct('/dummydir2/file1')
-        self.assertEqual(results, self.data['configured file rendering'][0])
+        self.assertDataEqual('configured file rendering', results)
