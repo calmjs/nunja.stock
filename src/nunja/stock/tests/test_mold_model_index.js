@@ -225,20 +225,85 @@ describe('nunja.stock.molds/model inner model tests', function() {
 
     beforeEach(function() {
         this.clock = sinon.useFakeTimers();
+
+        this.server = sinon.fakeServer.create();
+        this.server.autoRespond = true;
+
+        var self = this;
+
+        for (var key in data) {
+            // form a proper closure via parameters to an anonymous
+            // function so that the inner function can use the right
+            // values.
+            (function(target, datum) {
+                self.server.respondWith('GET', target, function (xhr) {
+                    var s = JSON.stringify(datum);
+                    xhr.respond(200, {'Content-Type': 'application/json'}, s);
+                });
+            }('/script.py?' + key, data[key]));
+        }
+
     });
 
     afterEach(function() {
+        this.server.restore();
         this.clock.restore();
     });
 
-    it('async populate', function(done) {
+    it('inner missing div', function() {
         var module = require('nunja.stock.molds/model/index');
         var div = document.createElement('div');
+        expect(function() {
+            new module.Model(div);
+        }).to.throw(Error, "failed to select child element using 'div'");
+    });
+
+    it('inner div missing id', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var div = document.createElement('div');
+        var child = document.createElement('div');
+        div.appendChild(child);
+        expect(function() {
+            new module.Model(div);
+        }).to.throw(Error, 'child element must have an id attribute');
+    });
+
+    it('inner div bad config', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var div = document.createElement('div');
+        var child = document.createElement('div');
+        child.setAttribute('id', 'demo_object');
+        child.setAttribute('data-config', '}{');
+        div.appendChild(child);
+        var model = new module.Model(div);
+        expect(model._id).to.equal('demo_object');
+        expect(model.config).to.deep.equal({});
+    });
+
+    it('async populate', function(done) {
+        var self = this;
+        var module = require('nunja.stock.molds/model/index');
+        var datum = data['/'];
+
+        var div = document.createElement('div');
         div.setAttribute('data-nunja', 'nunja.stock.molds/model');
+        // emulate the standard rendering.
+        var child = document.createElement('div');
+        child.setAttribute('id', 'demo_object');
+        child.setAttribute('data-config', JSON.stringify({
+            "data_href": datum.nunja_model_config.data_href}));
+        div.appendChild(child);
 
         var model = new module.Model(div);
-        model.populate(data['/'], function() {
+        model.populate(datum, function() {
             expect($('a', div)[0].innerHTML).to.equal('dir');
+            expect(model.data_href).to.equal(
+                datum.nunja_model_config.data_href);
+            $('a', div)[0].click();
+            self.clock.tick(500);
+            expect($('a', div)[1].innerHTML).to.equal('nested');
+            expect(model.data_href).to.equal(
+                data['/dir/'].nunja_model_config.data_href);
             done();
         });
         this.clock.tick(500);

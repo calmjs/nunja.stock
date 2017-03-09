@@ -30,37 +30,33 @@ define([
         this.config = {};
         var child = this.root.querySelector(this.selector);
         if (child === null) {
-            // XXX this should be an error
-            // using surrogate values for now...
-            this._id = Math.random();
-            this.data_href = window.location.toString();
+            throw Error(
+                "failed to select child element using '" +
+                this.selector + "'");
         }
-        else {
-            // XXX none of this is guaranteed to work
-            // TODO write test cases for various cases of missing data
-            // TODO define behavior for missing data.
-            this._id = child.getAttribute('id');
-            try {
-                this.config = JSON.parse(child.getAttribute('data-config'));
-            } catch(e) {
-                // pass
-            }
+
+        this._id = child.getAttribute('id');
+        if (!(this._id)) {
+            throw Error("child element must have an id attribute");
+        }
+
+        this.data_href = null;
+        this.config = {};
+        try {
+            this.config = JSON.parse(child.getAttribute('data-config'));
             this.data_href = this.config['data_href'];
+        } catch(e) {
+            // pass
         }
 
         if (history.has_push_state) {
             window.addEventListener('popstate', function(ev) {
-                if ((ev.state instanceof Object) && (self._id in ev.state)) {
-                    var data_uri = ev.state[self._id].data_href;
-                    // XXX if the data represented is already the same,
-                    // save this step?
-                    self._fetch_populate(data_uri);
-                }
+                self.popstate(ev);
             }, false);
         }
     };
 
-    Model.prototype.get = function(uri, cb, error_module) {
+    Model.prototype.fetch = function(uri, cb, error_module) {
         var xhr = new XMLHttpRequest();
         var self = this;
         xhr.onreadystatechange = function() {
@@ -85,23 +81,38 @@ define([
         xhr.send();
     };
 
+    // model.update should reference this instead?
     Model.prototype._fetch_populate = function(data_uri, cb) {
-        // the callback is really an extra callback
-        var self = this;
+        /*
+        Standard fetch and populate for a given model
+        */
         var config = {};
         try {
-            config = JSON.parse(self.root.querySelector('div').getAttribute(
+            config = JSON.parse(this.root.querySelector('div').getAttribute(
                 'data-config'));
         } catch (e) {
             // pass
         }
-        this.get(data_uri, function(xhr) {
+        var self = this;
+        this.fetch(data_uri, function(xhr) {
+            // the callback is really an extra callback
             if (cb instanceof Function) {
                 cb(self, data_uri);
             }
             var obj = JSON.parse(xhr.responseText);
             self.populate(obj);
+            self.data_href = data_uri;
         }, config.error_handler);
+    };
+
+    Model.prototype.popstate = function(ev) {
+        if ((ev.state instanceof Object) && (this._id in ev.state)) {
+            var data_uri = ev.state[this._id].data_href;
+            if (this.data_href != data_uri) {
+                // only fetch and populate if the data is different.
+                this._fetch_populate(data_uri);
+            }
+        }
     };
 
     Model.prototype.json_nav = function(ev) {
@@ -139,7 +150,7 @@ define([
             }
         };
 
-        self._fetch_populate(data_uri, _do_push);
+        this._fetch_populate(data_uri, _do_push);
         ev.preventDefault();
         return false;
     };
