@@ -13,6 +13,7 @@ from os.path import normpath
 from os.path import sep
 
 from posixpath import normpath as normuri
+from nunja.stock.model import base
 
 
 statmap = (
@@ -47,55 +48,32 @@ def get_filetype(path):
 # first cut, but it needs to be better decoupled so that a more generic
 # navtree model can be provided.
 
-class Base(object):
+class Base(base.Base):
 
     def __init__(
-            self, nunja_model_id, root, uri_template,
-            uri_template_json=None,
+            self, definition, root,
             active_keys=None,
             anchor_key=None,
-            css_class=None,
-            config=None,
-            context='https://schema.org/',
             ):
         """
         Arguments:
 
-        nunja_model_id
-            The id of the element - will be persisted into the template
-            as the id for the container node.
+        definition
+            The core definitions for a nunja model
+
         root
             The root directory; all entries will be generated from below
             this one.
-        uri_template
-            This is the template for all the URIs that will be generated
-            for all the navigational links.  It should follow the
-            convention set forth by RFC 6570.
 
-            see the method ``format_uri`` for details.
-        uri_template_json
-            This is the template for all the URIs that will be generated
-            for all the navigational links for getting to the JSON for
-            that particular record.
-
-            Defaults to uri_template if left as unassigned.
         active_keys
             The keys that are active.
+
         anchor_key
             The column to render the anchor.
-        css_class
-            CSS classes assignment
-        config
-            Optional configuration mapping.
-        context
-            The context for the linked data.
-            Defaults to https://schema.org
         """
 
-        self.nunja_model_id = nunja_model_id
+        super(Base, self).__init__(definition)
         self.root = root
-        self.uri_template = uri_template
-        self.uri_template_json = uri_template_json
         if not active_keys:
             self.active_keys = fsnav_keys
         else:
@@ -104,29 +82,10 @@ class Base(object):
 
         # TODO restrict it to available active_keys
         self.anchor_key = anchor_key
-        self.css_class = css_class if css_class else {}
 
-        self.config = {}
-        if isinstance(config, dict):
-            self.config.update(config)
-        self.context = context
-
-    def format_uri(self, path, template=None):
-        """
-        Subclasses should override this, as the default simply take over
-        the entire query string with the path.
-        """
-
-        if template is None:
-            template = self.uri_template
-        return template.format(path=path)
-
-    def _fs_path_format_uri(self, fs_path, template=None):
-        # the reason for the normpath is that some instances the pardir
-        # might be appended; normalize it for uniformity.
+    def _fs_path_format_path(self, fs_path):
         trail = [''] if isdir(fs_path) else []
-        return self.format_uri('/'.join(
-            normpath(fs_path)[len(self.root):].split(sep) + trail), template)
+        return '/'.join(normpath(fs_path)[len(self.root):].split(sep) + trail)
 
     def _get_attrs(self, fs_path):
         attr = os.stat(fs_path)
@@ -136,12 +95,14 @@ class Base(object):
         result = [
             ('@id', basename(fs_path)),
             ('@type', ld_type),
-            ('href', self._fs_path_format_uri(fs_path)),
+            ('href', self.format_uri(path=self._fs_path_format_path(fs_path))),
         ]
 
-        if self.uri_template_json:
-            result.append(('data_href', self._fs_path_format_uri(
-                fs_path, self.uri_template_json)))
+        # TODO maybe have a better way of doing this via parent class
+        # i.e. accessing definition shouldn't strictly be necessary.
+        if self.definition.uri_template_json:
+            result.append(('data_href', self.format_uri_data_href(
+                path=self._fs_path_format_path(fs_path))))
 
         result.extend([(k, v) for k, v in [
             ('alternativeType', f_type),
@@ -211,26 +172,6 @@ class Base(object):
                 'mold_id': 'nunja.stock.molds/grid',
             },
         }
-
-    def finalize(self, obj):
-        config = {}
-        config.update(self.config)
-        config.update(obj.get('nunja_model_config', {}))
-
-        if 'data_href' in obj.get('mainEntity', {}):
-            config['data_href'] = obj['mainEntity']['data_href']
-
-        meta = obj.get('meta', {})
-        css_class = {}
-        css_class.update(self.css_class)
-        css_class.update(meta.get('css_class', {}))
-        meta['css_class'] = css_class
-
-        obj['meta'] = meta
-        obj['nunja_model_config'] = config
-        obj['nunja_model_id'] = self.nunja_model_id
-        obj['@context'] = obj.get('@context', self.context)
-        return obj
 
     def get_struct(self, path):
         """

@@ -7,16 +7,20 @@ import json
 
 from nunja.core import engine
 from nunja.stock.model import fsnav
+from nunja.stock.model.base import Definition
+
 
 nav = fsnav.Base(
-    'baseid',
+    Definition(
+        'baseid',
+        basename(__file__) + '?{+path}',
+        uri_template_json=basename(__file__) + '?{+path}',
+        css_class={
+            'table': 'pure-table',
+        },
+    ),
     getcwd(),
-    basename(__file__) + '?{path}',
-    uri_template_json=basename(__file__) + '?{path}',
     anchor_key='name',
-    css_class={
-        'table': 'pure-table',
-    },
 )
 
 target = environ.get('QUERY_STRING') or '/'

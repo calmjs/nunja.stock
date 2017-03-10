@@ -71,6 +71,9 @@ class Base(object):
     def __init__(self, definition):
         self.definition = definition
 
+    # XXX need to formalize the method names for the two methods below
+    # either call them in relation to href or data-href or some proper
+    # term.
     def format_uri(self, **kw):
         """
         Subclasses should override this, as the default simply take over
@@ -78,6 +81,14 @@ class Base(object):
         """
 
         return expand(self.definition.uri_template, **kw)
+
+    def format_uri_data_href(self, **kw):
+        """
+        Subclasses should override this, as the default simply take over
+        the entire query string with the path.
+        """
+
+        return expand(self.definition.uri_template_json, **kw)
 
     def finalize(self, obj):
         config = clone_dict(self.definition.config)

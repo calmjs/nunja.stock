@@ -65,6 +65,59 @@ class BaseTestCase(unittest.TestCase):
             'meta': {'css_class': {}},
         })
 
+    def test_finalize_css(self):
+        obj = base.Base(base.Definition(
+            'model_id', 'https://example.com/{path}'))
+        value = {'meta': {'css_class': {'test': 'class'}}}
+        self.assertEqual(obj.finalize(value), {
+            '@context': 'https://schema.org/',
+            'nunja_model_id': 'model_id',
+            'nunja_model_config': {},
+            'meta': {
+                'css_class': {'test': 'class'},
+            },
+        })
+
+        # apply the class directly to the model
+        obj = base.Base(base.Definition(
+            'model_id', 'https://example.com/{path}',
+            css_class={'table': 'some-table'}
+        ))
+        value = {'meta': {'css_class': {'test': 'class'}}}
+        self.assertEqual(obj.finalize(value), {
+            '@context': 'https://schema.org/',
+            'nunja_model_id': 'model_id',
+            'nunja_model_config': {},
+            'meta': {
+                'css_class': {'test': 'class', 'table': 'some-table'},
+            },
+        })
+
+        # apply the class directly to the model
+        obj = base.Base(base.Definition(
+            'model_id', 'https://example.com/{path}',
+            css_class={'table': 'some-table'}
+        ))
+        value = {'meta': {'css_class': {'test': 'class'}}}
+        self.assertEqual(obj.finalize(value), {
+            '@context': 'https://schema.org/',
+            'nunja_model_id': 'model_id',
+            'nunja_model_config': {},
+            'meta': {
+                'css_class': {'test': 'class', 'table': 'some-table'},
+            },
+        })
+
+        value = {'meta': {'css_class': {'table': 'provided'}}}
+        self.assertEqual(obj.finalize(value), {
+            '@context': 'https://schema.org/',
+            'nunja_model_id': 'model_id',
+            'nunja_model_config': {},
+            'meta': {
+                'css_class': {'table': 'provided'},
+            },
+        })
+
     def test_base_finalize_data_href(self):
         # test WILL be redone once the treatment of data_href is
         # finalized
