@@ -116,38 +116,16 @@ define([
     };
 
     Model.prototype.json_nav = function(ev) {
-        var self = this;
+        // XXX ideally, the history management bits be a bit more
+        // decoupled from the navigation bits.
         history.initialize();
-
-        // XXX this block too should be a separate common function
-        if (!(self._id in window.history.state)) {
-            // assign this object as a subkey
-            // XXX similar to the pushState call...
-            var state = {};
-            state[self._id] = {
-                'data_href': this.data_href,
-                // XXX seems a bit redundant?
-                'model': self._id,
-            };
-            history.modify_state('replaceState', state, document.title);
-        }
+        history.replace(this._id, this.data_href);
 
         var href = ev.target.attributes.getNamedItem('href').value;
         var data_uri = ev.target.attributes.getNamedItem('data-href').value;
 
         var _do_push = function(self, data_uri) {
-            // XXX like previous, figure out how to factor the pushState
-            // things into a standalone cohesive unit
-            if (history.has_push_state) {
-                // take the current state, then push it in
-                var state = {};
-                state[self._id] = {
-                    'data_href': data_uri,
-                    // XXX seems a bit redundant?
-                    'model': self._id,
-                };
-                history.modify_state('pushState', state, document.title, href);
-            }
+            history.push(self._id, data_uri, href);
         };
 
         this._fetch_populate(data_uri, _do_push);
@@ -178,7 +156,6 @@ define([
 
     Model.prototype.hook = function() {
         var self = this;
-        // XXX all states for this MUST be set.
         addEventListeners($('[data-href]', this.root), 'click', function(ev) {
             self.json_nav(ev);
         });
