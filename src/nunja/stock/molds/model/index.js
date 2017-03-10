@@ -150,7 +150,7 @@ define([
         }
     };
 
-    Model.prototype.hook = function() {
+    Model.prototype.enable_data_href = function() {
         var self = this;
         addEventListeners($('[data-href]', this.root), 'click', function(ev) {
             self.json_nav(ev);
@@ -158,7 +158,7 @@ define([
     };
 
     Model.prototype.init = function() {
-        this.hook();
+        this.enable_data_href();
     };
 
     var init = function(self) {
