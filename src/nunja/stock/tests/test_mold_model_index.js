@@ -296,14 +296,30 @@ describe('nunja.stock.molds/model inner model tests', function() {
 
         var model = new module.Model(div);
         model.populate(datum, function() {
+            var history = require('nunja/stock/history');
+
             expect($('a', div)[0].innerHTML).to.equal('dir');
             expect(model.data_href).to.equal(
                 datum.nunja_model_config.data_href);
             $('a', div)[0].click();
             self.clock.tick(500);
+
             expect($('a', div)[1].innerHTML).to.equal('nested');
             expect(model.data_href).to.equal(
                 data['/dir/'].nunja_model_config.data_href);
+            if (history.has_push_state) {
+                expect(window.location.search).to.equal('?/dir/');
+            }
+            $('a', div)[1].click();
+            self.clock.tick(500);
+
+            expect($('a', div)[1].innerHTML).to.equal('deep');
+            expect(model.data_href).to.equal(
+                data['/dir/nested/'].nunja_model_config.data_href);
+            if (history.has_push_state) {
+                expect(window.location.search).to.equal('?/dir/nested/');
+            }
+
             done();
         });
         this.clock.tick(500);

@@ -91,8 +91,8 @@ var exports = {
                 },
                 {
                     "@id": "nested",
-                    "href": "/script.py?/dir/nested",
-                    "data_href": "/script.py?/dir/nested",
+                    "href": "/script.py?/dir/nested/",
+                    "data_href": "/script.py?/dir/nested/",
                     "name": "nested",
                     "size": 0,
                     "additionalType": "folder",
@@ -123,6 +123,52 @@ var exports = {
                     "additionalType": "file",
                     "@type": "CreativeWork"
                 }
+            ],
+            "key_label_map": {
+                "name": "name",
+                "size": "size",
+                "additionalType": "type"
+            },
+            "active_keys": [
+                "name",
+                "additionalType",
+                "size"
+            ]
+        }
+    },
+
+    '/dir/nested/': {
+        "@context": "http://schema.org",
+        "nunja_model_id": "model_grid",
+        "nunja_model_config": {
+            "data_href": "/script.py?/dir/nested/",
+            "mold_id": "nunja.stock.molds/navgrid"
+        },
+        "mainEntity": {
+            "@id": "dir",
+            "href": "/script.py?/dir/nested/",
+            "name": "dir",
+            "size": 0,
+            "additionalType": "folder",
+            "@type": "ItemList",
+            "itemListElement": [
+                {
+                    "@id": "..",
+                    "href": "/script.py?/",
+                    "data_href": "/script.py?/",
+                    "name": "..",
+                    "size": 0,
+                    "additionalType": "folder",
+                    "@type": "ItemList"
+                },
+                {
+                    "@id": "deep",
+                    "href": "/script.py?/dir/nested/deep",
+                    "name": "deep",
+                    "size": 33,
+                    "additionalType": "file",
+                    "@type": "CreativeWork"
+                },
             ],
             "key_label_map": {
                 "name": "name",
