@@ -35,6 +35,8 @@ define([
         with the anchor node.
         */
 
+        // XXX currently, the constructor is coupled to a DOM element.
+        // this may be undesirable in the future.
         var child = this.root.querySelector(this.selector);
         if (child === null) {
             throw Error(
@@ -48,7 +50,18 @@ define([
         }
 
         this.config = loads(child.getAttribute('data-config'));
-        this.data_href = this.config['data_href'] || null;
+        this.data_href = this.config.data_href || null;
+
+        (this.config.hooks instanceof Array ? this.config.hooks : [
+        ]).forEach(function(entry) {
+            (function(module_name, callable, args) {
+                require([module_name], function(module) {
+                    // the called function will have a reference to
+                    // this object.
+                    module[callable].apply(self, args);
+                });
+            }).apply(null, entry);
+        });
 
         if (history.has_push_state) {
             window.addEventListener('popstate', function(ev) {
@@ -115,6 +128,9 @@ define([
         // XXX ideally, the history management bits be a bit more
         // decoupled from the navigation bits.
         history.initialize();
+        // this may seem redundant, but this is more for the initial
+        // state as the model does not set the state until required,
+        // i.e. when this feature is needed right here.
         history.replace(this._id, this.data_href);
 
         var href = ev.target.attributes.getNamedItem('href').value;

@@ -222,6 +222,15 @@ describe('nunja.stock.molds/model test cases', function() {
 describe('nunja.stock.molds/model inner model tests', function() {
 
     var data = model_navgrid_data;
+    var result_items = [];
+    var _defaultOnError = requirejs.onError;
+
+    var demo_module_name = 'nunja.molds.demo/module/index';
+    var demo_module = {
+        'demo': function(a, b, c) {
+            result_items.push([a, b, c]);
+        }
+    };
 
     beforeEach(function() {
         this.clock = sinon.useFakeTimers();
@@ -248,6 +257,9 @@ describe('nunja.stock.molds/model inner model tests', function() {
     afterEach(function() {
         this.server.restore();
         this.clock.restore();
+        requirejs.undef(demo_module_name);
+        result_items = [];
+        requirejs.onError = _defaultOnError;
     });
 
     it('inner missing div', function() {
@@ -278,6 +290,84 @@ describe('nunja.stock.molds/model inner model tests', function() {
         var model = new module.Model(div);
         expect(model._id).to.equal('demo_object');
         expect(model.config).to.deep.equal({});
+    });
+
+    it('inner div config hook', function() {
+        define(demo_module_name, [], demo_module);
+
+        var module = require('nunja.stock.molds/model/index');
+        var div = document.createElement('div');
+        var child = document.createElement('div');
+        var config = {
+            'hooks': [['nunja.molds.demo/module/index', 'demo', [1, 2, 3]]],
+        };
+
+        child.setAttribute('id', 'demo_object');
+        child.setAttribute('data-config', JSON.stringify(config));
+        div.appendChild(child);
+        var model = new module.Model(div);
+        this.clock.tick(500);
+        expect(model._id).to.equal('demo_object');
+        expect(model.config).to.deep.equal(config);
+        expect(result_items[0]).to.deep.equal([1, 2, 3]);
+    });
+
+    it('inner div config hook with errors', function(done) {
+        define(demo_module_name, [], demo_module);
+        this.clock.tick(500);
+        var errors = 2;
+        var counter = 0;
+
+        // a potential flaw in this plan is if the errors somehow gets
+        // triggered before the correct outcomes, but from testing it
+        // seems to happen later in all cases.
+        requirejs.onError = function() {
+            counter++;
+            if (counter >= errors) {
+                expect(result_items[1]).to.deep.equal([1, 2, 3]);
+                done();
+            }
+        };
+
+        var module = require('nunja.stock.molds/model/index');
+        var div = document.createElement('div');
+        var child = document.createElement('div');
+        var config = {
+            'hooks': [
+                // errors with an import error
+                ['nunja.molds.demo/no_module/index', 'no_such_thing', []],
+                // errors with an calling undefined error
+                ['nunja.molds.demo/module/index', 'no_such_thing', []],
+                // should not error
+                ['nunja.molds.demo/module/index', 'demo', {}],
+                // the good one should still be called.
+                ['nunja.molds.demo/module/index', 'demo', [1, 2, 3]],
+            ]
+        };
+
+        child.setAttribute('id', 'demo_object');
+        child.setAttribute('data-config', JSON.stringify(config));
+        div.appendChild(child);
+        new module.Model(div);
+        this.clock.tick(500);
+    });
+
+    it('inner div config hook wrong type', function() {
+        define(demo_module_name, [], demo_module);
+
+        var module = require('nunja.stock.molds/model/index');
+        var div = document.createElement('div');
+        var child = document.createElement('div');
+        var config = {'hooks': 'some bad type'};
+        child.setAttribute('id', 'demo_object');
+        child.setAttribute('data-config', JSON.stringify(config));
+        div.appendChild(child);
+
+        var model = new module.Model(div);
+        this.clock.tick(500);
+
+        expect(model._id).to.equal('demo_object');
+        expect(model.config).to.deep.equal(config);
     });
 
     it('async populate', function(done) {
