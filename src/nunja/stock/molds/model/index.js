@@ -8,6 +8,14 @@ define([
     var $ = utils.$;
     var addEventListeners = utils.addEventListeners;
 
+    var loads = function(s) {
+        try {
+            return JSON.parse(s);
+        } catch(e) {
+            return {};
+        }
+    };
+
     var Model = function(root, selector) {
         /*
         Create a view model that is associated the root element with a
@@ -27,7 +35,6 @@ define([
         with the anchor node.
         */
 
-        this.config = {};
         var child = this.root.querySelector(this.selector);
         if (child === null) {
             throw Error(
@@ -40,14 +47,8 @@ define([
             throw Error("child element must have an id attribute");
         }
 
-        this.data_href = null;
-        this.config = {};
-        try {
-            this.config = JSON.parse(child.getAttribute('data-config'));
-            this.data_href = this.config['data_href'];
-        } catch(e) {
-            // pass
-        }
+        this.config = loads(child.getAttribute('data-config'));
+        this.data_href = this.config['data_href'] || null;
 
         if (history.has_push_state) {
             window.addEventListener('popstate', function(ev) {
@@ -86,13 +87,8 @@ define([
         /*
         Standard fetch and populate for a given model
         */
-        var config = {};
-        try {
-            config = JSON.parse(this.root.querySelector('div').getAttribute(
-                'data-config'));
-        } catch (e) {
-            // pass
-        }
+        var config = loads(this.root.querySelector('div').getAttribute(
+            'data-config'));
         var self = this;
         this.fetch(data_uri, function(xhr) {
             // the callback is really an extra callback
