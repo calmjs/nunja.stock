@@ -96,20 +96,34 @@ define([
     };
 
     // model.update should reference this instead?
-    Model.prototype._fetch_populate = function(data_uri, cb) {
+    Model.prototype._fetch_populate = function(data_uri, href) {
         /*
         Standard fetch and populate for a given model
         */
+        // XXX should this target (i.e. _fetch_populate) actually be
+        // configurablefrom the model? i.e. be able to be swapped out
+        // with another function/method?
         var config = loads(this.root.querySelector('div').getAttribute(
             'data-config'));
         var self = this;
         this.fetch(data_uri, function(xhr) {
             // the callback is really an extra callback
-            if (cb instanceof Function) {
-                cb(self, data_uri);
-            }
             var obj = JSON.parse(xhr.responseText);
+            // XXX what if we follow https://schema.org/WebPageElement
+            // also xml:id, and have a case where populate against that,
+            // i.e. activate a link on breadcrumbs populates some other
+            // element, what happens then?
             self.populate(obj);
+            if (href) {
+                // TODO see if this other check can also be used: if the
+                // fetched data uri is the same as state, the push can
+                // be avoided, which also avoids the extra push where
+                // the uri stays the same; however, this data_uri
+                // difference may not apply to the underlying href, and
+                // vice-versa, so this can be problematic at the end.
+                // Regardless, this is fine for now.
+                history.push(self._id, data_uri, href);
+            }
         }, config.error_handler);
     };
 
@@ -132,43 +146,51 @@ define([
         // i.e. when this feature is needed right here.
         history.replace(this._id, this.data_href);
 
+        // Always need the href because this is _the_ canonical URI for
+        // the target resource.
         var href = ev.target.attributes.getNamedItem('href').value;
+        // The data-href is what will provide the data for the template;
+        // done so as an explicit marker, and also that browsers are bad
+        // at dealing with caching of multiple hypermedia types provided
+        // by the same URI.
         var data_uri = ev.target.attributes.getNamedItem('data-href').value;
 
-        var _do_push = function(self, data_uri) {
-            history.push(self._id, data_uri, href);
-        };
-
-        this._fetch_populate(data_uri, _do_push);
+        this._fetch_populate(data_uri, href);
         ev.preventDefault();
         return false;
     };
 
-    Model.prototype.populate = function(obj, _cb) {
+    Model.prototype.populate = function(obj, cb) {
         // Always attempt the synchronous flow whenever possible to
         // prevent various issues, but also permit asychronous flow with
         // an optional callback in the case that the codepath was forced
         // or triggered.
         var self = this;
-        var template_name = obj.nunja_model_config.mold_id + '/macro.nja';
-        if (core.engine.query_template(template_name) && (_cb == null)) {
-            core.engine.populate(self.root, obj);
+
+        var after_populate = function() {
             self.data_href = obj.nunja_model_config.data_href;
             self.init();
+            if (cb instanceof Function) {
+                cb();
+            }
+        };
+
+        var template_name = obj.nunja_model_config.mold_id + '/macro.nja';
+        if (core.engine.query_template(template_name)) {
+            core.engine.populate(self.root, obj);
+            after_populate();
         }
         else {
-            core.engine.populate(self.root, obj, function() {
-                self.data_href = obj.nunja_model_config.data_href;
-                self.init();
-                if (_cb instanceof Function) {
-                    _cb();
-                }
-            });
+            core.engine.populate(self.root, obj, after_populate);
         }
     };
 
     Model.prototype.enable_data_href = function() {
         var self = this;
+        // XXX TODO [data-href], 'click', the function json_nav are all
+        // magic thus should be figured out how to make this be part of
+        // the object configuration.
+        // Though these should remain defaults.
         addEventListeners($('[data-href]', this.root), 'click', function(ev) {
             self.json_nav(ev);
         });
