@@ -110,7 +110,6 @@ define([
             }
             var obj = JSON.parse(xhr.responseText);
             self.populate(obj);
-            self.data_href = data_uri;
         }, config.error_handler);
     };
 
@@ -154,10 +153,12 @@ define([
         var template_name = obj.nunja_model_config.mold_id + '/macro.nja';
         if (core.engine.query_template(template_name) && (_cb == null)) {
             core.engine.populate(self.root, obj);
+            self.data_href = obj.nunja_model_config.data_href;
             self.init();
         }
         else {
             core.engine.populate(self.root, obj, function() {
+                self.data_href = obj.nunja_model_config.data_href;
                 self.init();
                 if (_cb instanceof Function) {
                     _cb();
