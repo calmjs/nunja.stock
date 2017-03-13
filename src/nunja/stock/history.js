@@ -79,7 +79,13 @@ var push = function(id, data_href, href) {
 };
 
 
+var get = function(id) {
+    return (window.history.state[id] || {}).data_href;
+};
+
+
 exports.initialize = initialize;
 exports.modify_state = modify_state;
 exports.replace = replace;
 exports.push = push;
+exports.get = get;

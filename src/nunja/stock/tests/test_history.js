@@ -73,4 +73,15 @@ describe_('nunja/stock/history test cases enabled', function() {
         expect(window.location.pathname).to.equal('/example/test/location');
     });
 
+    it('test history get', function() {
+        expect(nunja_stock_history.get('obj_id')).to.be.undefined;
+        nunja_stock_history.initialize();
+        expect(nunja_stock_history.get('obj_id')).to.be.undefined;
+        nunja_stock_history.replace('obj_id', 'some_href');
+        expect(nunja_stock_history.get('obj_id')).to.equal('some_href');
+        nunja_stock_history.replace('model_id', 'model_href');
+        expect(nunja_stock_history.get('obj_id')).to.equal('some_href');
+        expect(nunja_stock_history.get('model_id')).to.equal('model_href');
+    });
+
 });
