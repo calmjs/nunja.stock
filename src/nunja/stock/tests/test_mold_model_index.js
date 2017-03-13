@@ -7,6 +7,30 @@ var $ = utils.$;
 var markers = {};
 var model_navgrid_data = require('nunja/stock/tests/model_navgrid_data');
 
+
+var setup_window_event_listener = function(testcase) {
+    // setup the cleanup for window event listeners
+    var window_addEventListener = window.addEventListener;
+    testcase.window_listeners = [];
+    window.addEventListener = function(type, listener, options) {
+        testcase.window_listeners.push([type, listener, options]);
+        window_addEventListener(type, listener, options);
+    };
+    // only bind the original listener here after the method has
+    // been created above.
+    testcase.window_addEventListener = window_addEventListener;
+};
+
+
+var teardown_window_event_listener = function(testcase) {
+    // cleanup window event listeners.
+    testcase.window_listeners.forEach(function(v) {
+        window.removeEventListener.apply(window, v);
+    });
+    window.addEventListener = testcase.window_addEventListener;
+};
+
+
 window.mocha.setup('bdd');
 
 describe('nunja.stock.molds/model test cases', function() {
@@ -112,16 +136,8 @@ describe('nunja.stock.molds/model test cases', function() {
             xhr.respond(404, {'Content-Type': 'application/json'}, '{}');
         });
 
-        // setup the cleanup for window event listeners
-        var window_addEventListener = window.addEventListener;
-        this.window_listeners = [];
-        window.addEventListener = function(type, listener, options) {
-            self.window_listeners.push([type, listener, options]);
-            window_addEventListener(type, listener, options);
-        };
-        // only bind the original listener here after the method has
-        // been created above.
-        this.window_addEventListener = window_addEventListener;
+        setup_window_event_listener(this);
+
     });
 
     afterEach(function() {
@@ -133,11 +149,8 @@ describe('nunja.stock.molds/model test cases', function() {
         window.history.replaceState(null, '');
         document.body.innerHTML = "";
 
-        // cleanup window event listeners.
-        this.window_listeners.forEach(function(v) {
-            window.removeEventListener.apply(window, v);
-        });
-        window.addEventListener = this.window_addEventListener;
+        teardown_window_event_listener(this);
+
     });
 
     it('Click test', function() {
@@ -252,9 +265,11 @@ describe('nunja.stock.molds/model inner model tests', function() {
             }('/script.py?' + key, data[key]));
         }
 
+        setup_window_event_listener(this);
     });
 
     afterEach(function() {
+        teardown_window_event_listener(this);
         this.server.restore();
         this.clock.restore();
         requirejs.undef(demo_module_name);
@@ -370,7 +385,7 @@ describe('nunja.stock.molds/model inner model tests', function() {
         expect(model.config).to.deep.equal(config);
     });
 
-    it('async populate', function(done) {
+    it('async initial populate and click interaction', function(done) {
         var self = this;
         var module = require('nunja.stock.molds/model/index');
         var datum = data['/'];
@@ -413,6 +428,95 @@ describe('nunja.stock.molds/model inner model tests', function() {
             done();
         });
         this.clock.tick(500);
+    });
+
+});
+
+
+describe('nunja.stock.molds/model inner model async macro', function() {
+
+    var datum = {
+        "@context": "http://schema.org",
+        "nunja_model_id": "demo_object",
+        "nunja_model_config": {
+            "data_href": "/dummy.py?/hello",
+            "mold_id": "nunja.stock.mock/async"
+        },
+        "mainEntity": {
+            "@id": "/",
+            "href": "/dummy.py?/hello",
+            "data_href": "/dummy.py?/hello",
+            "@type": "CreativeWork",
+            "value": "hello world.",
+        }
+    };
+
+    beforeEach(function() {
+        this.engine = core.engine;
+        // this.clock = sinon.useFakeTimers();
+        this.server = sinon.fakeServer.create();
+        this.server.autoRespond = true;
+
+        // simply just declare a single main macro for the dummy
+        var macro = [
+            '{%- macro main(mainEntity, meta={}) %}',
+            '<p>{{ mainEntity.value }}</p>',
+            '<a href="/foo" data_href="/foo">Dummy Link</a>',
+            '{%- endmacro %}'
+        ].join('\n');
+        // the template can be omitted because the model template is
+        // used instead.
+
+        this.server.respondWith(
+            'GET', '/base/nunja.stock.mock/async/macro.nja',
+            function (xhr) {
+                xhr.respond(200, {'Content-Type': 'text/plain'}, macro);
+            }
+        );
+
+        requirejs.config({
+            'baseUrl': '/base',
+            'paths': {
+                'nunja.stock.mock/async': 'nunja.stock.mock/async',
+            }
+        });
+
+        setup_window_event_listener(this);
+    });
+
+    afterEach(function() {
+        teardown_window_event_listener(this);
+        markers = {};
+        this.server.restore();
+        // this.clock.restore();
+        // TODO ideally, all the history should be wiped.
+        window.history.replaceState(null, '');
+        document.body.innerHTML = "";
+    });
+
+    it('async populate fresh', function(done) {
+        // requires actual asynchronous load path
+        var self = this;
+        var module = require('nunja.stock.molds/model/index');
+
+        var div = document.createElement('div');
+        div.setAttribute('data-nunja', 'nunja.stock.molds/model');
+        // emulate the standard rendering.
+        var child = document.createElement('div');
+        child.setAttribute('id', 'demo_object');
+        child.setAttribute('data-config', JSON.stringify({
+            "data_href": datum.nunja_model_config.data_href}));
+        div.appendChild(child);
+
+        var model = new module.Model(div);
+        model.populate(datum);
+
+        model.populate(datum, function() {
+            // the one single event pushed.
+            expect($('p', div)[0].innerHTML).to.equal('hello world.');
+            expect(self.window_listeners.length).to.equal(1);
+            done();
+        });
     });
 
 });
