@@ -22,9 +22,13 @@ class Definition(namedtuple('Definition', [
         'css_class', 'config', 'context',
         ])):
     """
+    A frozen definition for the construction of the model/schema.
+
     nunja_model_id
         The id of the element - will be persisted into the template
-        as the id for the container node.
+        as the id for the container node.  This should be equivalent to
+        xml:id (i.e. unique across all resource(s) provided at a given
+        URI/IRI).
 
     uri_template
         This is the template for all the URIs that will be generated
@@ -65,6 +69,29 @@ class Definition(namedtuple('Definition', [
             clone_dict(css_class), clone_dict(config), context,
         )
 
+    def finalize(self, obj):
+        config = clone_dict(self.config)
+        config.update(obj.get('nunja_model_config', {}))
+
+        # XXX This is a big huge crutch for now to get an independent
+        # end point.  Must make decision on how to address this, either
+        # keep and refactor out to external method, or figure out the
+        # proper ontological term to represent this within the system.
+        if 'data_href' in obj.get('mainEntity', {}):
+            config['data_href'] = obj['mainEntity']['data_href']
+
+        meta = obj.get('meta', {})
+        # XXX Ditto for CSS class, as this is a mutable type.
+        css_class = clone_dict(self.css_class)
+        css_class.update(meta.get('css_class', {}))
+        meta['css_class'] = css_class
+
+        obj['meta'] = meta
+        obj['nunja_model_config'] = config
+        obj['nunja_model_id'] = self.nunja_model_id
+        obj['@context'] = obj.get('@context', self.context)
+        return obj
+
 
 class Base(object):
 
@@ -91,23 +118,4 @@ class Base(object):
         return expand(self.definition.uri_template_json, **kw)
 
     def finalize(self, obj):
-        config = clone_dict(self.definition.config)
-        config.update(obj.get('nunja_model_config', {}))
-
-        # XXX This is a big huge crutch for now to get an independent
-        # end point.  Must make decision on how to address this, either
-        # keep and refactor out to external method, or figure out the
-        # proper ontological term to represent this within the system.
-        if 'data_href' in obj.get('mainEntity', {}):
-            config['data_href'] = obj['mainEntity']['data_href']
-
-        meta = obj.get('meta', {})
-        css_class = clone_dict(self.definition.css_class)
-        css_class.update(meta.get('css_class', {}))
-        meta['css_class'] = css_class
-
-        obj['meta'] = meta
-        obj['nunja_model_config'] = config
-        obj['nunja_model_id'] = self.definition.nunja_model_id
-        obj['@context'] = obj.get('@context', self.definition.context)
-        return obj
+        return self.definition.finalize(obj)
