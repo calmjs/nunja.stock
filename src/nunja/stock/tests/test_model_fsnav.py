@@ -207,7 +207,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'size': 22,
                 '@id': 'test_file.txt',
                 'name': 'test_file.txt',
-                'href': '/script.py?/test_file.txt'
+                'url': '/script.py?/test_file.txt'
             }
         )
 
@@ -219,7 +219,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'alternativeType': 'folder',
                 '@id': 'dummydir1',
                 'name': 'dummydir1',
-                'href': '/script.py?/dummydir1/'
+                'url': '/script.py?/dummydir1/'
             }
         )
 
@@ -230,7 +230,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'size': 13,
                 '@id': 'file1',
                 'name': 'file1',
-                'href': '/script.py?/dummydir2/file1'
+                'url': '/script.py?/dummydir2/file1'
             }
         )
 
@@ -266,7 +266,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'size': 22,
                 '@id': 'test_file.txt',
                 'name': 'test_file.txt',
-                'href': '/script.py?/test_file.txt',
+                'url': '/script.py?/test_file.txt',
                 'data_href': '/json.py/test_file.txt',
             }
         )
@@ -279,7 +279,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@type': 'ItemList',
                 '@id': 'dummydir1',
                 'name': 'dummydir1',
-                'href': '/script.py?/dummydir1/',
+                'url': '/script.py?/dummydir1/',
                 'data_href': '/json.py/dummydir1/',
             }
         )
@@ -291,7 +291,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'size': 13,
                 '@id': 'file1',
                 'name': 'file1',
-                'href': '/script.py?/dummydir2/file1',
+                'url': '/script.py?/dummydir2/file1',
                 'data_href': '/json.py/dummydir2/file1',
             }
         )
@@ -316,7 +316,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@id': '..',
                 'name': '..',
                 'data_href': '/json.py/',
-                'href': '/script.py?/',
+                'url': '/script.py?/',
             }
         )
 
@@ -336,7 +336,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'size': 22,
                 '@id': 'test_file.txt',
                 'name': 'test_file.txt',
-                'href': '/script.py?/test_file.txt',
+                'url': '/script.py?/test_file.txt',
                 'rownames': ['alternativeType', 'name', 'size'],
                 'rows': [['file'], ['test_file.txt'], [22]],
             }
@@ -351,7 +351,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'size': 13,
                 '@id': 'file1',
                 'name': 'file1',
-                'href': '/script.py?/dummydir2/file1',
+                'url': '/script.py?/dummydir2/file1',
                 'rownames': ['alternativeType', 'name', 'size'],
                 'rows': [['file'], ['file1'], [13]],
             }
@@ -370,7 +370,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@type': 'ItemList',
                 '@id': 'dummydir1',
                 'name': 'dummydir1',
-                'href': '/script.py?/dummydir1/',
+                'url': '/script.py?/dummydir1/',
 
                 'key_label_map': {
                     'alternativeType': 'type',
@@ -395,7 +395,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 '@type': 'ItemList',
                 '@id': 'dummydir2',
                 'name': 'dummydir2',
-                'href': '/script.py?/dummydir2/',
+                'url': '/script.py?/dummydir2/',
 
                 'key_label_map': {
                     'alternativeType': 'type',

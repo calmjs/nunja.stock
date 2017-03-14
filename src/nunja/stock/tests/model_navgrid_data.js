@@ -10,7 +10,7 @@ var exports = {
         },
         "mainEntity": {
             "@id": "/",
-            "href": "/script.py?/",
+            "url": "/script.py?/",
             "data_href": "/script.py?/",
             "name": "/",
             "size": 0,
@@ -19,7 +19,7 @@ var exports = {
             "itemListElement": [
                 {
                     "@id": "dir",
-                    "href": "/script.py?/dir/",
+                    "url": "/script.py?/dir/",
                     "data_href": "/script.py?/dir/",
                     "name": "dir",
                     "size": 0,
@@ -28,7 +28,7 @@ var exports = {
                 },
                 {
                     "@id": "bad_target",
-                    "href": "/script.py?/bad_target",
+                    "url": "/script.py?/bad_target",
                     "data_href": "/script.py?/bad_target",
                     "name": "bad_target",
                     "size": 0,
@@ -37,7 +37,7 @@ var exports = {
                 },
                 {
                     "@id": "file1",
-                    "href": "/script.py?/file1",
+                    "url": "/script.py?/file1",
                     "name": "file1",
                     "size": 13,
                     "additionalType": "file",
@@ -45,7 +45,7 @@ var exports = {
                 },
                 {
                     "@id": "file2",
-                    "href": "/script.py?/file2",
+                    "url": "/script.py?/file2",
                     "name": "file2",
                     "size": 13,
                     "additionalType": "file",
@@ -74,7 +74,7 @@ var exports = {
         },
         "mainEntity": {
             "@id": "dir",
-            "href": "/script.py?/dir/",
+            "url": "/script.py?/dir/",
             "name": "dir",
             "size": 0,
             "additionalType": "folder",
@@ -82,7 +82,7 @@ var exports = {
             "itemListElement": [
                 {
                     "@id": "..",
-                    "href": "/script.py?/",
+                    "url": "/script.py?/",
                     "data_href": "/script.py?/",
                     "name": "..",
                     "size": 0,
@@ -91,7 +91,7 @@ var exports = {
                 },
                 {
                     "@id": "nested",
-                    "href": "/script.py?/dir/nested/",
+                    "url": "/script.py?/dir/nested/",
                     "data_href": "/script.py?/dir/nested/",
                     "name": "nested",
                     "size": 0,
@@ -100,7 +100,7 @@ var exports = {
                 },
                 {
                     "@id": "bad_target",
-                    "href": "/dir/bad_target",
+                    "url": "/dir/bad_target",
                     "data_href": "/dir/bad_target",
                     "name": "bad_target",
                     "size": 0,
@@ -109,7 +109,7 @@ var exports = {
                 },
                 {
                     "@id": "file1",
-                    "href": "/script.py?/dir/file1",
+                    "url": "/script.py?/dir/file1",
                     "name": "file1",
                     "size": 13,
                     "additionalType": "file",
@@ -117,7 +117,7 @@ var exports = {
                 },
                 {
                     "@id": "file2",
-                    "href": "/script.py?/dir/file2",
+                    "url": "/script.py?/dir/file2",
                     "name": "file2",
                     "size": 13,
                     "additionalType": "file",
@@ -146,7 +146,7 @@ var exports = {
         },
         "mainEntity": {
             "@id": "dir",
-            "href": "/script.py?/dir/nested/",
+            "url": "/script.py?/dir/nested/",
             "name": "dir",
             "size": 0,
             "additionalType": "folder",
@@ -154,7 +154,7 @@ var exports = {
             "itemListElement": [
                 {
                     "@id": "..",
-                    "href": "/script.py?/",
+                    "url": "/script.py?/",
                     "data_href": "/script.py?/",
                     "name": "..",
                     "size": 0,
@@ -163,7 +163,7 @@ var exports = {
                 },
                 {
                     "@id": "deep",
-                    "href": "/script.py?/dir/nested/deep",
+                    "url": "/script.py?/dir/nested/deep",
                     "name": "deep",
                     "size": 33,
                     "additionalType": "file",

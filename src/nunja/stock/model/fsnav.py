@@ -95,7 +95,7 @@ class Base(base.Base):
         result = [
             ('@id', basename(fs_path)),
             ('@type', ld_type),
-            ('href', self.format_uri(path=self._fs_path_format_path(fs_path))),
+            ('url', self.format_uri(path=self._fs_path_format_path(fs_path))),
         ]
 
         # TODO maybe have a better way of doing this via parent class

@@ -12,7 +12,7 @@
     <tr class="{{ css_class['table.tbody.tr'] }}">
       {% for id in active_keys -%}
         {%- if id == anchor_key and item['@id'] -%}
-          <td><a href="{{ item['href'] }}"
+          <td><a href="{{ item['url'] }}"
           {%- if item['data_href'] %} data-href="{{ item['data_href'] }}"
           {%- endif -%}
           >{{ item[id] }}</a></td>

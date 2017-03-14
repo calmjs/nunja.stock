@@ -71,13 +71,13 @@ var exports = {
             "@id": "dummydir2",
             "@type": "ItemList",
             "name": "dummydir2",
-            "href": "/script.py?/dummydir2/",
+            "url": "/script.py?/dummydir2/",
             "size": 0,
             "alternativeType": "folder",
             "itemListElement": [
                 {
                     "@id": "..",
-                    "href": "/script.py?/",
+                    "url": "/script.py?/",
                     "name": "..",
                     "size": 0,
                     "alternativeType": "folder",
@@ -85,7 +85,7 @@ var exports = {
                 },
                 {
                     "@id": "dir",
-                    "href": "/script.py?/dummydir2/dir/",
+                    "url": "/script.py?/dummydir2/dir/",
                     "name": "dir",
                     "size": 0,
                     "alternativeType": "folder",
@@ -93,7 +93,7 @@ var exports = {
                 },
                 {
                     "@id": "file1",
-                    "href": "/script.py?/dummydir2/file1",
+                    "url": "/script.py?/dummydir2/file1",
                     "name": "file1",
                     "size": 13,
                     "alternativeType": "file",
@@ -101,7 +101,7 @@ var exports = {
                 },
                 {
                     "@id": "file2",
-                    "href": "/script.py?/dummydir2/file2",
+                    "url": "/script.py?/dummydir2/file2",
                     "name": "file2",
                     "size": 13,
                     "alternativeType": "file",
@@ -156,7 +156,7 @@ var exports = {
         "mainEntity": {
             "@id": "dummydir2",
             "@type": "ItemList",
-            "href": "/script.py?/dummydir2/",
+            "url": "/script.py?/dummydir2/",
             "data_href": "/json.py?/dummydir2/",
             "name": "dummydir2",
             "size": 0,
@@ -164,7 +164,7 @@ var exports = {
             "itemListElement": [
                 {
                     "@id": "..",
-                    "href": "/script.py?/",
+                    "url": "/script.py?/",
                     "data_href": "/json.py?/",
                     "name": "..",
                     "size": 0,
@@ -173,7 +173,7 @@ var exports = {
                 },
                 {
                     "@id": "dir",
-                    "href": "/script.py?/dummydir2/dir/",
+                    "url": "/script.py?/dummydir2/dir/",
                     "data_href": "/json.py?/dummydir2/dir/",
                     "name": "dir",
                     "size": 0,
@@ -182,7 +182,7 @@ var exports = {
                 },
                 {
                     "@id": "file1",
-                    "href": "/script.py?/dummydir2/file1",
+                    "url": "/script.py?/dummydir2/file1",
                     "data_href": "/json.py?/dummydir2/file1",
                     "name": "file1",
                     "size": 13,
@@ -191,7 +191,7 @@ var exports = {
                 },
                 {
                     "@id": "file2",
-                    "href": "/script.py?/dummydir2/file2",
+                    "url": "/script.py?/dummydir2/file2",
                     "data_href": "/json.py?/dummydir2/file2",
                     "name": "file2",
                     "size": 13,
@@ -247,13 +247,13 @@ var exports = {
             "@id": "dummydir2",
             "@type": "ItemList",
             "name": "dummydir2",
-            "href": "/script.py?/dummydir2/",
+            "url": "/script.py?/dummydir2/",
             "size": 0,
             "alternativeType": "folder",
             "itemListElement": [
                 {
                     "@id": "..",
-                    "href": "/script.py?/",
+                    "url": "/script.py?/",
                     "data_href": "/json.py?/",
                     "name": "..",
                     "size": 0,
@@ -304,13 +304,13 @@ var exports = {
             "@id": "dummydir2",
             "@type": "ItemList",
             "name": "dummydir2",
-            "href": "/script.py?/dummydir2/",
+            "url": "/script.py?/dummydir2/",
             "size": 0,
             "alternativeType": "folder",
             "itemListElement": [
                 {
                     "@id": "..",
-                    "href": "/script.py?/",
+                    "url": "/script.py?/",
                     "name": "..",
                     "size": 0,
                     "alternativeType": "folder",
