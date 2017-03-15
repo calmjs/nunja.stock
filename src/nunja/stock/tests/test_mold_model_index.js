@@ -303,7 +303,7 @@ describe('nunja.stock.molds/model inner model tests', function() {
         child.setAttribute('data-config', '}{');
         div.appendChild(child);
         var model = new module.Model(div);
-        expect(model._id).to.equal('demo_object');
+        expect(model.id).to.equal('demo_object');
         expect(model.config).to.deep.equal({});
     });
 
@@ -322,7 +322,7 @@ describe('nunja.stock.molds/model inner model tests', function() {
         div.appendChild(child);
         var model = new module.Model(div);
         this.clock.tick(500);
-        expect(model._id).to.equal('demo_object');
+        expect(model.id).to.equal('demo_object');
         expect(model.config).to.deep.equal(config);
         expect(result_items[0]).to.deep.equal([1, 2, 3]);
     });
@@ -381,11 +381,82 @@ describe('nunja.stock.molds/model inner model tests', function() {
         var model = new module.Model(div);
         this.clock.tick(500);
 
-        expect(model._id).to.equal('demo_object');
+        expect(model.id).to.equal('demo_object');
         expect(model.config).to.deep.equal(config);
     });
 
-    it('async initial populate and click interaction', function(done) {
+    it('initial populate mismatch id not exist', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var datum = JSON.parse(JSON.stringify(data['/']));
+        datum.nunja_model_id = "id" + Math.random();
+
+        // emulate the standard rendering.
+        var div = document.createElement('div');
+        div.setAttribute('data-nunja', 'nunja.stock.molds/model');
+        var child = document.createElement('div');
+        child.setAttribute('id', 'not_model_grid');
+        div.appendChild(child);
+
+        var model = new module.Model(div);
+        expect(function() {
+            model.populate(datum);
+        }).to.throw(
+            Error, "model '" + datum.nunja_model_id + "' does not exist.");
+    });
+
+    it('initial populate mismatch id exist', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var datum = JSON.parse(JSON.stringify(data['/']));
+        datum.nunja_model_id = 'predefined';
+
+        // emulate the standard rendering.
+        var div = document.createElement('div');
+        div.setAttribute('data-nunja', 'nunja.stock.molds/model');
+        var child = document.createElement('div');
+        child.setAttribute('id', 'not_model_grid');
+        div.appendChild(child);
+
+        // the actual element
+        var div2 = document.createElement('div');
+        div2.setAttribute('data-nunja', 'nunja.stock.molds/model');
+        var child2 = document.createElement('div');
+        child2.setAttribute('id', datum.nunja_model_id);
+        div2.appendChild(child2);
+
+        var model = new module.Model(div);
+        new module.Model(div2);
+        model.populate(datum);
+
+        expect($('a', div).length).to.equal(0);
+        expect($('a', div2)[0].innerHTML).to.equal('dir');
+    });
+
+    it('initial populate mismatch id model forced rename', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var datum = JSON.parse(JSON.stringify(data['/']));
+        datum.nunja_model_id = 'to_be_renamed';
+
+        // emulate the standard rendering.
+        var div = document.createElement('div');
+        div.setAttribute('data-nunja', 'nunja.stock.molds/model');
+        var child = document.createElement('div');
+        child.setAttribute('id', datum.nunja_model_id);
+        div.appendChild(child);
+        var model = new module.Model(div);
+        // force an id mismatch here, i.e. the id here no longer match
+        // with the one tracked by the manager.
+        model.id = 'renamed';
+
+        expect(function() {
+            // As the id stored and referenced by the map is mismatched,
+            // the populate method will fetch and return the same object
+            // resulting in an infinite loop, so raise this exception.
+            model.populate(datum);
+        }).to.throw(
+            Error, "model 'to_be_renamed' has mismatched id ('renamed')");
+    });
+
+    it('initial populate and click interaction in callback', function(done) {
         var self = this;
         var module = require('nunja.stock.molds/model/index');
         var datum = data['/'];
@@ -394,7 +465,7 @@ describe('nunja.stock.molds/model inner model tests', function() {
         div.setAttribute('data-nunja', 'nunja.stock.molds/model');
         // emulate the standard rendering.
         var child = document.createElement('div');
-        child.setAttribute('id', 'demo_object');
+        child.setAttribute('id', 'model_grid');
         child.setAttribute('data-config', JSON.stringify({
             "data_href": datum.nunja_model_config.data_href}));
         div.appendChild(child);

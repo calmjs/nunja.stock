@@ -16,6 +16,24 @@ define([
         }
     };
 
+    var models = {};
+
+    var get_model = function(id) {
+        // verify that the model exist and that the id is the same
+        var result = models[id];
+        if (!result) {
+            throw Error("model '" + id + "' does not exist.");
+        }
+        else if (result.id != id) {
+            // as this will break rendering, and since the model _can_
+            // be controlled/accessed to have its id be manipulated, we
+            // need this check.
+            throw Error(
+                "model '" + id + "' has mismatched id ('" + result.id + "')");
+        }
+        return result;
+    };
+
     var Model = function(root, selector) {
         /*
         Create a view model that is associated the root element with a
@@ -44,16 +62,24 @@ define([
                 this.selector + "'");
         }
 
-        this._id = child.getAttribute('id');
-        if (!(this._id)) {
+        this.id = child.getAttribute('id');
+        if (!(this.id)) {
             throw Error("child element must have an id attribute");
         }
+        // TODO ensure that at time of construction, verify that no
+        // other elements share this id.
+
+        // store a reference in the global mapping;
+        // XXX how to deal with reuse/collisions?
+        // XXX for testing, this is going to get big huge...
+        models[this.id] = this;
 
         this.config = loads(child.getAttribute('data-config'));
-        this.data_href = this.config.data_href || null;
+        this.data_href = this.config && this.config.data_href || null;
 
-        (this.config.hooks instanceof Array ? this.config.hooks : [
-        ]).forEach(function(entry) {
+        (this.config && this.config.hooks instanceof Array ?
+            this.config.hooks : []
+        ).forEach(function(entry) {
             (function(module_name, callable, args) {
                 require([module_name], function(module) {
                     // the called function will have a reference to
@@ -122,14 +148,18 @@ define([
                 // difference may not apply to the underlying href, and
                 // vice-versa, so this can be problematic at the end.
                 // Regardless, this is fine for now.
-                history.push(self._id, data_uri, href);
+                history.push(self.id, data_uri, href);
+                // Note that while the populate method may delegate the
+                // rendering to another model, the fact that this model
+                // initially responded must be tracked, so this is the
+                // id that will be pushed.
             }
         }, config.error_handler);
     };
 
     Model.prototype.popstate = function(ev) {
-        if ((ev.state instanceof Object) && (this._id in ev.state)) {
-            var data_uri = ev.state[this._id].data_href;
+        if ((ev.state instanceof Object) && (this.id in ev.state)) {
+            var data_uri = ev.state[this.id].data_href;
             if (this.data_href != data_uri) {
                 // only fetch and populate if the data is different.
                 this._fetch_populate(data_uri);
@@ -144,7 +174,7 @@ define([
         // this may seem redundant, but this is more for the initial
         // state as the model does not set the state until required,
         // i.e. when this feature is needed right here.
-        history.replace(this._id, this.data_href);
+        history.replace(this.id, this.data_href);
 
         // Always need the href because this is _the_ canonical URI for
         // the target resource.
@@ -161,10 +191,6 @@ define([
     };
 
     Model.prototype.populate = function(obj, cb) {
-        // Always attempt the synchronous flow whenever possible to
-        // prevent various issues, but also permit asychronous flow with
-        // an optional callback in the case that the codepath was forced
-        // or triggered.
         var self = this;
 
         var after_populate = function() {
@@ -175,6 +201,16 @@ define([
             }
         };
 
+        if (obj.nunja_model_id != this.id) {
+            // if this model does not exist, or its id does not match,
+            // what then?
+            return get_model(obj.nunja_model_id).populate(obj, cb);
+        }
+
+        // Always attempt the synchronous flow whenever possible to
+        // prevent various issues, but also permit asychronous flow with
+        // an optional callback in the case that the codepath was forced
+        // or triggered.
         var template_name = obj.nunja_model_config.mold_id + '/macro.nja';
         if (core.engine.query_template(template_name)) {
             core.engine.populate(self.root, obj);
