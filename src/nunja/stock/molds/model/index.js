@@ -170,6 +170,10 @@ define([
     Model.prototype.json_nav = function(ev) {
         // XXX ideally, the history management bits be a bit more
         // decoupled from the navigation bits.
+        if (!this.data_href) {
+            return false;
+        }
+
         history.initialize();
         // this may seem redundant, but this is more for the initial
         // state as the model does not set the state until required,
@@ -187,7 +191,6 @@ define([
 
         this._fetch_populate(data_uri, href);
         ev.preventDefault();
-        return false;
     };
 
     Model.prototype.populate = function(obj, cb) {

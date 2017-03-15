@@ -456,6 +456,39 @@ describe('nunja.stock.molds/model inner model tests', function() {
             Error, "model 'to_be_renamed' has mismatched id ('renamed')");
     });
 
+    it('json_nav disabled without model.data_href defined', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var datum = data['/'];
+
+        var div = document.createElement('div');
+        div.setAttribute('data-nunja', 'nunja.stock.molds/model');
+        var child = document.createElement('div');
+        child.setAttribute('id', 'model_grid');
+        div.appendChild(child);
+
+        var model = new module.Model(div);
+        // Since the element did not provided one via data-config
+        expect(model.data_href).to.be.null;
+        // As this is populated using the default method, the data_href
+        // will be assigned, so we need; server side rendering will have
+        // this fully pre-rendered and this rendering will not be done
+        // like so, which sets data_href...
+        model.populate(datum);
+        // To properly test this, that need to be flipped back to its
+        // default state where the config doe snot define this.
+        model.data_href = null;
+
+        var target = $('a', div)[0];
+        expect(target.innerHTML).to.equal('dir');
+        // not providing a preventDefault as that is not called; if that
+        // condition it will try to call preventDefault and then fail.
+        expect(model.json_nav({'target': target})).to.be.false;
+        // Naturally, calling this will trigger a standard click as the
+        // trap is disabled.  Since the test framework can't handle this
+        // it is to remain commented.
+        // target.click();
+    });
+
     it('initial populate and click interaction in callback', function(done) {
         var self = this;
         var module = require('nunja.stock.molds/model/index');
