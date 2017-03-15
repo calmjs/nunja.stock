@@ -34,7 +34,7 @@ define([
         return result;
     };
 
-    var fetch = function(data_uri, href, caller, error_module) {
+    var fetch = function(data_uri, href, caller) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -53,8 +53,9 @@ define([
                     }
                 }
                 else {
-                    if (error_module) {
-                        require([error_module], function(handler) {
+                    var error_handler = caller.config.error_handler;
+                    if (error_handler) {
+                        require([error_handler], function(handler) {
                             // XXX shouldn't an attribute from that
                             // module be invoked instead?
                             handler(caller, xhr);
@@ -139,9 +140,7 @@ define([
         */
         // TODO see if alternative (config provided) update methods can
         // also be supported.
-        var config = loads(this.root.querySelector('div').getAttribute(
-            'data-config'));
-        fetch(data_uri, href, this, config.error_handler);
+        fetch(data_uri, href, this);
     };
 
     Model.prototype.popstate = function(ev) {
