@@ -34,6 +34,43 @@ define([
         return result;
     };
 
+    var fetch = function(data_uri, href, caller, error_module) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status == 200) {
+                    // not using loads because error handling.
+                    // XXX have this be in try/catch too
+                    var obj = JSON.parse(xhr.responseText);
+                    get_model(obj.nunja_model_id).populate(obj);
+                    if (href) {
+                        // TODO standard browser behavior on history
+                        // state is that if the href remains the same,
+                        // no history is pushed; see if this can be
+                        // implemented.
+                        // Simply push with server specified model id.
+                        history.push(obj.nunja_model_id, data_uri, href);
+                    }
+                }
+                else {
+                    if (error_module) {
+                        require([error_module], function(handler) {
+                            // XXX shouldn't an attribute from that
+                            // module be invoked instead?
+                            handler(caller, xhr);
+                        });
+                    }
+                    else {
+                        console.error(data_uri + ' -> error ' + xhr.status);
+                    }
+                }
+            }
+        };
+        xhr.open('GET', data_uri, true);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.send();
+    };
+
     var Model = function(root, selector) {
         /*
         Create a view model that is associated the root element with a
@@ -96,65 +133,15 @@ define([
         }
     };
 
-    Model.prototype.fetch = function(uri, cb, error_module) {
-        var xhr = new XMLHttpRequest();
-        var self = this;
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                if (xhr.status == 200) {
-                    cb(xhr);
-                }
-                else {
-                    if (error_module) {
-                        require([error_module], function(handler) {
-                            handler(self, xhr);
-                        });
-                    }
-                    else {
-                        console.error(uri + ' -> error ' + xhr.status);
-                    }
-                }
-            }
-        };
-        xhr.open('GET', uri, true);
-        xhr.setRequestHeader('Accept', 'application/json');
-        xhr.send();
-    };
-
-    // model.update should reference this instead?
-    Model.prototype._fetch_populate = function(data_uri, href) {
+    Model.prototype.update = function(data_uri, href) {
         /*
         Standard fetch and populate for a given model
         */
-        // XXX should this target (i.e. _fetch_populate) actually be
-        // configurablefrom the model? i.e. be able to be swapped out
-        // with another function/method?
+        // TODO see if alternative (config provided) update methods can
+        // also be supported.
         var config = loads(this.root.querySelector('div').getAttribute(
             'data-config'));
-        var self = this;
-        this.fetch(data_uri, function(xhr) {
-            // the callback is really an extra callback
-            var obj = JSON.parse(xhr.responseText);
-            // XXX what if we follow https://schema.org/WebPageElement
-            // also xml:id, and have a case where populate against that,
-            // i.e. activate a link on breadcrumbs populates some other
-            // element, what happens then?
-            self.populate(obj);
-            if (href) {
-                // TODO see if this other check can also be used: if the
-                // fetched data uri is the same as state, the push can
-                // be avoided, which also avoids the extra push where
-                // the uri stays the same; however, this data_uri
-                // difference may not apply to the underlying href, and
-                // vice-versa, so this can be problematic at the end.
-                // Regardless, this is fine for now.
-                history.push(self.id, data_uri, href);
-                // Note that while the populate method may delegate the
-                // rendering to another model, the fact that this model
-                // initially responded must be tracked, so this is the
-                // id that will be pushed.
-            }
-        }, config.error_handler);
+        fetch(data_uri, href, this, config.error_handler);
     };
 
     Model.prototype.popstate = function(ev) {
@@ -162,7 +149,7 @@ define([
             var data_uri = ev.state[this.id].data_href;
             if (this.data_href != data_uri) {
                 // only fetch and populate if the data is different.
-                this._fetch_populate(data_uri);
+                this.update(data_uri);
             }
         }
     };
@@ -189,7 +176,7 @@ define([
         // by the same URI.
         var data_uri = ev.target.attributes.getNamedItem('data-href').value;
 
-        this._fetch_populate(data_uri, href);
+        this.update(data_uri, href);
         ev.preventDefault();
     };
 
@@ -208,6 +195,7 @@ define([
             // if this model does not exist, or its id does not match,
             // what then?
             return get_model(obj.nunja_model_id).populate(obj, cb);
+            // TODO provide with user feedback on errors.
         }
 
         // Always attempt the synchronous flow whenever possible to
