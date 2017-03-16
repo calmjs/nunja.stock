@@ -18,6 +18,16 @@ define([
 
     var models = {};
 
+    // for the push state manager; originally I thought having each
+    // object deal with their data, but given that there is now only
+    // one method for fetching data and is co-ordinated at the level of
+    // this module, just use this standard id for now.
+
+    // Will have to explore how simultaneous shared control of history
+    // states across multiple components that rely on different data
+    // sources might work later.
+    var default_state_id = 'nunja.stock.mold/model/__state_id__';
+
     var get_model = function(id) {
         // verify that the model exist and that the id is the same
         var result = models[id];
@@ -49,7 +59,7 @@ define([
                         // no history is pushed; see if this can be
                         // implemented.
                         // Simply push with server specified model id.
-                        history.push(obj.nunja_model_id, data_uri, href);
+                        history.push(caller.state_id, data_uri, href);
                     }
                 }
                 else {
@@ -72,16 +82,32 @@ define([
         xhr.send();
     };
 
+    var popstate = function(ev) {
+        if (!(ev.state instanceof Object)) {
+            return false;
+        }
+        var urls = {};
+        for (var id in ev.state) {
+            (function (state, model) {
+                if (models && !(data_uri in urls) && state.data_href) {
+                    var data_uri = state.data_href;
+                    urls[data_uri] = true;
+                    fetch(data_uri, null, model);
+                }
+            })(ev.state[id], models[id]);
+        }
+    };
+
     var Model = function(root, selector) {
         /*
         Create a view model that is associated the root element with a
         selector for the immediate node that will be updated via JSON.
         */
 
-        var self = this;
         this.selector = selector || 'div';
 
         this.root = root;
+        this.state_id = default_state_id;
 
         /*
         data-href is _required_ for this element simply because that is
@@ -128,10 +154,9 @@ define([
         });
 
         if (history.has_push_state) {
-            window.addEventListener('popstate', function(ev) {
-                self.popstate(ev);
-            }, false);
+            window.addEventListener('popstate', popstate, false);
         }
+
     };
 
     Model.prototype.update = function(data_uri, href) {
@@ -141,16 +166,6 @@ define([
         // TODO see if alternative (config provided) update methods can
         // also be supported.
         fetch(data_uri, href, this);
-    };
-
-    Model.prototype.popstate = function(ev) {
-        if ((ev.state instanceof Object) && (this.id in ev.state)) {
-            var data_uri = ev.state[this.id].data_href;
-            if (this.data_href != data_uri) {
-                // only fetch and populate if the data is different.
-                this.update(data_uri);
-            }
-        }
     };
 
     Model.prototype.json_nav = function(ev) {
@@ -164,7 +179,7 @@ define([
         // this may seem redundant, but this is more for the initial
         // state as the model does not set the state until required,
         // i.e. when this feature is needed right here.
-        history.replace(this.id, this.data_href);
+        history.replace(this.state_id, this.data_href);
 
         // Always need the href because this is _the_ canonical URI for
         // the target resource.
