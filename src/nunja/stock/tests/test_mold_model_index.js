@@ -4,7 +4,6 @@ var core = require('nunja/core');
 var utils = require('nunja/utils');
 var $ = utils.$;
 
-var markers = {};
 var model_navgrid_data = require('nunja/stock/tests/model_navgrid_data');
 
 
@@ -36,6 +35,7 @@ window.mocha.setup('bdd');
 describe('nunja.stock.molds/model test cases', function() {
 
     var data = model_navgrid_data;
+    var markers = {};
 
     var defaultPopulate = function(test, arg) {
         var obj = arg instanceof Object ? arg : data[arg || '/'];
@@ -539,25 +539,8 @@ describe('nunja.stock.molds/model inner model tests', function() {
 
 describe('nunja.stock.molds/model inner model async macro', function() {
 
-    var datum = {
-        "@context": "http://schema.org",
-        "nunja_model_id": "demo_object",
-        "nunja_model_config": {
-            "data_href": "/dummy.py?/hello",
-            "mold_id": "nunja.stock.mock/async"
-        },
-        "mainEntity": {
-            "@id": "/",
-            "href": "/dummy.py?/hello",
-            "data_href": "/dummy.py?/hello",
-            "@type": "CreativeWork",
-            "value": "hello world.",
-        }
-    };
-
-    beforeEach(function() {
+    before(function() {
         this.engine = core.engine;
-        // this.clock = sinon.useFakeTimers();
         this.server = sinon.fakeServer.create();
         this.server.autoRespond = true;
 
@@ -585,20 +568,41 @@ describe('nunja.stock.molds/model inner model async macro', function() {
             }
         });
 
+    });
+
+    after(function() {
+        this.server.restore();
+        requirejs.undef('nunja.stock.mock/async/mod');
+    });
+
+    beforeEach(function() {
         setup_window_event_listener(this);
     });
 
     afterEach(function() {
         teardown_window_event_listener(this);
-        markers = {};
-        this.server.restore();
-        // this.clock.restore();
+        document.body.innerHTML = "";
         // TODO ideally, all the history should be wiped.
         window.history.replaceState(null, '');
-        document.body.innerHTML = "";
     });
 
     it('async populate fresh', function(done) {
+        var datum = {
+            "@context": "http://schema.org",
+            "nunja_model_id": "demo_object",
+            "nunja_model_config": {
+                "data_href": "/dummy.py?/hello",
+                "mold_id": "nunja.stock.mock/async"
+            },
+            "mainEntity": {
+                "@id": "/",
+                "href": "/dummy.py?/hello",
+                "data_href": "/dummy.py?/hello",
+                "@type": "CreativeWork",
+                "value": "hello world.",
+            }
+        };
+
         // requires actual asynchronous load path
         var self = this;
         var module = require('nunja.stock.molds/model/index');
@@ -613,7 +617,6 @@ describe('nunja.stock.molds/model inner model async macro', function() {
         div.appendChild(child);
 
         var model = new module.Model(div);
-        model.populate(datum);
 
         model.populate(datum, function() {
             // the one single event pushed.
