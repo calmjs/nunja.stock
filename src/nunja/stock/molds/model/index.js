@@ -2,7 +2,8 @@ define([
     'nunja/core',
     'nunja/utils',
     'nunja/stock/history',
-], function(core, utils, history) {
+    'nunja.stock.molds/model/hook',
+], function(core, utils, history, hook) {
     'use strict';
 
     var $ = utils.$;
@@ -52,8 +53,9 @@ define([
                     // not using loads because error handling.
                     // XXX have this be in try/catch too
                     var obj = JSON.parse(xhr.responseText);
-                    get_model(obj.nunja_model_id).populate(obj);
-                    if (href) {
+                    var populated = get_model(
+                        obj.nunja_model_id).trigger_populate(obj);
+                    if (populated && href) {
                         // TODO standard browser behavior on history
                         // state is that if the href remains the same,
                         // no history is pushed; see if this can be
@@ -108,6 +110,7 @@ define([
 
         this.root = root;
         this.state_id = default_state_id;
+        this.populate_handlers = null;
 
         /*
         data-href is _required_ for this element simply because that is
@@ -141,17 +144,9 @@ define([
         this.config = loads(child.getAttribute('data-config'));
         this.data_href = this.config && this.config.data_href || null;
 
-        (this.config && this.config.hooks instanceof Array ?
-            this.config.hooks : []
-        ).forEach(function(entry) {
-            (function(module_name, callable, args) {
-                require([module_name], function(module) {
-                    // the called function will have a reference to
-                    // this object.
-                    module[callable].apply(self, args);
-                });
-            }).apply(null, entry);
-        });
+        if (this.config && this.config.hooks instanceof Array) {
+            hook.amd_call_map(this, this.config.hooks);
+        }
 
         if (history.has_push_state) {
             window.addEventListener('popstate', popstate, false);
@@ -208,7 +203,7 @@ define([
         if (obj.nunja_model_id != this.id) {
             // if this model does not exist, or its id does not match,
             // what then?
-            return get_model(obj.nunja_model_id).populate(obj, cb);
+            return get_model(obj.nunja_model_id).trigger_populate(obj, cb);
             // TODO provide with user feedback on errors.
         }
 
@@ -223,6 +218,33 @@ define([
         }
         else {
             core.engine.populate(self.root, obj, after_populate);
+        }
+    };
+
+    // XXX this really should be attached as an event, but given that
+    // how wildly different events are done across browser versions, do
+    // this as a shortcut for now.
+    Model.prototype.trigger_populate = function(obj, cb) {
+        if (this.populate_handlers instanceof Array) {
+            var self = this;
+            var populate = function(obj, cb) {
+                return self.populate(obj, cb);
+            };
+
+            this.populate_handlers.forEach(function(handler) {
+                // pass in the populate function of this instance, if
+                // the handler feels like calling it.
+                handler.apply(populate, [obj, cb]);
+            });
+            // this stops the push state if no handlers
+            // TODO provide better feedback on why nothing happened.
+            // TODO consider just fallback and continue on the standard
+            // link click action.
+            return this.populate_handlers.length > 0;
+        }
+        else {
+            this.populate(obj, cb);
+            return true;
         }
     };
 

@@ -534,6 +534,66 @@ describe('nunja.stock.molds/model inner model tests', function() {
         this.clock.tick(500);
     });
 
+    it('populate with hook', function(done) {
+        var datum = {
+            "nunja_model_id": "demo_object2",
+            "nunja_model_config": {
+                "data_href": "/dummy.py?/hello",
+                "mold_id": "nunja.stock.mock/async"
+            },
+            'value': 'hello world.'
+        };
+
+        // define the custom module
+        define('nunja.stock.mock/async/mod', [], function() {
+            return {
+                'alt_populate': function() {
+                    return (function(obj, cb) {
+                        obj.value = 'alt: ' + obj.value;
+                        this(obj, cb);
+                    });
+                }
+            };
+        });
+
+        var module = require('nunja.stock.molds/model/index');
+
+        var div = document.createElement('div');
+        div.setAttribute('data-nunja', 'nunja.stock.molds/model');
+        // emulate the standard rendering.
+        var child = document.createElement('div');
+        child.setAttribute('id', 'demo_object2');
+        child.setAttribute('data-config', JSON.stringify({
+            "data_href": datum.nunja_model_config.data_href,
+            "hooks": [
+                ['nunja.stock.molds/model/hook', 'custom_populate', [[
+                    ['nunja.stock.mock/async/mod', 'alt_populate', []],
+                ]]],
+            ],
+        }));
+        div.appendChild(child);
+
+        var model = new module.Model(div);
+        // trigger the async things for the model, i.e. the assignment
+        // of the populate_handlers.
+        this.clock.tick(500);
+
+        // Override the real populate with this dummy; though this can
+        // probably be done with a dummy module, this is fine for now.
+        model.populate = function(obj, cb) {
+            $('div', model.root)[0].innerHTML = obj.value;
+            cb();
+        };
+
+        model.trigger_populate(datum, function() {
+            // the one single event pushed.
+            expect(model.populate_handlers.length).to.equal(1);
+            expect($('div', model.root)[0].innerHTML).to.equal(
+                'alt: hello world.');
+            done();
+        });
+    });
+
 });
 
 
@@ -618,7 +678,7 @@ describe('nunja.stock.molds/model inner model async macro', function() {
 
         var model = new module.Model(div);
 
-        model.populate(datum, function() {
+        model.trigger_populate(datum, function() {
             // the one single event pushed.
             expect($('p', div)[0].innerHTML).to.equal('hello world.');
             expect(self.window_listeners.length).to.equal(1);
