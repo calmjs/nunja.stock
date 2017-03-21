@@ -33,7 +33,8 @@ class Simple(Base):
         # XXX very naive implementation that does not take into account
         # of a bunch of edge cases.
         return {
-            "@id": self.format_uri(path=''.join(fragments[:position])),
+            "@id": self.definition.format_href(
+                path=''.join(fragments[:position])),
             "name": (
                 self.home
                 if position == self.start_position and fragment == '/' else

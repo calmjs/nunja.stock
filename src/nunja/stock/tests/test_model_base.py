@@ -40,6 +40,22 @@ class DefinitionTestCase(unittest.TestCase):
         with self.assertRaises(TypeError):
             base.Definition('model_id', '{path}', config='notdict')
 
+    def test_definition_format_href_template(self):
+        defn = base.Definition(
+            'model_id', 'https://example.com/chapter/{chapter_id}/')
+        self.assertEqual(
+            defn.format_href(chapter_id='1'), 'https://example.com/chapter/1/')
+
+    def test_definition_format_data_href_template(self):
+        defn = base.Definition(
+            'model_id',
+            'https://example.com/chapter/{chapter_id}/',
+            uri_template_json='https://api.example.com/chapter/{chapter_id}/',
+        )
+        self.assertEqual(
+            defn.format_data_href(chapter_id='1'),
+            'https://api.example.com/chapter/1/')
+
 
 class BaseTestCase(unittest.TestCase):
 
@@ -47,12 +63,6 @@ class BaseTestCase(unittest.TestCase):
         obj = base.Base(base.Definition(
             'model_id', 'https://example.com/{path}'))
         self.assertEqual(obj.definition.nunja_model_id, 'model_id')
-
-    def test_base_format_uri_template(self):
-        obj = base.Base(base.Definition(
-            'model_id', 'https://example.com/chapter/{chapter_id}/'))
-        self.assertEqual(
-            obj.format_uri(chapter_id='1'), 'https://example.com/chapter/1/')
 
     def test_base_finalize_simple(self):
         obj = base.Base(base.Definition(

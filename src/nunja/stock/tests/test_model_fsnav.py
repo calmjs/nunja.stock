@@ -17,6 +17,30 @@ def _dict_clone_filtered(value, filtered=['created']):
     return {k: v for k, v in items if k not in filtered}
 
 
+def create_test_data(testcase):
+    testcase.tmpdir = mkdtemp(testcase)
+    testcase.dummydir1 = join(testcase.tmpdir, 'dummydir1')
+    testcase.dummydir2 = join(testcase.tmpdir, 'dummydir2')
+    testcase.dummydir23 = join(testcase.tmpdir, 'dummydir2', 'dummydir3')
+
+    makedirs(testcase.dummydir1)
+    makedirs(testcase.dummydir2)
+    makedirs(testcase.dummydir23)
+
+    testcase.test_file = join(testcase.tmpdir, 'test_file.txt')
+    testcase.dummydirfile1 = join(testcase.dummydir2, 'file1')
+    testcase.dummydirfile2 = join(testcase.dummydir2, 'file2')
+
+    with open(testcase.test_file, 'w') as fd:
+        fd.write('test_file.txt contents')
+
+    with open(testcase.dummydirfile1, 'w') as fd:
+        fd.write('dummydirfile1')
+
+    with open(testcase.dummydirfile2, 'w') as fd:
+        fd.write('dummydirfile2')
+
+
 class MiscTestCase(unittest.TestCase):
 
     def test_to_filetype(self):
@@ -24,38 +48,171 @@ class MiscTestCase(unittest.TestCase):
         self.assertEqual(fsnav.to_filetype(0o40000), 'folder')
         self.assertEqual(fsnav.to_filetype(0), 'unknown')
 
+    def test_base_get_filetype(self):
+        create_test_data(self)
+        self.assertEqual(fsnav.get_filetype(self.dummydir1), 'folder')
+        self.assertEqual(fsnav.get_filetype(self.test_file), 'file')
 
-class FSNavTreeModelTestCase(unittest.TestCase):
+
+class FSModelTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.tmpdir = mkdtemp(self)
-        self.dummydir1 = join(self.tmpdir, 'dummydir1')
-        self.dummydir2 = join(self.tmpdir, 'dummydir2')
-        self.dummydir23 = join(self.tmpdir, 'dummydir2', 'dummydir3')
-
-        makedirs(self.dummydir1)
-        makedirs(self.dummydir2)
-        makedirs(self.dummydir23)
-
-        self.test_file = join(self.tmpdir, 'test_file.txt')
-        self.dummydirfile1 = join(self.dummydir2, 'file1')
-        self.dummydirfile2 = join(self.dummydir2, 'file2')
-
-        with open(self.test_file, 'w') as fd:
-            fd.write('test_file.txt contents')
-
-        with open(self.dummydirfile1, 'w') as fd:
-            fd.write('dummydirfile1')
-
-        with open(self.dummydirfile2, 'w') as fd:
-            fd.write('dummydirfile2')
+        create_test_data(self)
 
     def tearDown(self):
         pass
 
-    def test_base_get_filetype(self):
-        self.assertEqual(fsnav.get_filetype(self.dummydir1), 'folder')
-        self.assertEqual(fsnav.get_filetype(self.test_file), 'file')
+    def test_get_attrs(self):
+        model = fsnav.FSModel(self.tmpdir)
+
+        self.assertEqual(
+            _dict_clone_filtered(model.get_attrs(self.test_file)), {
+                '@type': 'CreativeWork',
+                'alternativeType': 'file',
+                'size': 22,
+                '@id': 'test_file.txt',
+                'name': 'test_file.txt',
+                'path': '/test_file.txt'
+            }
+        )
+
+        self.assertEqual(
+            _dict_clone_filtered(model.get_attrs(self.dummydir1), [
+                'created', 'size',
+            ]), {
+                '@type': 'ItemList',
+                'alternativeType': 'folder',
+                '@id': 'dummydir1',
+                'name': 'dummydir1',
+                'path': '/dummydir1/'
+            }
+        )
+
+        self.assertEqual(
+            _dict_clone_filtered(model.get_attrs(self.dummydirfile1)), {
+                '@type': 'CreativeWork',
+                'alternativeType': 'file',
+                'size': 13,
+                '@id': 'file1',
+                'name': 'file1',
+                'path': '/dummydir2/file1'
+            }
+        )
+
+    def test_get_attrs_data_pardir(self):
+        # for the case where legitimate parent dir entry is required
+        model = fsnav.FSModel(self.tmpdir)
+        self.assertEqual(
+            _dict_clone_filtered(model.get_attrs(
+                join(self.dummydir2, pardir)
+            )), {
+                'alternativeType': 'folder',
+                '@type': 'ItemList',
+                'size': 0,
+                '@id': '..',
+                'name': '..',
+                'path': '/',
+            }
+        )
+
+    def test_path_to_fs_path(self):
+        model = fsnav.FSModel(self.tmpdir)
+        with self.assertRaises(ValueError):
+            model.path_to_fs_path('welp')
+
+        result = model.path_to_fs_path('/readme.txt')
+        self.assertTrue(result.startswith(self.tmpdir))
+        self.assertTrue(result.endswith('readme.txt'))
+
+    def test_listdir(self):
+        model = fsnav.FSModel(self.tmpdir)
+        self.assertEqual(sorted(model._listdir(sep)), [])
+
+        # No issue between this or the one with a separtor
+        self.assertEqual(sorted(model._listdir(self.tmpdir)), [
+            'dummydir1', 'dummydir2', 'test_file.txt'])
+        self.assertEqual(sorted(model._listdir(self.tmpdir + sep)), [
+            'dummydir1', 'dummydir2', 'test_file.txt'])
+
+        self.assertEqual(sorted(model._listdir(self.dummydir1)), ['..'])
+
+    def test_get_struct_dir_empty(self):
+        model = fsnav.FSModel(self.tmpdir)
+        result = model.get_struct(self.dummydir1)
+        self.assertEqual(_dict_clone_filtered(result['mainEntity'], [
+            'created', 'size', 'itemListElement',
+        ]), {
+            'alternativeType': 'folder',
+            '@type': 'ItemList',
+            '@id': 'dummydir1',
+            'name': 'dummydir1',
+            'path': '/dummydir1/',
+        })
+        self.assertEqual(len(result['mainEntity']['itemListElement']), 1)
+        self.assertEqual(
+            result['mainEntity']['itemListElement'][0]['name'], '..')
+        self.assertEqual(
+            result['mainEntity']['itemListElement'][0]['path'], '/')
+
+    def test_get_struct_dir_contents(self):
+        model = fsnav.FSModel(self.tmpdir)
+        result = model.get_struct(self.dummydir2)
+        self.assertEqual(_dict_clone_filtered(result['mainEntity'], [
+            'created', 'size', 'itemListElement',
+        ]), {
+            'alternativeType': 'folder',
+            '@type': 'ItemList',
+            '@id': 'dummydir2',
+            'name': 'dummydir2',
+            'path': '/dummydir2/',
+        })
+        self.assertEqual(len(result['mainEntity']['itemListElement']), 4)
+
+    def test_get_struct_file(self):
+        model = fsnav.FSModel(self.tmpdir)
+
+        self.assertEqual(
+            _dict_clone_filtered(model.get_struct(self.test_file)[
+                'mainEntity'
+            ]), {
+                'alternativeType': 'file',
+                '@type': 'CreativeWork',
+                'size': 22,
+                '@id': 'test_file.txt',
+                'name': 'test_file.txt',
+                'path': '/test_file.txt',
+            }
+        )
+
+        self.assertEqual(
+            _dict_clone_filtered(model.get_struct(self.dummydirfile1)[
+                'mainEntity'
+            ]), {
+                'alternativeType': 'file',
+                '@type': 'CreativeWork',
+                'size': 13,
+                '@id': 'file1',
+                'name': 'file1',
+                'path': '/dummydir2/file1',
+            }
+        )
+
+    def test_get_struct_error(self):
+        model = fsnav.FSModel(self.tmpdir)
+        with self.assertRaises(OSError):  # FileNotFoundError
+            model.get_struct('/no_such_dir')
+
+        with self.assertRaises(OSError):  # FileNotFoundError
+            model.get_struct('/no_such_dir')
+
+
+class FSNavTreeModelTestCase(unittest.TestCase):
+
+    def setUp(self):
+        create_test_data(self)
+
+    def tearDown(self):
+        pass
 
     def test_base_model_initialize(self):
         model = fsnav.Base(
@@ -176,150 +333,6 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             },
         })
 
-    def test_fs_path_format_path_root(self):
-        model = fsnav.Base(
-            Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
-        self.assertEqual(
-            '/', model._fs_path_format_path(self.tmpdir))
-
-    def test_fs_path_format_path_file(self):
-        model = fsnav.Base(
-            Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
-        self.assertEqual(
-            '/dummydir2/file1', model._fs_path_format_path(self.dummydirfile1))
-
-    def test_fs_path_format_path_pardir(self):
-        model = fsnav.Base(
-            Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
-        self.assertEqual(
-            '/dummydir2/',
-            model._fs_path_format_path(join(self.dummydir23, pardir)),
-        )
-
-    def test_get_attrs(self):
-        model = fsnav.Base(
-            Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
-
-        self.assertEqual(
-            _dict_clone_filtered(model._get_attrs(self.test_file)), {
-                '@type': 'CreativeWork',
-                'alternativeType': 'file',
-                'size': 22,
-                '@id': 'test_file.txt',
-                'name': 'test_file.txt',
-                'url': '/script.py?/test_file.txt'
-            }
-        )
-
-        self.assertEqual(
-            _dict_clone_filtered(model._get_attrs(self.dummydir1), [
-                'created', 'size',
-            ]), {
-                '@type': 'ItemList',
-                'alternativeType': 'folder',
-                '@id': 'dummydir1',
-                'name': 'dummydir1',
-                'url': '/script.py?/dummydir1/'
-            }
-        )
-
-        self.assertEqual(
-            _dict_clone_filtered(model._get_attrs(self.dummydirfile1)), {
-                '@type': 'CreativeWork',
-                'alternativeType': 'file',
-                'size': 13,
-                '@id': 'file1',
-                'name': 'file1',
-                'url': '/script.py?/dummydir2/file1'
-            }
-        )
-
-    def test_listdir(self):
-        model = fsnav.Base(
-            Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
-        self.assertEqual(sorted(model.listdir(sep)), [])
-
-        # No issue between this or the one with a separtor
-        self.assertEqual(sorted(model.listdir(self.tmpdir)), [
-            'dummydir1', 'dummydir2', 'test_file.txt'])
-        self.assertEqual(sorted(model.listdir(self.tmpdir + sep)), [
-            'dummydir1', 'dummydir2', 'test_file.txt'])
-
-        self.assertEqual(sorted(model.listdir(self.dummydir1)), ['..'])
-
-        self.assertEqual(sorted(model.listdir(self.dummydir2)), [
-            '..', 'dummydir3', 'file1', 'file2'])
-
-    def test_get_attrs_data(self):
-        model = fsnav.Base(
-            Definition(
-                'fsnav', '/script.py?{+path}',
-                uri_template_json='/json.py{+path}',
-            ),
-            self.tmpdir,
-        )
-
-        self.assertEqual(
-            _dict_clone_filtered(model._get_attrs(self.test_file)), {
-                '@type': 'CreativeWork',
-                'alternativeType': 'file',
-                'size': 22,
-                '@id': 'test_file.txt',
-                'name': 'test_file.txt',
-                'url': '/script.py?/test_file.txt',
-                'data_href': '/json.py/test_file.txt',
-            }
-        )
-
-        self.assertEqual(
-            _dict_clone_filtered(model._get_attrs(self.dummydir1), [
-                'created', 'size',
-            ]), {
-                'alternativeType': 'folder',
-                '@type': 'ItemList',
-                '@id': 'dummydir1',
-                'name': 'dummydir1',
-                'url': '/script.py?/dummydir1/',
-                'data_href': '/json.py/dummydir1/',
-            }
-        )
-
-        self.assertEqual(
-            _dict_clone_filtered(model._get_attrs(self.dummydirfile1)), {
-                'alternativeType': 'file',
-                '@type': 'CreativeWork',
-                'size': 13,
-                '@id': 'file1',
-                'name': 'file1',
-                'url': '/script.py?/dummydir2/file1',
-                'data_href': '/json.py/dummydir2/file1',
-            }
-        )
-
-    def test_get_attrs_data_pardir(self):
-        # for the case where legitimate parent dir entry is required
-        model = fsnav.Base(
-            Definition(
-                'fsnav', '/script.py?{+path}',
-                uri_template_json='/json.py{+path}',
-            ),
-            self.tmpdir,
-        )
-
-        self.assertEqual(
-            _dict_clone_filtered(model._get_attrs(
-                join(self.dummydir2, pardir)
-            )), {
-                'alternativeType': 'folder',
-                '@type': 'ItemList',
-                'size': 0,
-                '@id': '..',
-                'name': '..',
-                'data_href': '/json.py/',
-                'url': '/script.py?/',
-            }
-        )
-
     def test_get_struct_file(self):
         model = fsnav.Base(
             Definition('fsnav', '/script.py?{+path}'),
@@ -362,7 +375,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             Definition('fsnav', '/script.py?{+path}'), self.tmpdir,
             anchor_key='name')
 
-        result = model._get_struct_dir(self.dummydir1)
+        result = model._get_struct_dir(self.dummydir1, lambda x: True)
         self.assertEqual(_dict_clone_filtered(result['mainEntity'], [
                 'created', 'size', 'itemListElement',
             ]), {
@@ -387,7 +400,9 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             'mold_id': 'nunja.stock.molds/navgrid',
         })
 
-        result = model._get_struct_dir(self.dummydir2)
+        # TODO should test out the other conditions here, but this is
+        # covered later with the specialized methods
+        result = model._get_struct_dir(self.dummydir2, lambda x: True)
         self.assertEqual(_dict_clone_filtered(result['mainEntity'], [
                 'created', 'size', 'itemListElement',
             ]), {
@@ -411,16 +426,6 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             'mold_id': 'nunja.stock.molds/navgrid',
         })
         self.assertEqual(len(result['mainEntity']['itemListElement']), 4)
-
-    def test_path_to_fs_path(self):
-        model = fsnav.Base(
-            Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
-        with self.assertRaises(ValueError):
-            model.path_to_fs_path('welp')
-
-        result = model.path_to_fs_path('/readme.txt')
-        self.assertTrue(result.startswith(self.tmpdir))
-        self.assertTrue(result.endswith('readme.txt'))
 
     def test_get_struct(self):
         model = fsnav.Base(
@@ -451,6 +456,22 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
         results = model.get_struct('/dummydir2')
         self.assertEqual(len(results['mainEntity']['itemListElement']), 4)
+
+    def test_get_struct_dir_dirs(self):
+        model = fsnav.Base(
+            Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
+        results = model.get_struct_dirs_only('/dummydir2')
+        self.assertEqual(len(results['mainEntity']['itemListElement']), 2)
+
+        # also for an item underneath
+        results = model.get_struct_dirs_only('/dummydir2/something')
+        self.assertEqual(len(results['mainEntity']['itemListElement']), 2)
+
+    def test_get_struct_dir_files(self):
+        model = fsnav.Base(
+            Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
+        results = model.get_struct_files_only('/dummydir2')
+        self.assertEqual(len(results['mainEntity']['itemListElement']), 2)
 
 
 class FSNavTreeModelMirrorTestCase(ExamplesTestCase):

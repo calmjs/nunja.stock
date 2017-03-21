@@ -92,30 +92,30 @@ class Definition(namedtuple('Definition', [
         obj['@context'] = obj.get('@context', self.context)
         return obj
 
+    def format_href(self, **kw):
+        """
+        Default implementation for href, which expands the uri_template
+        with the provided arguments
+        """
+
+        return expand(self.uri_template, **kw)
+
+    def format_data_href(self, **kw):
+        """
+        Default implementation for data-href, same as format_href, with
+        uri_template_json instead.
+        """
+
+        return expand(self.uri_template_json, **kw)
+
 
 class Base(object):
+    """
+    A simple base implmenetation that include just one definition.
+    """
 
     def __init__(self, definition):
         self.definition = definition
-
-    # XXX need to formalize the method names for the two methods below
-    # either call them in relation to href or data-href or some proper
-    # term.
-    def format_uri(self, **kw):
-        """
-        Subclasses should override this, as the default simply take over
-        the entire query string with the path.
-        """
-
-        return expand(self.definition.uri_template, **kw)
-
-    def format_uri_data_href(self, **kw):
-        """
-        Subclasses should override this, as the default simply take over
-        the entire query string with the path.
-        """
-
-        return expand(self.definition.uri_template_json, **kw)
 
     def finalize(self, obj):
         return self.definition.finalize(obj)
