@@ -7,21 +7,32 @@ exports.has_push_state = (
 );
 
 
-var initialize = function() {
+var initialize = function(id, data_href) {
     if (!(exports.has_push_state)) {
         return false;
     }
 
+    var init_new = function() {
+        window.history.replaceState(
+            (id ? make_node_state(id, data_href) : {}),
+            document.title
+        );
+        return true;
+    };
+
     // dump in a new state to manipulate with if one has not
     // already been created
     if (window.history.state === null) {
-        window.history.replaceState({}, document.title);
+        return init_new();
     }
     // sanity check - a standard object can be worked with.
     else if (!(window.history.state instanceof Object)) {
         console.warn(
             'window.history.state was not an object; fixing...');
-        window.history.replaceState({}, document.title);
+        return init_new();
+    }
+    if (!(id in window.history.state)) {
+        replace(id, data_href);
     }
     return true;
 };
@@ -80,7 +91,7 @@ var push = function(id, data_href, href) {
 
 
 var get = function(id) {
-    return (window.history.state[id] || {}).data_href;
+    return (window.history.state && window.history.state[id] || {}).data_href;
 };
 
 

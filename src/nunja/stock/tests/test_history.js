@@ -36,9 +36,34 @@ describe('nunja/stock/history test cases disabled', function() {
 
 describe_('nunja/stock/history test cases enabled', function() {
 
+    afterEach(function() {
+        window.history.replaceState(null, window.title);
+    });
+
     it('test history initialize', function() {
         expect(nunja_stock_history.initialize()).to.be.true;
         expect(window.history.state instanceof Object).to.be.true;
+    });
+
+    it('test history initialize with arguments', function() {
+        expect(nunja_stock_history.initialize('id', 'href')).to.be.true;
+        expect(window.history.state).to.deep.equal({
+            'id': {'data_href': 'href'}
+        });
+
+        expect(nunja_stock_history.initialize('id', 'another')).to.be.true;
+        // remain unchanged
+        expect(window.history.state).to.deep.equal({
+            'id': {'data_href': 'href'}
+        });
+
+        expect(nunja_stock_history.initialize('alt', 'new')).to.be.true;
+        // the new one should be applied.
+        expect(window.history.state).to.deep.equal({
+            'id': {'data_href': 'href'},
+            'alt': {'data_href': 'new'}
+        });
+
     });
 
     it('test history replace', function() {
