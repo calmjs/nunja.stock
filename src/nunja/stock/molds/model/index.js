@@ -45,14 +45,41 @@ define([
         return result;
     };
 
-    var fetch = function(data_uri, href, caller) {
+    var fetch = function(data_uri, href, caller, handler, error_handler) {
+        var process_error = function(xhr) {
+            // grab error definition
+            if (error_handler instanceof Function) {
+                return error_handler(xhr);
+            }
+            var error_def = (
+                caller && caller.config && caller.config.error_handler);
+            if (error_def) {
+                require([error_def], function(error_handler) {
+                    // XXX shouldn't an attribute from that
+                    // module be invoked instead?
+                    error_handler(caller, xhr);
+                });
+            }
+            else {
+                console.error(data_uri + ' -> error; status: ' + xhr.status);
+            }
+        };
+
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 if (xhr.status == 200) {
                     // not using loads because error handling.
                     // XXX have this be in try/catch too
-                    var obj = JSON.parse(xhr.responseText);
+                    try {
+                        var obj = JSON.parse(xhr.responseText);
+                    }
+                    catch(e) {
+                        return process_error(xhr);
+                    }
+                    if (handler instanceof Function) {
+                        return handler(obj);
+                    }
                     var populated = get_model(
                         obj.nunja_model_id).trigger_populate(obj);
                     if (populated && href) {
@@ -65,17 +92,7 @@ define([
                     }
                 }
                 else {
-                    var error_handler = caller.config.error_handler;
-                    if (error_handler) {
-                        require([error_handler], function(handler) {
-                            // XXX shouldn't an attribute from that
-                            // module be invoked instead?
-                            handler(caller, xhr);
-                        });
-                    }
-                    else {
-                        console.error(data_uri + ' -> error ' + xhr.status);
-                    }
+                    process_error(xhr);
                 }
             }
         };
@@ -270,6 +287,8 @@ define([
 
     return {
         'Model': Model,
+        'fetch': fetch,
+        'get_model': get_model,
         'init': init
     };
 });

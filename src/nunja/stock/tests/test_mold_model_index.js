@@ -133,7 +133,17 @@ describe('nunja.stock.molds/model test cases', function() {
 
         this.server.respondWith('GET', '/bad_target', function (xhr) {
             markers['bad_target'] = true;
-            xhr.respond(404, {'Content-Type': 'application/json'}, '{}');
+            xhr.respond(400, {'Content-Type': 'application/json'}, '{}');
+        });
+
+        this.server.respondWith('GET', '/empty', function (xhr) {
+            xhr.respond(200, {
+                'Content-Type': 'application/json'}, '{"empty":true}');
+        });
+
+        this.server.respondWith('GET', '/not_json', function (xhr) {
+            xhr.respond(200, {
+                'Content-Type': 'text/plain'}, '<html></html>');
         });
 
         setup_window_event_listener(this);
@@ -227,6 +237,70 @@ describe('nunja.stock.molds/model test cases', function() {
         inactive_a.click();
         this.clock.tick(500);
         expect(markers.bad_target).to.be.undefined;
+    });
+
+    it('Standard get_model call', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var div = document.createElement('div');
+        var child = document.createElement('div');
+        child.setAttribute('id', 'demo_object');
+        div.appendChild(child);
+        var model = new module.Model(div);
+        expect(module.get_model('demo_object')).to.equal(model);
+    });
+
+    it('Standard fetch call with custom handler', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var result;
+        module.fetch('/empty', 'some_href', null, function(obj) {
+            result = obj;
+        });
+        this.clock.tick(500);
+        expect(result).to.deep.equal({'empty': true});
+    });
+
+    it('Standard fetch, no model', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var result;
+        module.fetch('/empty', 'some_href', null, function(obj) {
+            result = obj;
+        });
+        this.clock.tick(500);
+        expect(result).to.deep.equal({'empty': true});
+    });
+
+    it('Standard fetch, no model, request error no error handler', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var handler = sinon.spy();
+        module.fetch('/bad_target', 'some_href', null, handler);
+        this.clock.tick(500);
+        expect(handler.called).to.be.false;
+    });
+
+    it('Standard fetch, no model, request error, error handler', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var handler = sinon.spy();
+        var code;
+        var error_handler = function(xhr) {
+            code = xhr.status;
+        };
+        module.fetch('/bad_target', 'some_href', null, handler, error_handler);
+        this.clock.tick(500);
+        expect(handler.called).to.be.false;
+        expect(code).to.equal(400);
+    });
+
+    it('Standard fetch, no model, not json error', function() {
+        var module = require('nunja.stock.molds/model/index');
+        var handler = sinon.spy();
+        var code;
+        var error_handler = function(xhr) {
+            code = xhr.status;
+        };
+        module.fetch('/not_json', 'some_href', null, handler, error_handler);
+        this.clock.tick(500);
+        expect(handler.called).to.be.false;
+        expect(code).to.equal(200);
     });
 
 });
