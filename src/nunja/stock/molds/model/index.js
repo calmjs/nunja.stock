@@ -187,11 +187,9 @@ define([
             return false;
         }
 
-        history.initialize();
-        // this may seem redundant, but this is more for the initial
-        // state as the model does not set the state until required,
-        // i.e. when this feature is needed right here.
-        history.replace(this.state_id, this.data_href);
+        // initialize the navigation, iff the current state_id token was
+        // not already assigned with any data.
+        history.initialize(this.state_id, this.data_href);
 
         // Always need the href because this is _the_ canonical URI for
         // the target resource.
