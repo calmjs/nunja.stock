@@ -14,6 +14,7 @@ from os.path import normpath
 from os.path import sep
 
 from posixpath import normpath as normuri
+from posixpath import dirname as diruri
 from nunja.stock.model import base
 
 
@@ -244,11 +245,28 @@ class Base(base.Base):
     def _get_struct_file(self, fs_path):
         def pre_filter(attrs):
             rows, rownames = [], []
+            part_of = None
             for key, value in attrs:
+                if key == 'path':
+                    part_of = value
                 if key not in self.active_keys:
                     continue
                 rownames.append(key)
                 rows.append([value])
+
+            if part_of and self.definition.uri_template_json:
+                # XXX this should actually follow the same url as the
+                # true identifier of the object, i.e. format with the
+                # standard format_href; however, this is being used with
+                # the fetch_for filter for now to provide a way to
+                # ensure the related element will be synchronized when
+                # the state changes.
+                # However, the more correct way is to not do this but
+                # have the history/state API better manage that from the
+                # client.
+                attrs.append(['partOf', self.definition.format_data_href(
+                    path=diruri(part_of))])
+
             attrs.append(['rows', rows])
             attrs.append(['rownames', rownames])
             return self.create_filter()(attrs)

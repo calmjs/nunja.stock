@@ -240,6 +240,7 @@ var exports = {
             "alternativeType": "file",
             "url": "/script.py?/dummydir2/file1",
             "data_href": "/json.py?/dummydir2/file1",
+            "partOf": "/json.py?/dummydir2",
             "name": "file1",
             "size": 13,
             "rownames": ["alternativeType", "name", "size"],
