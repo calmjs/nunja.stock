@@ -81,6 +81,9 @@ If the command was executed much like the simple introductory method,
 i.e. omitting the ``--source-registry`` flag, all the templates will
 be sourced from the artifact file and thus not as useful.
 
+Simple CGI version (all supported Python versions)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Now that the ``nunja.js`` is written, try serving that via:
 
 .. code:: sh
@@ -111,3 +114,27 @@ Or alternatively with templates pre-compiled in:
 
 The output file should be ``nunja.stock.js`` by default.  Refer to the
 built-in help for details.
+
+Sanic version (Python 3.5+)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An example for using the `Sanic`_ integration layer as it is currently
+implemented (as of ``nunja.serve@686499c6e``) is also included in this
+directory.  In order to use this, the current environment must be using
+Python 3.5+, and simply install it like so:
+
+.. code:: sh
+
+    (env) $ pip install sanic
+
+Once that is done, execute the sample script directly:
+
+.. code:: sh
+
+    (env) $ python sanic_example.py 
+    2017-04-04 00:00:00,000: INFO: Goin' Fast @ http://127.0.0.1:9000
+    2017-04-04 00:00:00,001: INFO: Starting worker [13337]
+
+Now point the browser to http://127.0.0.1:9000/fsnavtree/ and the site
+should come up.  Navigate around and responses should be much faster
+than the CGI version.

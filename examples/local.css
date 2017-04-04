@@ -1,0 +1,35 @@
+.content {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 2em;
+    margin-bottom: 50px;
+}
+
+table {
+    width: 100%;
+}
+
+ol.breadcrumb {
+    list-style: none;
+    padding: 0;
+    height: 2em;
+    line-height: 2em;
+    border: 1px solid #ccc;
+    overflow: hidden;
+}
+
+ol.breadcrumb li {
+    float: left;
+}
+
+ol.breadcrumb li:after {
+    content: '/';
+}
+
+ol.breadcrumb li:last-child:after {
+    content: '';
+}
+
+ol.breadcrumb li a {
+    padding: 0 0.5em;
+}
