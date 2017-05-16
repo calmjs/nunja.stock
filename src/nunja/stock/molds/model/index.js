@@ -206,6 +206,7 @@ define([
 
     Model.prototype.populate = function(obj, cb) {
         var self = this;
+        var mold_id = 'nunja.stock.molds/model';
 
         var after_populate = function() {
             self.data_href = obj.nunja_model_config.data_href;
@@ -228,11 +229,15 @@ define([
         // or triggered.
         var template_name = obj.nunja_model_config.mold_id + '/macro.nja';
         if (core.engine.query_template(template_name)) {
-            core.engine.populate(self.root, obj);
+            self.root.innerHTML = core.engine.render(mold_id, obj);
             after_populate();
         }
         else {
-            core.engine.populate(self.root, obj, after_populate);
+            core.engine.render(mold_id, obj, function(err, result) {
+                // TODO handle err if there is an error somewhere...
+                self.root.innerHTML = result;
+                after_populate();
+            });
         }
     };
 

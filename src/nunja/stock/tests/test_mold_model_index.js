@@ -47,12 +47,6 @@ describe('nunja.stock.molds/model test cases', function() {
         test.clock.tick(500);
     };
 
-    var triggerOnLoad = function(test) {
-        // apply the onload trigger on the document body.
-        test.engine.do_onload(document.body);
-        test.clock.tick(500);
-    };
-
     var activate_custom = function(test) {
         // some unrelated data.
         var custom_data = {
@@ -165,7 +159,6 @@ describe('nunja.stock.molds/model test cases', function() {
 
     it('Click test', function() {
         defaultPopulate(this);
-        triggerOnLoad(this);
         expect($('a')[0].innerHTML).to.equal('dir');
         $('a')[0].click();
         this.clock.tick(500);
@@ -179,7 +172,6 @@ describe('nunja.stock.molds/model test cases', function() {
         // also apply a purposely bad state
         window.history.replaceState('', '');
         defaultPopulate(this);
-        triggerOnLoad(this);
         $('a')[0].click();
         this.clock.tick(500);
 
@@ -203,7 +195,6 @@ describe('nunja.stock.molds/model test cases', function() {
 
     it('Standard error handling', function() {
         defaultPopulate(this);
-        triggerOnLoad(this);
         expect($('a')[1].innerHTML).to.equal('bad_target');
         $('a')[1].click();
         this.clock.tick(500);
@@ -214,7 +205,6 @@ describe('nunja.stock.molds/model test cases', function() {
     it('Custom error handling test', function() {
         var obj = activate_custom(this);
         defaultPopulate(this, obj);
-        triggerOnLoad(this);
         expect($('a')[0].innerHTML).to.equal('bad_target');
         // should trigger custom error handling.
         $('a')[0].click();
@@ -230,9 +220,6 @@ describe('nunja.stock.molds/model test cases', function() {
         document.body.appendChild(div);
 
         var inactive_a = $('#inactive')[0];
-
-        // Now trigger the onload.
-        triggerOnLoad(this);
 
         inactive_a.click();
         this.clock.tick(500);
