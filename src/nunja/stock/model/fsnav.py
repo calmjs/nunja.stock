@@ -285,6 +285,9 @@ class Base(base.Base):
         The provided path will first be converted to a fs_path.
         """
 
+        if path[:1] != '/':
+            path = '/' + path
+
         fs_path = self.fs_model.path_to_fs_path(path)
         if not exists(fs_path):
             return self.finalize({'error': 'path "%s" not found' % path})
@@ -304,6 +307,10 @@ class Base(base.Base):
 
     def get_struct_dirs_only(self, path):
         # if the path lead to a file, its parent will  be listed instead
+
+        if path[:1] != '/':
+            path = '/' + path
+
         if not isdir(self.fs_model.path_to_fs_path(path)):
             path = dirname(path)
         return self.get_struct(path, lambda x: x.get('@type') == 'ItemList')

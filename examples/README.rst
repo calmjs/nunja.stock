@@ -125,7 +125,7 @@ Python 3.5+, and simply install it like so:
 
 .. code:: sh
 
-    (env) $ pip install sanic==0.4.1
+    (env) $ pip install sanic
 
 Once that is done, execute the sample script directly:
 

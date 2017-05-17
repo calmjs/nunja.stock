@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from os import makedirs
+from os.path import basename
 from os.path import join
 from os.path import pardir
 from os.path import sep
@@ -427,21 +428,12 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         })
         self.assertEqual(len(result['mainEntity']['itemListElement']), 4)
 
-    def test_get_struct(self):
-        model = fsnav.Base(
-            Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
-        with self.assertRaises(ValueError):
-            model.get_struct('welp')
-
-        missing = model.get_struct('/readme.txt')
-        self.assertIn('error', missing)
-
     def test_get_struct_errors(self):
         model = fsnav.Base(
             Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
-        with self.assertRaises(ValueError):
-            model.get_struct('welp')
 
+        errored = model.get_struct('readme.txt')
+        self.assertEqual(errored['error'], 'path "/readme.txt" not found')
         errored = model.get_struct('/readme.txt')
         self.assertEqual(errored['error'], 'path "/readme.txt" not found')
 
@@ -451,10 +443,21 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         results = model.get_struct('/test_file.txt')
         self.assertEqual(results['mainEntity']['size'], 22)
 
+    def test_get_struct_file_parent_traversal_failure(self):
+        model = fsnav.Base(
+            Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
+        target = '/'.join(['..', basename(self.tmpdir), 'test_file.txt'])
+        results = model.get_struct(target)
+        self.assertEqual(results['error'], 'path "/%s" not found' % target)
+
     def test_get_struct_dir_success(self):
         model = fsnav.Base(
             Definition('fsnav', '/script.py?{+path}'), self.tmpdir)
         results = model.get_struct('/dummydir2')
+        self.assertEqual(len(results['mainEntity']['itemListElement']), 4)
+
+        # also one where leading '/' is omitted.
+        results = model.get_struct('dummydir2')
         self.assertEqual(len(results['mainEntity']['itemListElement']), 4)
 
     def test_get_struct_dir_dirs(self):
@@ -465,6 +468,10 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
         # also for an item underneath
         results = model.get_struct_dirs_only('/dummydir2/something')
+        self.assertEqual(len(results['mainEntity']['itemListElement']), 2)
+
+        # also with the '/' omitted
+        results = model.get_struct_dirs_only('dummydir2/something')
         self.assertEqual(len(results['mainEntity']['itemListElement']), 2)
 
     def test_get_struct_dir_files(self):

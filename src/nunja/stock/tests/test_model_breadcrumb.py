@@ -20,3 +20,7 @@ class SimpleTestCase(ExamplesTestCase):
     def test_two_items(self):
         self.assertDataEqual('two items', self.breadcrumb.get_breadcrumb(
             '/documents/item'))
+
+    def test_two_items_relative_path(self):
+        self.assertDataEqual('two items', self.breadcrumb.get_breadcrumb(
+            'documents/item'))

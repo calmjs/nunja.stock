@@ -49,7 +49,12 @@ class Simple(Base):
 
         # TODO verify that the provided url conforms to the uri_pattern
         # defined for this object?
-        fragments = self.pattern.findall(urlparse(url).path)
+
+        path = urlparse(url).path
+        if path[:1] != '/':
+            # account for a relative url, since some are provided as so.
+            path = '/' + path
+        fragments = self.pattern.findall(path)
 
         return {"mainEntity": {
             "@type": "BreadcrumbList",

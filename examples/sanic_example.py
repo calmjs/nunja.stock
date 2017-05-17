@@ -118,10 +118,9 @@ body_tmpl = """
 """
 
 
-@app.route('/fsnavtree<path:[^?]*>')
-async def fsnavtree_demo(request, path):
-    if not path:
-        return response.redirect('/fsnavtree/')
+@app.route('/fsnavtree/')
+@app.route('/fsnavtree/<path:path>')
+async def fsnavtree_demo(request, path=''):
     if 'application/json' in request.headers.get('accept'):
         return response.json(dirnav.get_struct(path))
 
