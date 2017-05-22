@@ -6,6 +6,8 @@ var $ = utils.$;
 
 var model_navgrid_data = require('nunja/stock/tests/model_navgrid_data');
 
+window.mocha.setup('bdd');
+
 
 var setup_window_event_listener = function(testcase) {
     // setup the cleanup for window event listeners
@@ -29,8 +31,6 @@ var teardown_window_event_listener = function(testcase) {
     window.addEventListener = testcase.window_addEventListener;
 };
 
-
-window.mocha.setup('bdd');
 
 describe('nunja.stock.molds/model test cases', function() {
 
@@ -658,6 +658,48 @@ describe('nunja.stock.molds/model inner model tests', function() {
 });
 
 
+var inject_macro = function() {
+    var root = function root(env, context, frame, runtime, cb) {
+        var output = "";
+        var parentTemplate = null;
+        var macro_t_1 = runtime.makeMacro(
+            ["mainEntity"], ["meta"],
+            function (l_mainEntity, kwargs) {
+                var callerFrame = frame;
+                frame = new runtime.Frame();
+                kwargs = kwargs || {};
+                if (kwargs.hasOwnProperty("caller")) {
+                    frame.set("caller", kwargs.caller);
+                }
+                frame.set("mainEntity", l_mainEntity);
+                frame.set("meta", kwargs.hasOwnProperty("meta") ?
+                    kwargs["meta"] : {});
+                var t_2 = "";t_2 += "\n<p>";
+                t_2 += runtime.suppressValue(runtime.memberLookup(
+                    (l_mainEntity),"value"), env.opts.autoescape);
+                t_2 += "</p>\n<a href=\"/foo\" data_href=\"/foo\">";
+                t_2 += "Dummy Link</a>";
+                frame = callerFrame;
+                return new runtime.SafeString(t_2);
+            });
+        context.addExport("main");
+        context.setVariable("main", macro_t_1);
+        output += "\n";
+        if (parentTemplate) {
+            parentTemplate.rootRenderFunc(env, context, frame, runtime, cb);
+        }
+        else {
+            cb(null, output);
+        }
+    };
+
+    window.nunjucksPrecompiled = window.nunjucksPrecompiled || {};
+    window.nunjucksPrecompiled["nunja.stock.mock/async/macro.nja"] = {
+        'root': root,
+    };
+};
+
+
 describe('nunja.stock.molds/model inner model async macro', function() {
 
     before(function() {
@@ -666,6 +708,8 @@ describe('nunja.stock.molds/model inner model async macro', function() {
         this.server.autoRespond = true;
 
         // simply just declare a single main macro for the dummy
+        // the source that precompiles the macro
+        /*
         var macro = [
             '{%- macro main(mainEntity, meta={}) %}',
             '<p>{{ mainEntity.value }}</p>',
@@ -681,6 +725,9 @@ describe('nunja.stock.molds/model inner model async macro', function() {
                 xhr.respond(200, {'Content-Type': 'text/plain'}, macro);
             }
         );
+        */
+
+        inject_macro();
 
         requirejs.config({
             'baseUrl': '/base',
@@ -694,6 +741,7 @@ describe('nunja.stock.molds/model inner model async macro', function() {
     after(function() {
         this.server.restore();
         requirejs.undef('nunja.stock.mock/async/mod');
+        delete window.nunjucksPrecompiled['nunja.stock.mock/async/macro.nja'];
     });
 
     beforeEach(function() {

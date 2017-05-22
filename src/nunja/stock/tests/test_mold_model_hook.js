@@ -80,5 +80,3 @@ describe('nunja.stock.molds/model/hook', function() {
     });
 
 });
-
-
