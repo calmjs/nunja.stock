@@ -17,7 +17,11 @@ var fake_data = {
 };
 
 
-describe('test loader tests', function() {
+/* istanbul ignore next */
+var describe_ = (typeof requirejs == 'undefined') ? describe.skip : describe;
+
+
+describe_('test loader tests', function() {
 
     beforeEach(function() {
         this.clock = sinon.useFakeTimers();
@@ -55,8 +59,10 @@ describe('test loader tests', function() {
 
     afterEach(function() {
         window.nunjucksPrecompiled = this.nunjucksPrecompiled;
-        requirejs.undef('__nunja__/dummy/mold');
-        requirejs.undef('data');
+        if ((typeof requirejs != 'undefined') && requirejs.undef) {
+            requirejs.undef('__nunja__/dummy/mold');
+            requirejs.undef('data');
+        }
     });
 
     it('test_run', function(done) {

@@ -2,8 +2,9 @@
 
 window.mocha.setup('bdd');
 
+var describe_ = (typeof requirejs == 'undefined') ? describe.skip : describe;
 
-describe('nunja.stock.molds/model/hook', function() {
+describe_('nunja.stock.molds/model/hook', function() {
 
     var hook = require('nunja.stock.molds/model/hook');
 

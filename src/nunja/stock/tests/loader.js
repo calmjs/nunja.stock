@@ -1,6 +1,6 @@
 'use strict';
 
-// var core = require('nunja/core');
+var core = require('nunja/core');
 
 var GenerateTestFactory = function(core, test_lib) {
     return function(name, mold_id, data_module) {

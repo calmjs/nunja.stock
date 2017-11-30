@@ -8,6 +8,10 @@ var model_navgrid_data = require('nunja/stock/tests/model_navgrid_data');
 
 window.mocha.setup('bdd');
 
+/* istanbul ignore next */
+var describe_ = (typeof requirejs == 'undefined') ? describe.skip : describe;
+var it_ = (typeof requirejs == 'undefined') ? it.skip : it;
+
 
 var setup_window_event_listener = function(testcase) {
     // setup the cleanup for window event listeners
@@ -32,7 +36,7 @@ var teardown_window_event_listener = function(testcase) {
 };
 
 
-describe('nunja.stock.molds/model test cases', function() {
+describe_('nunja.stock.molds/model test cases', function() {
 
     var data = model_navgrid_data;
     var markers = {};
@@ -146,7 +150,9 @@ describe('nunja.stock.molds/model test cases', function() {
 
     afterEach(function() {
         markers = {};
-        requirejs.undef('nunja.stock.custom/error_handler');
+        if ((typeof requirejs !== 'undefined') && requirejs.undef) {
+            requirejs.undef('nunja.stock.custom/error_handler');
+        }
         this.server.restore();
         this.clock.restore();
         // TODO ideally, all the history should be wiped.
@@ -293,11 +299,11 @@ describe('nunja.stock.molds/model test cases', function() {
 });
 
 
-describe('nunja.stock.molds/model inner model tests', function() {
+describe_('nunja.stock.molds/model inner model tests', function() {
 
     var data = model_navgrid_data;
     var result_items = [];
-    var _defaultOnError = requirejs.onError;
+    var _defaultOnError;
 
     var demo_module_name = 'nunja.molds.demo/module/index';
     var demo_module = {
@@ -327,15 +333,20 @@ describe('nunja.stock.molds/model inner model tests', function() {
         }
 
         setup_window_event_listener(this);
+        if ((typeof requirejs !== 'undefined') && requirejs.undef) {
+            _defaultOnError = requirejs.onError;
+        }
     });
 
     afterEach(function() {
         teardown_window_event_listener(this);
         this.server.restore();
         this.clock.restore();
-        requirejs.undef(demo_module_name);
+        if ((typeof requirejs !== 'undefined') && requirejs.undef) {
+            requirejs.undef(demo_module_name);
+            requirejs.onError = _defaultOnError;
+        }
         result_items = [];
-        requirejs.onError = _defaultOnError;
     });
 
     it('inner missing div', function() {
@@ -700,7 +711,7 @@ var inject_macro = function() {
 };
 
 
-describe('nunja.stock.molds/model inner model async macro', function() {
+describe_('nunja.stock.molds/model inner model async macro', function() {
 
     before(function() {
         this.engine = core.engine;
