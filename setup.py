@@ -55,6 +55,7 @@ setup(
         ],
     },
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
+    build_calmjs_artifacts=True,
     entry_points={
         'calmjs.module': [
             'nunja.stock = nunja.stock',
@@ -65,6 +66,10 @@ setup(
         'nunja.mold': [
             'nunja.stock.molds = nunja.stock:molds',
         ],
+        'calmjs.artifacts': [
+            'nunja.stock.rjs.js = calmjs.rjs.artifact:complete_rjs',
+
+        ]
     },
     test_suite="nunja.stock.tests.make_suite",
 )
