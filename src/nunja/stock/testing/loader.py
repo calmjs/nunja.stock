@@ -3,7 +3,7 @@ import unittest
 import json
 from pkg_resources import resource_filename
 
-from calmjs.rjs.ecma import parse
+from calmjs.parse import es5
 
 from nunja.core import engine
 
@@ -46,7 +46,7 @@ def generate_test(name, mold_id, test_module_ns, data_module):
 
     with open(resource_filename(test_module_ns, data_module + '.js')) as fd:
         data = json.loads(
-            parse(fd.read()).children()[0].children()[0].initializer.to_ecma())
+            str(es5(fd.read()).children()[0].children()[0].initializer))
 
     attrs = {
         'maxDiff': None,

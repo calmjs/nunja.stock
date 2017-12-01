@@ -4,7 +4,7 @@ import unittest
 
 from pkg_resources import resource_filename
 
-from calmjs.rjs.ecma import parse
+from calmjs.parse import es5
 
 
 class ExamplesTestCase(unittest.TestCase):
@@ -26,8 +26,8 @@ class ExamplesTestCase(unittest.TestCase):
 
         with open(resource_filename(
                 cls.test_module_name, cls.test_examples)) as fd:
-            cls.data = json.loads(parse(fd.read()).children()[0].children(
-                )[0].initializer.to_ecma())
+            cls.data = json.loads(str(es5(fd.read()).children()[0].children(
+                )[0].initializer))
             # TODO also sanity check the resulting object?
 
     def assertDataEqual(self, key, result):
