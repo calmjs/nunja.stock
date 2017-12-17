@@ -51,8 +51,14 @@ setup(
     ],
     extras_require={
         'dev': [
-            'calmjs.dev>=1.0.2,<2',
+            'calmjs.dev>=1.0.2,<3',
             'calmjs.parse>=1.0.0,<2',
+        ],
+        'rjs': [
+             'calmjs.rjs',
+        ],
+        'webpack': [
+             'calmjs.webpack',
         ],
     },
     python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
