@@ -35,13 +35,16 @@ install:
 
   # - pip install coverage calmjs.dev calmjs.rjs
   - pip install coverage
-  - pip install -e git+https://github.com/calmjs/calmjs.dev.git#egg=calmjs.dev
-  - pip install -e git+https://github.com/calmjs/calmjs.rjs.git#egg=calmjs.rjs
-  - pip install -e git+https://github.com/calmjs/nunja.git#egg=nunja
+
+  - pip install -U -e git+https://github.com/calmjs/calmjs.git#egg=calmjs
+  - pip install -e git+https://github.com/metatoaster/calmjs.dev.git@calmjs3#egg=calmjs.dev
+  - pip install -e git+https://github.com/metatoaster/calmjs.rjs.git@calmjs.parse#egg=calmjs.rjs
+  - pip install -e git+https://github.com/metatoaster/calmjs.webpack.git@calmjs3#egg=calmjs.webpack
+  - pip install -e git+https://github.com/metatoaster/nunja.git@webpack_demo#egg=nunja
   - python setup.py develop
 
   # doing the env in this directory to save build time/bandwidth
-  - calmjs npm --install nunja.stock[dev] -w -D
+  - calmjs npm --install nunja.stock[dev,webpack,rjs] -w -D
   - npm install karma-ie-launcher
   - "SET CALMJS_TEST_ENV=."
 

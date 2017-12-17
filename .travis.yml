@@ -108,15 +108,17 @@ install:
   - pip install coverage flake8
   # install the required development dependencies as wheels first
   # - pip install calmjs.rjs calmjs.dev
-  # need development version of calmjs.dev for now
-  - pip install -e git+https://github.com/calmjs/calmjs.dev.git#egg=calmjs.dev
-  - pip install -e git+https://github.com/calmjs/calmjs.rjs.git#egg=calmjs.rjs
-  - pip install -e git+https://github.com/calmjs/nunja.git#egg=nunja
+  # use development versions of everything.
+  - pip install -U -e git+https://github.com/calmjs/calmjs.git#egg=calmjs
+  - pip install -e git+https://github.com/metatoaster/calmjs.dev.git@calmjs3#egg=calmjs.dev
+  - pip install -e git+https://github.com/metatoaster/calmjs.rjs.git@calmjs.parse#egg=calmjs.rjs
+  - pip install -e git+https://github.com/metatoaster/calmjs.webpack.git@calmjs3#egg=calmjs.webpack
+  - pip install -e git+https://github.com/metatoaster/nunja.git@webpack_demo#egg=nunja
   - python setup.py develop
 
   # doing the env in this directory to save build time/bandwidth, as the
   # same environment will be used for both Python and JavaScript tests.
-  - calmjs npm --install nunja.stock[dev] -w -D
+  - calmjs npm --install nunja.stock[dev,rjs,webpack] -w -D
   # out-of-band installation of platform specific dependencies
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       npm install karma-safari-launcher ;
@@ -128,13 +130,14 @@ script:
 
   # generate bundle/tests
   - mkdir manual
-  - calmjs rjs nunja -w --export-target=nunja.js
+  - calmjs webpack nunja -w --export-target=nunja.webpack.js
 
   # eslint 3 only works in nodejs 4+
-  - if [[ "$TRAVIS_NODE_VERSION" != "0.12" ]]; then
-      eslint "src/**/*.js" ;
-    fi
-  - calmjs karma --artifact=nunja.js -c --cover-test --browser=$BROWSER rjs nunja.stock --build-dir=manual --source-map-method=explicit -w
+  # not linting while prototyping a new build system.
+  # - if [[ "$TRAVIS_NODE_VERSION" != "0.12" ]]; then
+  #     ./node_modules/.bin/eslint "src/**/*.js" ;
+  #   fi
+  - calmjs karma --artifact=nunja.webpack.js -c --cover-test --browser=$BROWSER webpack nunja.stock --build-dir=manual --sourcepath-method=explicit -w
   - coverage report -m
 
 # Through a specific precompiled artifact
