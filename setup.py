@@ -75,8 +75,14 @@ setup(
         ],
         'calmjs.artifacts': [
             'nunja.stock.rjs.js = calmjs.rjs.artifact:complete_rjs',
-
-        ]
+            'nunja.stock.webpack.js'
+            ' = calmjs.webpack.artifact:complete_webpack',
+        ],
+        'calmjs.artifacts.tests': [
+            'nunja.stock.rjs.js = calmjs.rjs.artifact:test_complete_rjs',
+            'nunja.stock.webpack.js'
+            ' = calmjs.webpack.artifact:test_complete_webpack',
+        ],
     },
     test_suite="nunja.stock.tests.make_suite",
 )
