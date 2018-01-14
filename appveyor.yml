@@ -33,14 +33,9 @@ install:
   - virtualenv --clear venv
   - "venv\\Scripts\\activate.bat"
 
-  # - pip install coverage calmjs.dev calmjs.rjs
-  - pip install coverage
+  - pip install coverage calmjs.dev calmjs.rjs calmjs.webpack
 
-  - pip install -U -e git+https://github.com/calmjs/calmjs.git#egg=calmjs
-  - pip install -e git+https://github.com/metatoaster/calmjs.dev.git@calmjs3#egg=calmjs.dev
-  - pip install -e git+https://github.com/metatoaster/calmjs.rjs.git@calmjs.parse#egg=calmjs.rjs
-  - pip install -e git+https://github.com/metatoaster/calmjs.webpack.git@calmjs3#egg=calmjs.webpack
-  - pip install -e git+https://github.com/metatoaster/nunja.git@webpack_demo#egg=nunja
+  - pip install -e git+https://github.com/calmjs/nunja.git@demo201801#egg=nunja
   - python setup.py develop
 
   # doing the env in this directory to save build time/bandwidth
@@ -55,6 +50,11 @@ test_script:
   # for the JS
   - calmjs rjs nunja -w --export-target=nunja.js
   - calmjs karma --artifact=nunja.js -c --cover-test --browser=%BROWSER% rjs nunja.stock --source-map-method=explicit -w
+
+  # build all artifacts
+  - calmjs artifact build nunja.stock
+  # test all artifacts
+  - calmjs artifact karma --browser=%BROWSER% nunja.stock
 
 artifacts:
   - path: dist\*
