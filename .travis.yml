@@ -4,23 +4,23 @@ matrix:
     - os: osx
     - python: 3.7-dev
     - python: pypy3.3-5.2-alpha1
-    - env: TRAVIS_NODE_VERSION=7
+    - env: TRAVIS_NODE_VERSION=9
   include:
     - language: python
       python: 2.7
       env:
-        - TRAVIS_NODE_VERSION=0.12
+        - TRAVIS_NODE_VERSION=6.12
         - BROWSER=PhantomJS
     - language: python
       python: 3.3
       env:
-        - TRAVIS_NODE_VERSION=4.6
+        - TRAVIS_NODE_VERSION=6.12
         - BROWSER=Firefox
     - language: python
       dist: trusty
       python: 3.4
       env:
-        - TRAVIS_NODE_VERSION=4.6
+        - TRAVIS_NODE_VERSION=6.12
         - BROWSER=Chrome
       addons:
         apt:
@@ -31,28 +31,28 @@ matrix:
     - language: python
       python: 3.5
       env:
-        - TRAVIS_NODE_VERSION=6.9
+        - TRAVIS_NODE_VERSION=6.12
         - BROWSER=PhantomJS
     - language: python
       python: 3.6
       env:
-        - TRAVIS_NODE_VERSION=7
+        - TRAVIS_NODE_VERSION=8.9
         - BROWSER=PhantomJS
     - language: python
       python: 3.7-dev
       env:
-        - TRAVIS_NODE_VERSION=7
+        - TRAVIS_NODE_VERSION=9
         - BROWSER=PhantomJS
     - language: python
       python: pypy
       env:
-        - TRAVIS_NODE_VERSION=0.12
+        - TRAVIS_NODE_VERSION=6.12
         - BROWSER=Firefox
     - language: python
       dist: trusty
-      python: pypy3.3-5.2-alpha1
+      python: pypy3
       env:
-        - TRAVIS_NODE_VERSION=6.9
+        - TRAVIS_NODE_VERSION=8.9
         - BROWSER=Chrome
       addons:
         apt:
@@ -62,19 +62,19 @@ matrix:
             - google-chrome-stable
     # test different versions of Node.js on osx
     - language: node_js
-      node_js: 4.6
+      node_js: 6.12
       os: osx
       env:
         - TRAVIS_PYTHON_VERSION=3.4.5
         - BROWSER=PhantomJS
     - language: node_js
-      node_js: 6.9
+      node_js: 8.9
       os: osx
       env:
         - TRAVIS_PYTHON_VERSION=3.5.3
         - BROWSER=Safari
     - language: node_js
-      node_js: 7.4
+      node_js: 9
       os: osx
       env:
         - TRAVIS_PYTHON_VERSION=3.6.0
