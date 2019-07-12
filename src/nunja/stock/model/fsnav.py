@@ -78,7 +78,7 @@ class FSModel(object):
 
     def _fs_path_format_path(self, fs_path):
         trail = [''] if isdir(fs_path) else []
-        return '/'.join(normpath(fs_path)[len(self.root):].split(sep) + trail)
+        return normpath(fs_path)[len(self.root):].split(sep)[1:] + trail
 
     def _listdir(self, fs_path):
         """
@@ -248,7 +248,7 @@ class Base(base.Base):
             part_of = None
             for key, value in attrs:
                 if key == 'path':
-                    part_of = value
+                    part_of = '/'.join(value)
                 if key not in self.active_keys:
                     continue
                 rownames.append(key)
