@@ -42,7 +42,7 @@ class Simple(Base):
             ),
         }
 
-    def make_breadcrumb(self, url):
+    def make_breadcrumb_from_url(self, url):
         """
         Simply split the path.
         """
@@ -70,5 +70,5 @@ class Simple(Base):
             ]
         }}
 
-    def get_breadcrumb(self, url):
-        return self.finalize(self.make_breadcrumb(url))
+    def get_breadcrumb_from_url(self, url):
+        return self.finalize(self.make_breadcrumb_from_url(url))

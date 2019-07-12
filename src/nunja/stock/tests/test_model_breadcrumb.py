@@ -14,13 +14,19 @@ class SimpleTestCase(ExamplesTestCase):
             'model_id', 'https://example.com{+path}'))
 
     def test_root_item(self):
-        self.assertDataEqual('root item', self.breadcrumb.get_breadcrumb(
-            'https://example.com/'))
+        self.assertDataEqual(
+            'root item',
+            self.breadcrumb.get_breadcrumb_from_url('https://example.com/')
+        )
 
     def test_two_items(self):
-        self.assertDataEqual('two items', self.breadcrumb.get_breadcrumb(
-            '/documents/item'))
+        self.assertDataEqual(
+            'two items',
+            self.breadcrumb.get_breadcrumb_from_url('/documents/item')
+        )
 
     def test_two_items_relative_path(self):
-        self.assertDataEqual('two items', self.breadcrumb.get_breadcrumb(
-            'documents/item'))
+        self.assertDataEqual(
+            'two items',
+            self.breadcrumb.get_breadcrumb_from_url('documents/item')
+        )
