@@ -16,10 +16,13 @@ Programming Language :: Python :: 3.6
 """.strip().splitlines()
 
 package_json = {
-    "dependencies": {},
+    "dependencies": {
+        "webpack": "~4.16.0",
+        "webpack-cli": "~3.0.0",
+    },
     "devDependencies": {
         "eslint": "~3.15.0",
-    }
+    },
 }
 
 long_description = (
@@ -46,8 +49,10 @@ setup(
     zip_safe=False,
     package_json=package_json,
     install_requires=[
-        'nunja',
-        'uritemplate',
+        'nunja'
+        ' @ git+https://github.com/calmjs/nunja.git@master',
+        'uritemplate'
+        ' @ git+https://github.com/python-hyper/uritemplate.git@df03b63b7',
     ],
     extras_require={
         'dev': [
@@ -82,6 +87,9 @@ setup(
             'nunja.stock.rjs.js = calmjs.rjs.artifact:test_complete_rjs',
             'nunja.stock.webpack.js'
             ' = calmjs.webpack.artifact:test_complete_webpack',
+        ],
+        'calmjs.toolchain.advice.apply': [
+            'nunja = nunja',
         ],
     },
     test_suite="nunja.stock.tests.make_suite",
