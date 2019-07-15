@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+import codecs
 import json
 from pkg_resources import resource_filename
 
@@ -44,7 +45,9 @@ def generate_test(name, mold_id, test_module_ns, data_module):
 
         return _method
 
-    with open(resource_filename(test_module_ns, data_module + '.js')) as fd:
+    with codecs.open(
+            resource_filename(test_module_ns, data_module + '.js'),
+            encoding='utf8') as fd:
         data = json.loads(
             str(es5(fd.read()).children()[0].children()[0].initializer))
 
