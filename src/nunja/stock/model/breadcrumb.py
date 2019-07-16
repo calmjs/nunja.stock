@@ -3,9 +3,9 @@
 Model for filesystem navtree
 """
 
-import re
+from itertools import chain
 
-from .base import Base
+from nunja.stock.model import base
 
 try:
     from urllib.parse import urlparse
@@ -13,48 +13,37 @@ except ImportError:  # pragma: no cover
     from urlparse import urlparse
 
 
-class Simple(Base):
+class FragmentBC(base.Base):
     """
-    A simple implementation of a model of breadcrumbs.
-
-    Assumes the site root where parsed uri path == '/'
+    A basic implementation that assumes all inputs are fragments.
     """
 
-    def __init__(
-            self, definition, home='Home', start_position=1,
-            pattern=r'([^/]*/?)'
-            ):
-        super(Simple, self).__init__(definition)
+    def __init__(self, definition, home='Home', start_position=1):
+        super(FragmentBC, self).__init__(definition)
         self.home = home
         self.start_position = start_position
-        self.pattern = re.compile(pattern)
+
+    def format_href(self, fragments):
+        return self.definition.format_href(path=fragments)
 
     def make_item(self, fragments, position, fragment):
-        # XXX very naive implementation that does not take into account
-        # of a bunch of edge cases.
+        final = (
+            [] if fragments != [''] and position == len(fragments) else [''])
         return {
-            "@id": self.definition.format_href(
-                path=''.join(fragments[:position])),
-            "name": (
-                self.home
-                if position == self.start_position and fragment == '/' else
-                fragment.strip('/')
-            ),
+            "@id": self.format_href(fragments[1:position] + final),
+            "name": (self.home if (
+                position == self.start_position and
+                fragment in ('', '/')
+            ) else fragment.strip('/')),
         }
 
-    def make_breadcrumb_from_url(self, url):
+    def make_breadcrumb(self, fragments):
         """
         Simply split the path.
         """
 
-        # TODO verify that the provided url conforms to the uri_pattern
-        # defined for this object?
-
-        path = urlparse(url).path
-        if path[:1] != '/':
-            # account for a relative url, since some are provided as so.
-            path = '/' + path
-        fragments = self.pattern.findall(path)
+        chained_fragments = list(fragments if fragments == [''] else chain(
+            [''], fragments))
 
         return {"mainEntity": {
             "@type": "BreadcrumbList",
@@ -62,13 +51,45 @@ class Simple(Base):
                 {
                     "@type": "ListItem",
                     "position": position,
-                    "item": self.make_item(fragments, position, fragment),
+                    "item": self.make_item(
+                        chained_fragments, position, fragment),
                 }
                 for position, fragment in enumerate(
-                    fragments, self.start_position)
-                if fragment
+                    chained_fragments, self.start_position)
             ]
         }}
 
-    def get_breadcrumb_from_url(self, url):
-        return self.finalize(self.make_breadcrumb_from_url(url))
+    def get_breadcrumb(self, fragments):
+        return self.finalize(self.make_breadcrumb(fragments))
+
+
+class PathBC(FragmentBC):
+    """
+    A implementation of breadcrumbs that deals with raw paths.
+
+    Assumes the site root where parsed uri path == '/'
+    """
+
+    def format_href(self, fragments):
+        return self.definition.format_href(path='/'.join([''] + fragments))
+
+    def make_breadcrumb_from_uri(self, uri):
+        """
+        Simply split the path.
+        """
+
+        # XXX maintain the one by uri???
+        # XXX make it from path fragments.
+
+        # TODO verify that the provided uri conforms to the uri_pattern
+        # defined for this object?
+
+        path = urlparse(uri).path
+        if path[:1] != '/':
+            # account for a relative uri, since some are provided as so.
+            path = '/' + path
+        fragments = path.split('/')[1:]
+        return self.make_breadcrumb(fragments)
+
+    def get_breadcrumb_from_uri(self, uri):
+        return self.finalize(self.make_breadcrumb_from_uri(uri))
