@@ -12,6 +12,9 @@ try:
 except ImportError:  # pragma: no cover
     from urlparse import urlparse
 
+empty_pf = ['']  # empty path fragment
+empty = []
+
 
 class FragmentBC(base.Base):
     """
@@ -27,23 +30,46 @@ class FragmentBC(base.Base):
         return self.definition.format_href(path=fragments)
 
     def make_item(self, fragments, position, fragment):
-        final = (
-            [] if fragments != [''] and position == len(fragments) else [''])
+        # apply a similar rule to each item as per make_breadcrumb
         return {
-            "@id": self.format_href(fragments[1:position] + final),
+            "@id": self.format_href(fragments),
             "name": (self.home if (
-                position == self.start_position and
-                fragment in ('', '/')
+                position == self.start_position and fragment == ''
             ) else fragment.strip('/')),
         }
+
+    def norm_fragments(self, fragments, final=True):
+        # essentially treat as path.split all the way down to root, and
+        # drop the first empty root element as uritemplate effectively
+        # provide that but without encoding it.
+        #
+        # the effective representations:
+        # [] - None
+        # [''] - /
+        # ['foo'] - /foo
+        # ['foo', 'bar'] - /foo/bar
+        # ['foo', 'bar', ''] - /foo/bar/
+        #
+        # So given the case, assume the empty value to be the home root
+        # and to avoid a "empty" file name, convert the [''] case to the
+        # empty case, and then re-add that via suffix.
+        #
+        # Also, apply final empty path fragment if fragments provided
+        # is not final; use in cases to treat this as a "directory".
+
+        if fragments == empty or fragments == empty_pf:
+            return ['', '']
+        prefix = empty if fragments[:1] == empty_pf else empty_pf
+        suffix = empty if final else empty_pf
+        return list(chain(prefix, fragments, suffix))
 
     def make_breadcrumb(self, fragments):
         """
         Simply split the path.
         """
 
-        chained_fragments = list(fragments if fragments == [''] else chain(
-            [''], fragments))
+        norm_fragments = self.norm_fragments(fragments)
+        length = len(norm_fragments)
 
         return {"mainEntity": {
             "@type": "BreadcrumbList",
@@ -52,10 +78,15 @@ class FragmentBC(base.Base):
                     "@type": "ListItem",
                     "position": position,
                     "item": self.make_item(
-                        chained_fragments, position, fragment),
+                        self.norm_fragments(
+                            fragments=norm_fragments[:position],
+                            final=(position == length))[1:],
+                        position, fragment
+                    ),
                 }
                 for position, fragment in enumerate(
-                    chained_fragments, self.start_position)
+                    norm_fragments, self.start_position)
+                if fragment or position != len(norm_fragments)
             ]
         }}
 
@@ -77,9 +108,6 @@ class PathBC(FragmentBC):
         """
         Simply split the path.
         """
-
-        # XXX maintain the one by uri???
-        # XXX make it from path fragments.
 
         # TODO verify that the provided uri conforms to the uri_pattern
         # defined for this object?

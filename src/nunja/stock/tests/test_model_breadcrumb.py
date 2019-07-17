@@ -12,6 +12,30 @@ class FragmentBCTestCase(ExamplesTestCase):
         self.breadcrumb = breadcrumb.FragmentBC(Definition(
             'model_id', 'https://example.com{/path*}'))
 
+    def test_norm_fragments(self):
+        self.assertEqual(self.breadcrumb.norm_fragments(
+            []), ['', ''])
+        self.assertEqual(self.breadcrumb.norm_fragments(
+            ['']), ['', ''])
+        self.assertEqual(self.breadcrumb.norm_fragments(
+            ['foo']), ['', 'foo'])
+        self.assertEqual(self.breadcrumb.norm_fragments(
+            ['', 'foo']), ['', 'foo'])
+        self.assertEqual(self.breadcrumb.norm_fragments(
+            ['foo', '']), ['', 'foo', ''])
+        self.assertEqual(self.breadcrumb.norm_fragments(
+            ['foo', 'bar', 'baz']), ['', 'foo', 'bar', 'baz'])
+        self.assertEqual(self.breadcrumb.norm_fragments(
+            ['', 'foo', 'bar', 'baz']), ['', 'foo', 'bar', 'baz'])
+        self.assertEqual(self.breadcrumb.norm_fragments(
+            ['foo', 'bar', 'baz', '']), ['', 'foo', 'bar', 'baz', ''])
+
+    def test_empty(self):
+        self.assertDataEqual(
+            'root item',
+            self.breadcrumb.get_breadcrumb([])
+        )
+
     def test_root_item(self):
         self.assertDataEqual(
             'root item',
@@ -24,10 +48,13 @@ class FragmentBCTestCase(ExamplesTestCase):
             self.breadcrumb.get_breadcrumb(['documents', 'item'])
         )
 
-    def test_two_items_relative_path(self):
+    def test_three_items_trailing_empty_fragment(self):
+        # this can arise from destructuring a uri fragment such as
+        # 'document/item/' by splitting by '/'
         self.assertDataEqual(
-            'two items',
-            self.breadcrumb.get_breadcrumb(['documents', 'item'])
+            'three item empty final fragment',
+            self.breadcrumb.get_breadcrumb(
+                ['documents', 'subfolder', 'targets', ''])
         )
 
 
@@ -55,4 +82,11 @@ class PathBCTestCase(ExamplesTestCase):
         self.assertDataEqual(
             'two items',
             self.breadcrumb.get_breadcrumb_from_uri('documents/item')
+        )
+
+    def test_three_items_trailing_empty_fragment(self):
+        self.assertDataEqual(
+            'three item empty final fragment',
+            self.breadcrumb.get_breadcrumb_from_uri(
+                '/documents/subfolder/targets/')
         )

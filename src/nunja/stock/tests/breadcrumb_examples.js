@@ -83,6 +83,55 @@ var exports = {
         "</div>"
     ]],
 
+    "three item empty final fragment":
+    [{
+        "@context": "https://schema.org/",
+        "nunja_model_config": {},
+        "nunja_model_id": "model_id",
+        "mainEntity": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                    "@id": "https://example.com/",
+                    "name": "Home",
+                },
+            }, {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@id": "https://example.com/documents/",
+                    "name": "documents",
+                },
+            }, {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                    "@id": "https://example.com/documents/subfolder/",
+                    "name": "subfolder",
+                },
+            }, {
+                "@type": "ListItem",
+                "position": 4,
+                "item": {
+                    "@id": "https://example.com/documents/subfolder/targets/",
+                    "name": "targets",
+                },
+            }]
+        },
+        "meta": {"css_class": {}},
+    }, [
+        "<div data-nunja=\"nunja.stock.molds/breadcrumb\">",
+        "<ol class=\"\">",
+        "  <li><a href=\"https://example.com/\">Home</a></li>",
+        "  <li><a href=\"https://example.com/documents/\">documents</a></li>",
+        "  <li><a href=\"https://example.com/documents/subfolder/\">subfolder</a></li>",
+        "  <li><a href=\"https://example.com/documents/subfolder/targets/\">targets</a></li>",
+        "</ol>",
+        "</div>"
+    ]],
+
     "complete example":
     [{
         "@context": "https://schema.org/",
