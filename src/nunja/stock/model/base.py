@@ -40,9 +40,22 @@ class Definition(namedtuple('Definition', [
     uri_template_json
         This is the template for all the URIs that will be generated
         for all the navigational links for getting to the JSON for
-        that particular record.
+        that particular record, if set to a specific string.
 
-        Defaults to unspecified
+        If True is set, the uri_template will be used as is with the
+        json_cache_suffix applied.
+
+        If a falsy value is set, no uri_template_json will be defined
+        and this typically mean no data-href will be provided.
+
+        Defaults to None
+
+    json_cache_suffix
+        A string that will be appended to the default uri_template_json
+        as it would be identical to uri_template.  Set this to an empty
+        string if the browser cache workaround is not required.
+
+        Defaults to: '?'
 
     css_class
         The attributes for the css classes
@@ -60,8 +73,12 @@ class Definition(namedtuple('Definition', [
     def __new__(
             cls,
             nunja_model_id, uri_template, uri_template_json=None,
+            json_cache_suffix='?',
             css_class=None, config=None, context='https://schema.org/',
             ):
+
+        if uri_template_json is True:
+            uri_template_json = uri_template + json_cache_suffix
 
         return cls.__bases__[0].__new__(
             cls,

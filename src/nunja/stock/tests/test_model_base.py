@@ -18,7 +18,8 @@ class DefinitionTestCase(unittest.TestCase):
     def test_definition_construction_all_parameters(self):
         defn = base.Definition(
             'model_id', 'https://example.com/{path}',
-            uri_template_json='https://example.com/{path}?',
+            uri_template_json=True,
+            json_cache_suffix=';',
             css_class={'body': 'tagged'},
             config={'extra_mold': 'nunja.example/mold'},
             context=[
@@ -28,13 +29,38 @@ class DefinitionTestCase(unittest.TestCase):
         )
         self.assertEqual(defn.nunja_model_id, 'model_id')
         self.assertEqual(defn.uri_template, 'https://example.com/{path}')
-        self.assertEqual(defn.uri_template_json, 'https://example.com/{path}?')
+        self.assertEqual(defn.uri_template_json, 'https://example.com/{path};')
         self.assertEqual(defn.css_class, {'body': 'tagged'})
         self.assertEqual(defn.config, {'extra_mold': 'nunja.example/mold'})
         self.assertEqual(defn.context, [
             "http://schema.org",
             {"image": {"@id": "schema:image", "@type": "@id"}},
         ])
+
+    def test_definition_uri_template_json(self):
+        defn = base.Definition(
+            'model_id', 'https://example.com/{path}',
+            uri_template_json=True,
+        )
+        self.assertEqual(defn.uri_template_json, 'https://example.com/{path}?')
+
+        # explicit template will not have a json_cache_suffix applied.
+        defn = base.Definition(
+            'model_id', 'https://example.com/{path}',
+            uri_template_json='https://api.example.com/{path}',
+            json_cache_suffix=';',
+        )
+        self.assertEqual(
+            defn.uri_template_json, 'https://api.example.com/{path}')
+
+        # the way to set uri_template_json to be equal to uri_template
+        # without repeating it
+        defn = base.Definition(
+            'model_id', 'https://example.com/{path}',
+            uri_template_json=True,
+            json_cache_suffix='',
+        )
+        self.assertEqual(defn.uri_template_json, 'https://example.com/{path}')
 
     def test_definition_construction_error(self):
         with self.assertRaises(TypeError):
