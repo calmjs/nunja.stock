@@ -3,18 +3,26 @@
 Base server-side UI component model
 """
 
+import json
 from collections import namedtuple
 
 from uritemplate import expand
 
 
 def clone_dict(d):
-    o = {}
+    result = {}
     if d:
-        if not isinstance(d, dict):
-            raise TypeError('provided value must be falsy or dict')
-        o.update(d)
-    return o
+        if isinstance(d, dict):
+            result.update(d)
+        else:
+            try:
+                v = json.loads(d)
+            except Exception:
+                v = NotImplemented
+            if not isinstance(v, dict):
+                raise TypeError('provided value must be falsy or dict')
+            result.update(v)
+    return result
 
 
 class Definition(namedtuple('Definition', [
@@ -61,7 +69,8 @@ class Definition(namedtuple('Definition', [
         The attributes for the css classes
 
     config
-        Extra configuration for the template.
+        Extra configuration for the template.  Provided either as JSON
+        string or a dict that can be encoded as JSON.
 
     context
         The context for the linked data.

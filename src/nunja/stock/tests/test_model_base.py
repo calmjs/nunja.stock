@@ -37,6 +37,28 @@ class DefinitionTestCase(unittest.TestCase):
             {"image": {"@id": "schema:image", "@type": "@id"}},
         ])
 
+    def test_definition_construction_all_dict_param_jsonstr(self):
+        defn = base.Definition(
+            'model_id', 'https://example.com/{path}',
+            uri_template_json=True,
+            json_cache_suffix=';',
+            css_class='{"body": "tagged"}',
+            config='{"extra_mold": "nunja.example/mold"}',
+            context=[
+                "http://schema.org",
+                {"image": {"@id": "schema:image", "@type": "@id"}},
+            ],
+        )
+        self.assertEqual(defn.nunja_model_id, 'model_id')
+        self.assertEqual(defn.uri_template, 'https://example.com/{path}')
+        self.assertEqual(defn.uri_template_json, 'https://example.com/{path};')
+        self.assertEqual(defn.css_class, {'body': 'tagged'})
+        self.assertEqual(defn.config, {'extra_mold': 'nunja.example/mold'})
+        self.assertEqual(defn.context, [
+            "http://schema.org",
+            {"image": {"@id": "schema:image", "@type": "@id"}},
+        ])
+
     def test_definition_uri_template_json(self):
         defn = base.Definition(
             'model_id', 'https://example.com/{path}',
