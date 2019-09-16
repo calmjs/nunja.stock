@@ -18,6 +18,7 @@ from posixpath import dirname as diruri
 from nunja.stock.model import base
 
 
+# TODO make mapping from S_IFDIR and call stats.S_IFMT + lookup mapping
 statmap = (
     (stat.S_ISDIR, 'folder'),
     (stat.S_ISCHR, 'chardev'),
@@ -61,7 +62,7 @@ class FSModel(object):
         """
 
         # TODO deal with symlinks that point outside the root?
-        self.root = root
+        self.root = str(root)
 
     def path_to_fs_path(self, path):
         """
@@ -168,6 +169,8 @@ class Base(base.Base):
             impl=FSModel,
             active_keys=None,
             anchor_key=None,
+            uri_template_path_key=None,
+            uri_template_json_path_key=None,
             type_definitions=None,
             ):
         """
@@ -186,6 +189,20 @@ class Base(base.Base):
         anchor_key
             The column to render the anchor.
 
+        uri_template_path_key
+        uri_template_path_json_key
+            The key to use to specify the path.  The default value is
+            dependant on the core definition of the nunja model.  If
+            the respective template has an path segment with the explode
+            modifier (e.g. {/path*}) the name of that variable will be
+            used as the key.  Otherwise, this defaults to `path`.
+
+            This is exposed for configuration in the event that a
+            specific key is needed for the provided template, as the
+            intent for this is to be compatible with templates that are
+            provided as part of a separate system that is also shared
+            and used here.
+
         type_definitions
             Type specific definitions - allow specific definitions to
             be used for the finalizing part.
@@ -202,6 +219,20 @@ class Base(base.Base):
         # TODO restrict it to available active_keys
         self.anchor_key = anchor_key
         self.type_definitions = type_definitions if type_definitions else {}
+        self.uri_template_path_key = self.find_uri_template_explode_key(
+            definition.uri_template_tmpl) or 'path'
+        self.uri_template_json_path_key = self.find_uri_template_explode_key(
+            definition.uri_template_json_tmpl) or 'path'
+
+    @staticmethod
+    def find_uri_template_explode_key(tmpl):
+        if tmpl:
+            for variable in tmpl.variables:
+                if (variable.operator == '/' and
+                        len(variable.variables) == 1 and
+                        variable.variables[0][1]['explode']):
+                    return variable.variables[0][0]
+        return None
 
     def create_filter(self, condition=lambda x: True):
 
@@ -209,16 +240,18 @@ class Base(base.Base):
             result = dict(f_list_attrs)
             if not condition(result):
                 return None
+            # this 'path' is an internal one to the item.
             path = result.pop('path')
 
             # remove all inactive keys
             for key in set(fsnav_keys) - set(self.active_keys):
                 result.pop(key, None)
 
-            result['url'] = self.definition.format_href(path=path)
+            result['url'] = self.definition.format_href(
+                **{self.uri_template_path_key: path})
             if self.definition.uri_template_json:
                 result['data_href'] = self.definition.format_data_href(
-                    path=path)
+                    **{self.uri_template_json_path_key: path})
             return result
 
         return f_filter
@@ -285,6 +318,7 @@ class Base(base.Base):
         The provided path will first be converted to a fs_path.
         """
 
+        path = self.stdpath(path)
         if path[:1] != '/':
             path = '/' + path
 
@@ -305,9 +339,14 @@ class Base(base.Base):
         definition = self.type_definitions.get(filetype, self.definition)
         return definition.finalize(struct)
 
-    def get_struct_dirs_only(self, path):
-        # if the path lead to a file, its parent will  be listed instead
+    def stdpath(self, path):
+        if isinstance(path, list):
+            path = '/'.join(path)
+        return path
 
+    def get_struct_dirs_only(self, path):
+        # if the path lead to a file, its parent will be listed instead
+        path = self.stdpath(path)
         if path[:1] != '/':
             path = '/' + path
 
@@ -316,4 +355,5 @@ class Base(base.Base):
         return self.get_struct(path, lambda x: x.get('@type') == 'ItemList')
 
     def get_struct_files_only(self, path):
+        path = self.stdpath(path)
         return self.get_struct(path, lambda x: x.get('@type') != 'ItemList')

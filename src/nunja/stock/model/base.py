@@ -6,7 +6,7 @@ Base server-side UI component model
 import json
 from collections import namedtuple
 
-from uritemplate import expand
+from uritemplate import URITemplate
 
 
 def clone_dict(d):
@@ -20,13 +20,18 @@ def clone_dict(d):
             except Exception:
                 v = NotImplemented
             if not isinstance(v, dict):
-                raise TypeError('provided value must be falsy or dict')
+                raise TypeError(
+                    'provided value must be falsy, a dict, or a string '
+                    'encoding a JSON object'
+                )
             result.update(v)
     return result
 
 
 class Definition(namedtuple('Definition', [
-        'nunja_model_id', 'uri_template', 'uri_template_json',
+        'nunja_model_id',
+        'uri_template', 'uri_template_json',
+        'uri_template_tmpl', 'uri_template_json_tmpl',
         'css_class', 'config', 'context',
         ])):
     """
@@ -89,11 +94,17 @@ class Definition(namedtuple('Definition', [
         if uri_template_json is True:
             uri_template_json = uri_template + json_cache_suffix
 
-        return cls.__bases__[0].__new__(
+        uri_template_json_tmpl = None
+        if uri_template_json:
+            uri_template_json_tmpl = URITemplate(uri_template_json)
+
+        inst = cls.__bases__[0].__new__(
             cls,
             nunja_model_id, uri_template, uri_template_json,
+            URITemplate(uri_template), uri_template_json_tmpl,
             clone_dict(css_class), clone_dict(config), context,
         )
+        return inst
 
     def finalize(self, obj):
         config = clone_dict(self.config)
@@ -118,13 +129,15 @@ class Definition(namedtuple('Definition', [
         obj['@context'] = obj.get('@context', self.context)
         return obj
 
+    # TODO add property for the first explode key for path?
+
     def format_href(self, **kw):
         """
         Default implementation for href, which expands the uri_template
         with the provided arguments
         """
 
-        return expand(self.uri_template, **kw)
+        return self.uri_template_tmpl.expand(**kw)
 
     def format_data_href(self, **kw):
         """
@@ -132,7 +145,7 @@ class Definition(namedtuple('Definition', [
         uri_template_json instead.
         """
 
-        return expand(self.uri_template_json, **kw)
+        return self.uri_template_json_tmpl.expand(**kw)
 
 
 class Base(object):

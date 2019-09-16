@@ -6,6 +6,8 @@ from os.path import join
 from os.path import pardir
 from os.path import sep
 
+from uritemplate import URITemplate
+
 from nunja.stock.model.base import Definition
 from nunja.stock.model import fsnav
 
@@ -214,6 +216,21 @@ class FSNavTreeModelTestCase(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    def test_base_model_staticmethod(self):
+        self.assertIsNone(fsnav.Base.find_uri_template_explode_key(
+            URITemplate('/foo/bar/baz')))
+        self.assertIsNone(fsnav.Base.find_uri_template_explode_key(
+            URITemplate('/foo/bar/{baz}')))
+        self.assertIsNone(fsnav.Base.find_uri_template_explode_key(
+            URITemplate('/foo/bar{/baz}')))
+        self.assertEqual(fsnav.Base.find_uri_template_explode_key(
+            URITemplate('/foo/bar{/baz*}')), 'baz')
+        self.assertEqual(fsnav.Base.find_uri_template_explode_key(
+            URITemplate('/foo/{bar}{/baz*}')), 'baz')
+        # not supporting this form of exploding
+        self.assertIsNone(fsnav.Base.find_uri_template_explode_key(
+            URITemplate('/foo/bar{/wat,baz*}')))
 
     def test_base_model_initialize(self):
         model = fsnav.Base(
@@ -428,6 +445,100 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         })
         self.assertEqual(len(result['mainEntity']['itemListElement']), 4)
 
+    def test_get_struct_file_alternate_key(self):
+        model = fsnav.Base(
+            Definition('fsnav', '/root{/some_alt_key*}'),
+            self.tmpdir,
+            active_keys=['alternativeType', 'name', 'size'],
+        )
+
+        self.assertEqual(
+            _dict_clone_filtered(model._get_struct_file(self.test_file)[
+                'mainEntity'
+            ]), {
+                'alternativeType': 'file',
+                '@type': 'CreativeWork',
+                'size': 22,
+                '@id': 'test_file.txt',
+                'name': 'test_file.txt',
+                'url': '/root/test_file.txt',
+                'rownames': ['alternativeType', 'name', 'size'],
+                'rows': [['file'], ['test_file.txt'], [22]],
+            }
+        )
+
+        self.assertEqual(
+            _dict_clone_filtered(model._get_struct_file(self.dummydirfile1)[
+                'mainEntity'
+            ]), {
+                'alternativeType': 'file',
+                '@type': 'CreativeWork',
+                'size': 13,
+                '@id': 'file1',
+                'name': 'file1',
+                'url': '/root/dummydir2/file1',
+                'rownames': ['alternativeType', 'name', 'size'],
+                'rows': [['file'], ['file1'], [13]],
+            }
+        )
+
+    def test_get_struct_dir_alternate_key(self):
+        model = fsnav.Base(
+            Definition('fsnav', '/root{/some_alt_key*}'), self.tmpdir,
+            anchor_key='name')
+
+        result = model._get_struct_dir(self.dummydir1, lambda x: True)
+        self.assertEqual(_dict_clone_filtered(result['mainEntity'], [
+                'created', 'size', 'itemListElement',
+            ]), {
+                'alternativeType': 'folder',
+                '@type': 'ItemList',
+                '@id': 'dummydir1',
+                'name': 'dummydir1',
+                'url': '/root/dummydir1/',
+
+                'key_label_map': {
+                    'alternativeType': 'type',
+                    'created': 'created',
+                    'name': 'name',
+                    'size': 'size',
+                },
+                'active_keys': ['alternativeType', 'name', 'size', 'created'],
+                'anchor_key': 'name',
+            }
+        )
+        self.assertEqual(len(result['mainEntity']['itemListElement']), 1)
+        self.assertEqual(result['nunja_model_config'], {
+            'mold_id': 'nunja.stock.molds/navgrid',
+        })
+
+        # TODO should test out the other conditions here, but this is
+        # covered later with the specialized methods
+        result = model._get_struct_dir(self.dummydir2, lambda x: True)
+        self.assertEqual(_dict_clone_filtered(result['mainEntity'], [
+                'created', 'size', 'itemListElement',
+            ]), {
+                'alternativeType': 'folder',
+                '@type': 'ItemList',
+                '@id': 'dummydir2',
+                'name': 'dummydir2',
+                'url': '/root/dummydir2/',
+
+                'key_label_map': {
+                    'alternativeType': 'type',
+                    'created': 'created',
+                    'name': 'name',
+                    'size': 'size',
+                },
+                'active_keys': ['alternativeType', 'name', 'size', 'created'],
+                'anchor_key': 'name',
+            }
+        )
+        self.assertEqual(result['nunja_model_config'], {
+            'mold_id': 'nunja.stock.molds/navgrid',
+        })
+        self.assertEqual(len(result['mainEntity']['itemListElement']), 4)
+
     def test_get_struct_errors(self):
         model = fsnav.Base(
             Definition('fsnav', '/script.py?{/path*}'), self.tmpdir)
@@ -441,6 +552,12 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         model = fsnav.Base(
             Definition('fsnav', '/script.py?{/path*}'), self.tmpdir)
         results = model.get_struct('/test_file.txt')
+        self.assertEqual(results['mainEntity']['size'], 22)
+
+    def test_get_struct_file_from_list_success(self):
+        model = fsnav.Base(
+            Definition('fsnav', '/script.py?{/path*}'), self.tmpdir)
+        results = model.get_struct(['test_file.txt'])
         self.assertEqual(results['mainEntity']['size'], 22)
 
     def test_get_struct_file_parent_traversal_failure(self):
