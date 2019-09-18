@@ -467,6 +467,13 @@ class FSNavTreeModelTestCase(unittest.TestCase):
             }
         )
 
+        model = fsnav.Base(
+            Definition('fsnav', '/root/{additional}{/some_alt_key*}'),
+            self.tmpdir,
+            active_keys=['alternativeType', 'name', 'size'],
+            uri_template_vars={'additional': 'foo'}
+        )
+
         self.assertEqual(
             _dict_clone_filtered(model._get_struct_file(self.dummydirfile1)[
                 'mainEntity'
@@ -476,7 +483,7 @@ class FSNavTreeModelTestCase(unittest.TestCase):
                 'size': 13,
                 '@id': 'file1',
                 'name': 'file1',
-                'url': '/root/dummydir2/file1',
+                'url': '/root/foo/dummydir2/file1',
                 'rownames': ['alternativeType', 'name', 'size'],
                 'rows': [['file'], ['file1'], [13]],
             }
@@ -511,33 +518,6 @@ class FSNavTreeModelTestCase(unittest.TestCase):
         self.assertEqual(result['nunja_model_config'], {
             'mold_id': 'nunja.stock.molds/navgrid',
         })
-
-        # TODO should test out the other conditions here, but this is
-        # covered later with the specialized methods
-        result = model._get_struct_dir(self.dummydir2, lambda x: True)
-        self.assertEqual(_dict_clone_filtered(result['mainEntity'], [
-                'created', 'size', 'itemListElement',
-            ]), {
-                'alternativeType': 'folder',
-                '@type': 'ItemList',
-                '@id': 'dummydir2',
-                'name': 'dummydir2',
-                'url': '/root/dummydir2/',
-
-                'key_label_map': {
-                    'alternativeType': 'type',
-                    'created': 'created',
-                    'name': 'name',
-                    'size': 'size',
-                },
-                'active_keys': ['alternativeType', 'name', 'size', 'created'],
-                'anchor_key': 'name',
-            }
-        )
-        self.assertEqual(result['nunja_model_config'], {
-            'mold_id': 'nunja.stock.molds/navgrid',
-        })
-        self.assertEqual(len(result['mainEntity']['itemListElement']), 4)
 
     def test_get_struct_errors(self):
         model = fsnav.Base(

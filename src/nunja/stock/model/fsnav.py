@@ -12,6 +12,7 @@ from os.path import join
 from os.path import isdir
 from os.path import normpath
 from os.path import sep
+from types import MappingProxyType
 
 from posixpath import normpath as normuri
 from posixpath import dirname as diruri
@@ -171,6 +172,7 @@ class Base(base.Base):
             anchor_key=None,
             uri_template_path_key=None,
             uri_template_json_path_key=None,
+            uri_template_vars={},
             type_definitions=None,
             ):
         """
@@ -203,6 +205,10 @@ class Base(base.Base):
             provided as part of a separate system that is also shared
             and used here.
 
+        uri_template_vars
+            An mapping of variables to be provided to both templates
+            for formatting.
+
         type_definitions
             Type specific definitions - allow specific definitions to
             be used for the finalizing part.
@@ -223,6 +229,7 @@ class Base(base.Base):
             definition.uri_template_tmpl) or 'path'
         self.uri_template_json_path_key = self.find_uri_template_explode_key(
             definition.uri_template_json_tmpl) or 'path'
+        self.uri_template_vars = MappingProxyType(uri_template_vars)
 
     @staticmethod
     def find_uri_template_explode_key(tmpl):
@@ -247,11 +254,17 @@ class Base(base.Base):
             for key in set(fsnav_keys) - set(self.active_keys):
                 result.pop(key, None)
 
-            result['url'] = self.definition.format_href(
-                **{self.uri_template_path_key: path})
+            values = {}
+            values.update(self.uri_template_vars)
+            values[self.uri_template_path_key] = path
+
+            result['url'] = self.definition.format_href(**values)
             if self.definition.uri_template_json:
+                values = {}
+                values.update(self.uri_template_vars)
+                values[self.uri_template_json_path_key] = path
                 result['data_href'] = self.definition.format_data_href(
-                    **{self.uri_template_json_path_key: path})
+                    **values)
             return result
 
         return f_filter
