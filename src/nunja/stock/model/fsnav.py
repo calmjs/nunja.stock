@@ -19,16 +19,15 @@ from posixpath import dirname as diruri
 from nunja.stock.model import base
 
 
-# TODO make mapping from S_IFDIR and call stats.S_IFMT + lookup mapping
-statmap = (
-    (stat.S_ISDIR, 'folder'),
-    (stat.S_ISCHR, 'chardev'),
-    (stat.S_ISBLK, 'blockdev'),
-    (stat.S_ISREG, 'file'),
-    (stat.S_ISFIFO, 'fifo'),
-    (stat.S_ISLNK, 'symlink'),
-    (stat.S_ISSOCK, 'socket'),
-)
+statmap = {
+    stat.S_IFDIR: 'folder',
+    stat.S_IFCHR: 'chardev',
+    stat.S_IFBLK: 'blockdev',
+    stat.S_IFREG: 'file',
+    stat.S_IFIFO: 'fifo',
+    stat.S_IFLNK: 'symlink',
+    stat.S_IFSOCK: 'socket',
+}
 
 # using alternativeType from schema.org due to JSON-LD aliasing of @type
 # to type
@@ -36,15 +35,8 @@ fsnav_keys = ['alternativeType', 'name', 'size', 'created']
 fsnav_keys_value = ['type', 'name', 'size', 'created']
 
 
-def to_filetype(mode):
-    for f, v in statmap:
-        if f(mode):
-            return v
-    return 'unknown'
-
-
 def get_filetype(path):
-    return to_filetype(os.stat(path).st_mode)
+    return statmap.get(stat.S_IFMT(os.stat(path).st_mode), 'unknown')
 
 
 class FSModel(object):
@@ -104,7 +96,7 @@ class FSModel(object):
 
     def _list_attrs(self, fs_path):
         attr = os.stat(fs_path)
-        f_type = to_filetype(attr.st_mode)
+        f_type = statmap.get(stat.S_IFMT(attr.st_mode), 'unknown')
         ld_type = 'ItemList' if f_type == 'folder' else 'CreativeWork'
 
         return [

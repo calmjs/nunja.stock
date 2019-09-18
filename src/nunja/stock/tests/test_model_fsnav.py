@@ -47,9 +47,9 @@ def create_test_data(testcase):
 class MiscTestCase(unittest.TestCase):
 
     def test_to_filetype(self):
-        self.assertEqual(fsnav.to_filetype(0o100000), 'file')
-        self.assertEqual(fsnav.to_filetype(0o40000), 'folder')
-        self.assertEqual(fsnav.to_filetype(0), 'unknown')
+        self.assertEqual(fsnav.statmap.get(0o100000, 'unknown'), 'file')
+        self.assertEqual(fsnav.statmap.get(0o40000, 'unknown'), 'folder')
+        self.assertEqual(fsnav.statmap.get(0, 'unknown'), 'unknown')
 
     def test_base_get_filetype(self):
         create_test_data(self)
