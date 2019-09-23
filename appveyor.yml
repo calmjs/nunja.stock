@@ -1,8 +1,5 @@
 environment:
   matrix:
-    - PYTHON: "C:\\Python27"
-      nodejs_version: "8"
-      BROWSER: "Chrome"
     - PYTHON: "C:\\Python34"
       nodejs_version: "10"
       BROWSER: "Chrome"
@@ -18,6 +15,7 @@ environment:
 matrix:
   allow_failures:
     - BROWSER: "IE"
+    - BROWSER: "PhantomJS"
 
 install:
   - choco install firefox

@@ -6,57 +6,63 @@ matrix:
     - env: TRAVIS_NODE_VERSION=12
   include:
     - language: python
-      python: 2.7
-      env:
-        - TRAVIS_NODE_VERSION=10
-        - BROWSER=PhantomJS
-    - language: python
       dist: trusty
       python: 3.4
       env:
         - TRAVIS_NODE_VERSION=8
-        - BROWSER=Chrome
+        - BROWSER=PhantomJS
+    - language: python
+      python: 3.5
+      dist: bionic
+      services:
+        - xvfb
       addons:
         apt:
           sources:
             - google-chrome
           packages:
             - google-chrome-stable
-    - language: python
-      python: 3.5
       env:
         - TRAVIS_NODE_VERSION=10
-        - BROWSER=PhantomJS
+        - BROWSER=Chrome
     - language: python
       python: 3.6
+      dist: bionic
+      services:
+        - xvfb
       env:
         - TRAVIS_NODE_VERSION=10
-        - BROWSER=PhantomJS
+        - BROWSER=Firefox
     - language: python
       python: 3.7
       sudo: true
-      dist: xenial
+      dist: bionic
+      services:
+        - xvfb
+      addons:
+        apt:
+          sources:
+            - google-chrome
+          packages:
+            - google-chrome-stable
       env:
         - TRAVIS_NODE_VERSION=10
-        - BROWSER=PhantomJS
+        - BROWSER=Chrome
     - language: python
       python: 3.8-dev
       sudo: true
-      dist: xenial
+      dist: bionic
+      services:
+        - xvfb
       env:
         - TRAVIS_NODE_VERSION=12
-        - BROWSER=PhantomJS
-    - language: python
-      python: pypy
-      env:
-        - TRAVIS_NODE_VERSION=8
         - BROWSER=Firefox
     - language: python
       dist: trusty
       python: pypy3
       env:
         - TRAVIS_NODE_VERSION=10
-        - BROWSER=Chrome
+        - BROWSER=PhantomJS
       addons:
         apt:
           sources:

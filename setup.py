@@ -8,11 +8,10 @@ Intended Audience :: Developers
 License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)
 Operating System :: OS Independent
 Programming Language :: JavaScript
-Programming Language :: Python :: 2.7
-Programming Language :: Python :: 3.3
 Programming Language :: Python :: 3.4
 Programming Language :: Python :: 3.5
 Programming Language :: Python :: 3.6
+Programming Language :: Python :: 3.7
 """.strip().splitlines()
 
 package_json = {
@@ -66,7 +65,7 @@ setup(
              'calmjs.webpack',
         ],
     },
-    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*',
+    python_requires='>=3.4',
     build_calmjs_artifacts=True,
     entry_points={
         'calmjs.module': [
